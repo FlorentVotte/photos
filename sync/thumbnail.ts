@@ -13,23 +13,36 @@ interface ThumbnailResult {
 /**
  * Downloads an image and generates multiple thumbnail sizes.
  * Returns the relative paths to the generated images.
+ *
+ * @param imageUrl - URL to download from
+ * @param albumSlug - Album slug for directory structure
+ * @param photoId - Photo ID for filename
+ * @param authHeaders - Optional auth headers for Adobe API URLs
  */
 export async function generateThumbnails(
   imageUrl: string,
   albumSlug: string,
-  photoId: string
+  photoId: string,
+  authHeaders?: Record<string, string>
 ): Promise<ThumbnailResult | null> {
   try {
     console.log(`  Downloading: ${photoId}`);
 
-    // Download the original image (include API key for Adobe photos)
-    const response = await fetch(imageUrl, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-        "x-api-key": "LightroomMobileWeb1",
-      },
-    });
+    // Download the original image
+    const headers: Record<string, string> = {
+      "User-Agent":
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+    };
+
+    // Add auth headers for Adobe API URLs
+    if (authHeaders) {
+      Object.assign(headers, authHeaders);
+    } else if (imageUrl.includes("lr.adobe.io")) {
+      // Fallback for public gallery URLs
+      headers["x-api-key"] = "LightroomMobileWeb1";
+    }
+
+    const response = await fetch(imageUrl, { headers });
 
     if (!response.ok) {
       console.error(`Failed to download image: ${response.status}`);

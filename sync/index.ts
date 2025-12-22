@@ -166,7 +166,14 @@ async function syncPrivateAlbum(gallery: {
           full: `/photos/${albumSlug}/full/${assetId}.jpg`,
         };
       } else {
-        thumbnails = await generateThumbnails(renditionUrl, albumSlug, assetId);
+        // Pass auth headers for Adobe API URLs
+        const authHeaders = renditionUrl.includes("lr.adobe.io")
+          ? {
+              Authorization: `Bearer ${token.accessToken}`,
+              "X-API-Key": process.env.ADOBE_CLIENT_ID!,
+            }
+          : undefined;
+        thumbnails = await generateThumbnails(renditionUrl, albumSlug, assetId, authHeaders);
       }
 
       if (!thumbnails) {
