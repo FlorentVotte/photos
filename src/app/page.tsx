@@ -9,8 +9,16 @@ import Image from "next/image";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const featuredAlbum = await getFeaturedAlbum();
-  const albums = await getAlbums();
+  let featuredAlbum: Awaited<ReturnType<typeof getFeaturedAlbum>> = undefined;
+  let albums: Awaited<ReturnType<typeof getAlbums>> = [];
+
+  try {
+    featuredAlbum = await getFeaturedAlbum();
+    albums = await getAlbums();
+  } catch {
+    // Database may not exist during build
+  }
+
   const recentAlbums = albums.filter((a) => a.id !== featuredAlbum?.id);
 
   return (
