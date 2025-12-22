@@ -10,6 +10,9 @@ import {
 } from "@/lib/data";
 import type { Metadata } from "next";
 
+// Force dynamic rendering to pick up synced data
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: { id: string };
 }

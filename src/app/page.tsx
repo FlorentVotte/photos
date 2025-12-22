@@ -5,6 +5,9 @@ import Footer from "@/components/Footer";
 import { getAlbums, getFeaturedAlbum, siteConfig } from "@/lib/data";
 import Image from "next/image";
 
+// Force dynamic rendering to pick up synced data
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   const featuredAlbum = getFeaturedAlbum();
   const albums = getAlbums();
