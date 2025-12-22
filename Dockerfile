@@ -40,9 +40,10 @@ COPY --from=builder /app/.next/static ./.next/static
 # Create public directory (photos will be mounted as volume)
 RUN mkdir -p /app/public/photos
 
-# Copy sync scripts for runtime sync capability
+# Copy sync scripts and node_modules for runtime sync capability
 COPY --from=builder /app/sync ./sync
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
 
 # Create directories for data persistence
 RUN mkdir -p /app/public/photos
