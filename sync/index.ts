@@ -19,6 +19,7 @@ import {
   fetchAuthenticatedCatalog,
   fetchAuthenticatedAlbumAssets,
   fetchAuthenticatedAlbums,
+  fetchAuthenticatedAsset,
 } from "./lightroom-authenticated";
 import type { LightroomGalleryData } from "./types";
 
@@ -185,7 +186,9 @@ async function syncPrivateAlbum(gallery: {
         coverImage = thumbnails.medium;
       }
 
-      const payload = asset.payload || {};
+      // Fetch full asset metadata (album assets response has minimal data)
+      const fullAsset = await fetchAuthenticatedAsset(catId, catalogAssetId);
+      const payload = fullAsset?.payload || asset.payload || {};
       const xmp = payload.xmp || {};
       const location = payload.location || {};
 
@@ -584,18 +587,42 @@ async function getAssetRenditionUrl(
 
 function formatAperture(fNumber: unknown): string | undefined {
   if (!fNumber) return undefined;
-  const value = Array.isArray(fNumber) ? fNumber[0] : fNumber;
-  if (!value) return undefined;
-  const num = typeof value === "number" ? value : parseFloat(String(value));
+
+  let num: number;
+  if (Array.isArray(fNumber) && fNumber.length === 2) {
+    // Adobe API returns fractions as [numerator, denominator]
+    const [numerator, denominator] = fNumber;
+    if (denominator === 0) return undefined;
+    num = numerator / denominator;
+  } else if (Array.isArray(fNumber)) {
+    num = fNumber[0];
+  } else if (typeof fNumber === "number") {
+    num = fNumber;
+  } else {
+    num = parseFloat(String(fNumber));
+  }
+
   if (isNaN(num)) return undefined;
   return `f/${num.toFixed(1)}`;
 }
 
 function formatShutterSpeed(exposureTime: unknown): string | undefined {
   if (!exposureTime) return undefined;
-  const value = Array.isArray(exposureTime) ? exposureTime[0] : exposureTime;
-  if (!value) return undefined;
-  const time = typeof value === "number" ? value : parseFloat(String(value));
+
+  let time: number;
+  if (Array.isArray(exposureTime) && exposureTime.length === 2) {
+    // Adobe API returns fractions as [numerator, denominator]
+    const [numerator, denominator] = exposureTime;
+    if (denominator === 0) return undefined;
+    time = numerator / denominator;
+  } else if (Array.isArray(exposureTime)) {
+    time = exposureTime[0];
+  } else if (typeof exposureTime === "number") {
+    time = exposureTime;
+  } else {
+    time = parseFloat(String(exposureTime));
+  }
+
   if (isNaN(time)) return undefined;
   return time >= 1 ? `${time}s` : `1/${Math.round(1 / time)}s`;
 }
