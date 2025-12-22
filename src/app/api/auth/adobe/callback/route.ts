@@ -73,9 +73,8 @@ export async function GET(request: NextRequest) {
     console.log("Adobe tokens saved successfully");
 
     // Redirect to admin page with success message
-    return NextResponse.redirect(
-      new URL("/admin?adobe_auth=success", request.url)
-    );
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    return NextResponse.redirect(`${siteUrl}/admin?adobe_auth=success`);
   } catch (error) {
     console.error("OAuth callback error:", error);
     return NextResponse.json(
