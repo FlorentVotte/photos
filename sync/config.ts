@@ -10,9 +10,9 @@ export const config = {
   // Format: https://lightroom.adobe.com/shares/XXXXXXXX
   galleryUrls: [] as string[],
 
-  // Output directories
-  outputDir: path.join(process.cwd(), "public", "photos"),
-  manifestPath: path.join(process.cwd(), "public", "photos", "albums.json"),
+  // Output directories (use /app/data in Docker, public/photos locally)
+  outputDir: path.join(process.cwd(), process.env.NODE_ENV === "production" ? "data/photos" : "public/photos"),
+  manifestPath: path.join(process.cwd(), process.env.NODE_ENV === "production" ? "data/photos/albums.json" : "public/photos/albums.json"),
 
   // Image sizes for thumbnails
   imageSizes: {

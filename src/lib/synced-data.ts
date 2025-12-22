@@ -12,8 +12,11 @@ interface SyncManifest {
   chapters: Record<string, { id: string; title: string; narrative: string; photoIds: string[] }[]>;
 }
 
-// Path to the manifest file
-const MANIFEST_PATH = path.join(process.cwd(), "public", "photos", "albums.json");
+// Path to the manifest file (use /app/data in Docker, public/photos locally)
+const MANIFEST_PATH = path.join(
+  process.cwd(),
+  process.env.NODE_ENV === "production" ? "data/photos/albums.json" : "public/photos/albums.json"
+);
 
 // Cache for manifest data
 let manifestCache: SyncManifest | null = null;

@@ -2,8 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 
-const GALLERIES_FILE = path.join(process.cwd(), "sync", "galleries.json");
-const ALBUMS_FILE = path.join(process.cwd(), "public", "photos", "albums.json");
+const GALLERIES_FILE = path.join(
+  process.cwd(),
+  process.env.NODE_ENV === "production" ? "data/galleries.json" : "sync/galleries.json"
+);
+const ALBUMS_FILE = path.join(
+  process.cwd(),
+  process.env.NODE_ENV === "production" ? "data/photos/albums.json" : "public/photos/albums.json"
+);
 
 /**
  * Resolve short URLs (adobe.ly) to full Lightroom URLs

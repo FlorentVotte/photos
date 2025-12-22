@@ -9,7 +9,10 @@ const REDIRECT_URI = process.env.NEXT_PUBLIC_SITE_URL
   ? `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/adobe/callback`
   : "http://localhost:3000/api/auth/adobe/callback";
 
-const TOKENS_FILE = path.join(process.cwd(), "adobe-tokens.json");
+const TOKENS_FILE = path.join(
+  process.cwd(),
+  process.env.NODE_ENV === "production" ? "data/adobe-tokens.json" : "adobe-tokens.json"
+);
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");

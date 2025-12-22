@@ -2,7 +2,10 @@ import fetch from "node-fetch";
 import fs from "fs/promises";
 import path from "path";
 
-const TOKENS_FILE = path.join(process.cwd(), "adobe-tokens.json");
+const TOKENS_FILE = path.join(
+  process.cwd(),
+  process.env.NODE_ENV === "production" ? "data/adobe-tokens.json" : "adobe-tokens.json"
+);
 const LIGHTROOM_API = "https://lr.adobe.io/v2";
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
 

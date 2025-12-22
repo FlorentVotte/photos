@@ -13,12 +13,10 @@ services:
       - ADOBE_CLIENT_ID=${ADOBE_CLIENT_ID:-}
       - ADOBE_CLIENT_SECRET=${ADOBE_CLIENT_SECRET:-}
     volumes:
-      # Persist synced photos and manifest (albums.json is read at runtime)
+      # Persist all data (galleries config, tokens, photos)
+      - ./data:/app/data
+      # Also mount photos to public for static serving
       - ./data/photos:/app/public/photos
-      # Persist gallery config
-      - ./data/galleries.json:/app/sync/galleries.json
-      # Persist Adobe OAuth tokens
-      - ./data/adobe-tokens.json:/app/adobe-tokens.json
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
       interval: 30s
