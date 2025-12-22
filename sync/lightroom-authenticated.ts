@@ -21,11 +21,32 @@ interface LightroomAsset {
     captureDate?: string;
     importSource?: {
       fileName?: string;
+      originalWidth?: number;
+      originalHeight?: number;
+      cameraModel?: string;
+    };
+    develop?: {
+      croppedWidth?: number;
+      croppedHeight?: number;
     };
     xmp?: {
       dc?: {
-        title?: string;
-        description?: string;
+        title?: string | string[];
+        description?: string | string[];
+      };
+      tiff?: {
+        Model?: string;
+      };
+      aux?: {
+        Lens?: string;
+      };
+      exifEX?: {
+        LensModel?: string;
+      };
+      exif?: {
+        FNumber?: number | number[];
+        ExposureTime?: number | number[];
+        ISOSpeedRatings?: number;
       };
       [key: string]: any;
     };
@@ -34,6 +55,7 @@ interface LightroomAsset {
       longitude?: number;
       city?: string;
       country?: string;
+      name?: string;
     };
     [key: string]: any;
   };

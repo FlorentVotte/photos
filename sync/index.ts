@@ -387,6 +387,11 @@ async function syncGallery(
 ): Promise<typeof manifest> {
   const { url, tag, featured } = entry;
 
+  if (!url) {
+    console.log("  No URL provided, skipping");
+    return manifest;
+  }
+
   console.log(`\nSyncing gallery: ${url}`);
 
   // Check if gallery has the required tag
