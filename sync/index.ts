@@ -78,18 +78,19 @@ async function loadAuthenticatedMetadata(): Promise<void> {
       console.log("  Could not fetch catalog");
       return;
     }
-    catalogId = catalog.id;
-    console.log(`  Catalog ID: ${catalogId}`);
+    const catId = catalog.id;
+    catalogId = catId;
+    console.log(`  Catalog ID: ${catId}`);
 
     // Get all albums
-    const albumsResponse = await fetchAuthenticatedAlbums(catalogId);
+    const albumsResponse = await fetchAuthenticatedAlbums(catId);
     const albums = albumsResponse?.resources || [];
     console.log(`  Found ${albums.length} albums in catalog`);
 
     // Load assets from all albums to build our metadata cache
     for (const album of albums) {
       try {
-        const assets = await fetchAuthenticatedAlbumAssets(catalogId, album.id);
+        const assets = await fetchAuthenticatedAlbumAssets(catId, album.id);
         for (const asset of assets) {
           const title = asset.payload?.xmp?.dc?.title;
           const caption = asset.payload?.xmp?.dc?.description;
