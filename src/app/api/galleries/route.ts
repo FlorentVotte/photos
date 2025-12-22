@@ -159,7 +159,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE - Remove a gallery
+// DELETE - Remove a gallery and its synced data
 export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json();
@@ -183,6 +183,31 @@ export async function DELETE(request: NextRequest) {
     }
 
     await writeGalleries(filtered);
+
+    // Also remove the album from albums.json
+    const albumManifest = await readAlbums();
+    if (albumManifest) {
+      const albumToRemove = albumManifest.albums.find((a) => a.galleryUrl === url);
+      if (albumToRemove) {
+        // Remove album from manifest
+        albumManifest.albums = albumManifest.albums.filter((a) => a.galleryUrl !== url);
+        albumManifest.lastUpdated = new Date().toISOString();
+        await fs.writeFile(ALBUMS_FILE, JSON.stringify(albumManifest, null, 2));
+
+        // Optionally delete the album's photo folder
+        const photosDir = path.join(
+          process.cwd(),
+          process.env.NODE_ENV === "production" ? "data/photos" : "public/photos",
+          albumToRemove.slug
+        );
+        try {
+          await fs.rm(photosDir, { recursive: true, force: true });
+        } catch {
+          // Folder may not exist, ignore
+        }
+      }
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error removing gallery:", error);
