@@ -21,10 +21,23 @@ import {
   updatePhotos,
   generateDataFile,
 } from "./manifest";
+import {
+  isAuthenticatedApiAvailable,
+  fetchAuthenticatedCatalog,
+  fetchAuthenticatedAlbumAssets,
+  fetchAuthenticatedAlbums,
+} from "./lightroom-authenticated";
 import type { SyncAlbum, SyncPhoto, LightroomGalleryData } from "./types";
 
+// Cache for authenticated catalog data
+let catalogId: string | null = null;
+let catalogAssets: Map<string, { title?: string; caption?: string }> = new Map();
+
 // Store gallery URLs in a separate file
-const GALLERIES_FILE = path.join(process.cwd(), "sync", "galleries.json");
+const GALLERIES_FILE = path.join(
+  process.cwd(),
+  process.env.NODE_ENV === "production" ? "data/galleries.json" : "sync/galleries.json"
+);
 
 interface GalleryEntry {
   url: string;
@@ -43,6 +56,67 @@ async function loadGalleries(): Promise<GalleryEntry[]> {
 
 async function saveGalleries(galleries: GalleryEntry[]): Promise<void> {
   await fs.writeFile(GALLERIES_FILE, JSON.stringify(galleries, null, 2), "utf-8");
+}
+
+/**
+ * Load metadata from authenticated Adobe API if available
+ * This gives us access to titles and captions that aren't in the public API
+ */
+async function loadAuthenticatedMetadata(): Promise<void> {
+  try {
+    const isAvailable = await isAuthenticatedApiAvailable();
+    if (!isAvailable) {
+      console.log("Adobe API not authenticated - using public data only");
+      return;
+    }
+
+    console.log("Loading metadata from authenticated Adobe API...");
+
+    // Get catalog
+    const catalog = await fetchAuthenticatedCatalog();
+    if (!catalog?.id) {
+      console.log("  Could not fetch catalog");
+      return;
+    }
+    catalogId = catalog.id;
+    console.log(`  Catalog ID: ${catalogId}`);
+
+    // Get all albums
+    const albumsResponse = await fetchAuthenticatedAlbums(catalogId);
+    const albums = albumsResponse?.resources || [];
+    console.log(`  Found ${albums.length} albums in catalog`);
+
+    // Load assets from all albums to build our metadata cache
+    for (const album of albums) {
+      try {
+        const assets = await fetchAuthenticatedAlbumAssets(catalogId, album.id);
+        for (const asset of assets) {
+          const title = asset.payload?.xmp?.dc?.title;
+          const caption = asset.payload?.xmp?.dc?.description;
+
+          if (title || caption) {
+            catalogAssets.set(asset.id, {
+              title: typeof title === 'string' ? title : title?.[0],
+              caption: typeof caption === 'string' ? caption : caption?.[0]
+            });
+          }
+        }
+      } catch (err) {
+        // Continue with other albums
+      }
+    }
+
+    console.log(`  Cached metadata for ${catalogAssets.size} assets with titles/captions`);
+  } catch (error) {
+    console.log("  Failed to load authenticated metadata:", error);
+  }
+}
+
+/**
+ * Get enriched title/caption from authenticated API cache
+ */
+function getAuthenticatedMetadata(assetId: string): { title?: string; caption?: string } {
+  return catalogAssets.get(assetId) || {};
 }
 
 async function addGallery(url: string, tag?: string, featured?: boolean): Promise<void> {
@@ -146,10 +220,15 @@ async function syncGallery(
       album.coverImage = thumbnails.medium;
     }
 
+    // Get enriched metadata from authenticated API if available
+    const authMeta = getAuthenticatedMetadata(lrPhoto.id);
+    const photoTitle = authMeta.title || lrPhoto.title || lrPhoto.caption || `Photo ${i + 1}`;
+    const photoCaption = authMeta.caption || lrPhoto.caption;
+
     const photo: SyncPhoto = {
       id: lrPhoto.id,
-      title: lrPhoto.title || lrPhoto.caption || `Photo ${i + 1}`,
-      description: lrPhoto.caption,
+      title: photoTitle,
+      description: photoCaption,
       src: {
         thumb: thumbnails.thumb,
         medium: thumbnails.medium,
@@ -306,6 +385,9 @@ function formatDate(dateStr?: string): string | undefined {
 async function runSync(): Promise<void> {
   console.log("Starting Lightroom sync...");
   console.log(`Sync tag filter: "${config.syncTag}"`);
+
+  // Load authenticated metadata first (for titles/captions)
+  await loadAuthenticatedMetadata();
 
   let manifest = await loadManifest();
   const galleries = await loadGalleries();
