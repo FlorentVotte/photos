@@ -79,14 +79,28 @@ export async function GET() {
       tokens.access_token
     );
 
-    const albums = (albumsResponse?.resources || []).map((album: any) => ({
-      id: album.id,
-      name: album.payload?.name || "Untitled Album",
-      created: album.created,
-      updated: album.updated,
-      assetCount: album.payload?.assetCount || 0,
-      // Cover image would require another API call, skip for now
-    }));
+    const albums = (albumsResponse?.resources || []).map((album: any) => {
+      // Debug: log first album structure to see where count is
+      if (albumsResponse?.resources?.indexOf(album) === 0) {
+        console.log("First album structure:", JSON.stringify(album, null, 2));
+      }
+
+      // Try multiple possible locations for asset count
+      const assetCount =
+        album.payload?.assetCount ||
+        album.asset_count ||
+        album.links?.["/rels/assets"]?.count ||
+        album.relationships?.assets?.count ||
+        0;
+
+      return {
+        id: album.id,
+        name: album.payload?.name || "Untitled Album",
+        created: album.created,
+        updated: album.updated,
+        assetCount,
+      };
+    });
 
     // Sort by updated date (most recent first)
     albums.sort((a: any, b: any) =>
