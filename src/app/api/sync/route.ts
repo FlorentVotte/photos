@@ -1,24 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { exec } from "child_process";
 import { promisify } from "util";
-import fs from "fs/promises";
-import path from "path";
 import { cookies } from "next/headers";
+import prisma from "@/lib/db";
 
 const execAsync = promisify(exec);
-const ALBUMS_FILE = path.join(process.cwd(), "public", "photos", "albums.json");
 const WEBHOOK_SECRET = process.env.SYNC_WEBHOOK_SECRET;
 
 // GET - Get sync status
 export async function GET() {
   try {
-    const albumsData = await fs.readFile(ALBUMS_FILE, "utf-8");
-    const manifest = JSON.parse(albumsData);
+    const [albumCount, photoCount, lastAlbum] = await Promise.all([
+      prisma.album.count(),
+      prisma.photo.count(),
+      prisma.album.findFirst({
+        orderBy: { lastSynced: "desc" },
+        select: { lastSynced: true },
+      }),
+    ]);
 
     return NextResponse.json({
-      lastUpdated: manifest.lastUpdated,
-      albumCount: manifest.albums?.length || 0,
-      photoCount: manifest.photos?.length || 0,
+      lastUpdated: lastAlbum?.lastSynced?.toISOString() || null,
+      albumCount,
+      photoCount,
     });
   } catch {
     return NextResponse.json({

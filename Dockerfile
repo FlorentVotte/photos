@@ -2,11 +2,14 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Install dependencies for sharp (image processing)
-RUN apk add --no-cache libc6-compat
+# Install dependencies for sharp (image processing) and better-sqlite3 (native compilation)
+RUN apk add --no-cache libc6-compat python3 make g++
 
 COPY package.json package-lock.json ./
+COPY prisma ./prisma
 RUN npm ci
+# Generate Prisma client
+RUN npx prisma generate
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
@@ -44,10 +47,15 @@ RUN mkdir -p /app/public/photos
 COPY --from=builder /app/sync ./sync
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
+# Copy Prisma schema for database migrations
+COPY --from=builder /app/prisma ./prisma
+# Copy entrypoint script
+COPY docker-entrypoint.sh ./docker-entrypoint.sh
 
 # Create directories for data persistence
 RUN mkdir -p /app/public/photos /app/data
 RUN chown -R nextjs:nodejs /app
+RUN chmod +x ./docker-entrypoint.sh
 
 USER nextjs
 
@@ -56,4 +64,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["./docker-entrypoint.sh"]
