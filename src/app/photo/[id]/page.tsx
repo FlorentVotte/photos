@@ -41,8 +41,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  const photos = await getAllPhotos();
-  return photos.map((photo) => ({ id: photo.id }));
+  try {
+    const photos = await getAllPhotos();
+    return photos.map((photo) => ({ id: photo.id }));
+  } catch {
+    // Database may not exist during build
+    return [];
+  }
 }
 
 export default async function PhotoPage({ params }: Props) {

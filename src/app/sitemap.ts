@@ -4,8 +4,15 @@ import { getAlbums, getAllPhotos } from "@/lib/data";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
 
-  const albums = await getAlbums();
-  const photos = await getAllPhotos();
+  let albums: Awaited<ReturnType<typeof getAlbums>> = [];
+  let photos: Awaited<ReturnType<typeof getAllPhotos>> = [];
+
+  try {
+    albums = await getAlbums();
+    photos = await getAllPhotos();
+  } catch {
+    // Database may not exist during build
+  }
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [

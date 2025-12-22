@@ -35,8 +35,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  const albums = await getAlbums();
-  return albums.map((album) => ({ slug: album.slug }));
+  try {
+    const albums = await getAlbums();
+    return albums.map((album) => ({ slug: album.slug }));
+  } catch {
+    // Database may not exist during build
+    return [];
+  }
 }
 
 export default async function AlbumPage({ params }: Props) {
