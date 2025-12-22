@@ -434,32 +434,45 @@ async function getAssetRenditionUrl(
   assetId: string,
   accessToken: string
 ): Promise<string | null> {
-  try {
-    const url = `https://lr.adobe.io/v2/catalogs/${catId}/assets/${assetId}/renditions/2048`;
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "X-API-Key": process.env.ADOBE_CLIENT_ID!,
-      },
-      redirect: "manual",
-    });
+  // Try different rendition types in order of preference
+  const renditionTypes = ["2048", "1280", "fullsize", "thumbnail2x"];
 
-    if (response.status === 302 || response.status === 303) {
-      return response.headers.get("location");
+  for (const renditionType of renditionTypes) {
+    try {
+      const url = `https://lr.adobe.io/v2/catalogs/${catId}/assets/${assetId}/renditions/${renditionType}`;
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "X-API-Key": process.env.ADOBE_CLIENT_ID!,
+        },
+        redirect: "manual",
+      });
+
+      if (response.status === 302 || response.status === 303) {
+        const location = response.headers.get("location");
+        if (location) {
+          console.log(`    Got rendition ${renditionType} for ${assetId}`);
+          return location;
+        }
+      }
+
+      if (response.ok) {
+        const data = (await response.json()) as { href?: string; url?: string };
+        if (data.href || data.url) {
+          console.log(`    Got rendition ${renditionType} for ${assetId}`);
+          return data.href || data.url || null;
+        }
+      }
+
+      // Try next rendition type if this one fails
+    } catch {
+      // Continue to next rendition type
     }
-
-    if (response.ok) {
-      const data = (await response.json()) as { href?: string; url?: string };
-      return data.href || data.url || null;
-    }
-
-    // Log the error for debugging
-    console.log(`    Rendition error for ${assetId}: ${response.status}`);
-    return null;
-  } catch (error) {
-    console.log(`    Rendition exception for ${assetId}:`, error);
-    return null;
   }
+
+  // All rendition types failed
+  console.log(`    No rendition available for ${assetId} (tried: ${renditionTypes.join(", ")})`);
+  return null;
 }
 
 function formatAperture(fNumber: unknown): string | undefined {
