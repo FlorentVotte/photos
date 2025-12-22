@@ -52,9 +52,9 @@ COPY --from=builder /app/prisma ./prisma
 # Copy entrypoint script
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 
-# Create directories for data persistence
-RUN mkdir -p /app/public/photos /app/data
-RUN chown -R nextjs:nodejs /app
+# Create directories for data persistence and tsx temp
+RUN mkdir -p /app/public/photos /app/data /tmp/tsx-1001
+RUN chown -R nextjs:nodejs /app /tmp/tsx-1001
 RUN chmod +x ./docker-entrypoint.sh
 
 USER nextjs
