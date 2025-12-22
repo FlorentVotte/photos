@@ -146,8 +146,10 @@ async function syncPrivateAlbum(
   }
 
   // Get catalog ID if not already loaded
-  let catId = catalogId;
-  if (!catId) {
+  let catId: string;
+  if (catalogId) {
+    catId = catalogId;
+  } else {
     const catalog = await fetchAuthenticatedCatalog();
     if (!catalog?.id) {
       console.log("  Could not fetch catalog");
