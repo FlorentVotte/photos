@@ -1,13 +1,17 @@
 import fetch, { Response } from "node-fetch";
-import fs from "fs/promises";
-import path from "path";
+import fs from "fs";
+import { PrismaClient } from "@prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
-// In production (Docker), use /app/data. In development, use project root
-const TOKENS_FILE = process.env.NODE_ENV === "production"
-  ? "/app/data/adobe-tokens.json"
-  : path.join(process.cwd(), "adobe-tokens.json");
 const LIGHTROOM_API = "https://lr.adobe.io/v2";
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
+
+// Database setup
+const dbPath = process.env.NODE_ENV === "production" && fs.existsSync("/app/data")
+  ? "/app/data/photobook.db"
+  : "./photobook.db";
+const adapter = new PrismaBetterSqlite3({ url: dbPath });
+const prisma = new PrismaClient({ adapter });
 
 interface TokenData {
   access_token: string;
@@ -62,12 +66,18 @@ interface LightroomAsset {
 }
 
 /**
- * Load saved Adobe tokens
+ * Load saved Adobe tokens from database
  */
 async function loadTokens(): Promise<TokenData | null> {
   try {
-    const data = await fs.readFile(TOKENS_FILE, "utf-8");
-    return JSON.parse(data);
+    const token = await prisma.adobeToken.findUnique({ where: { id: "default" } });
+    if (!token) return null;
+
+    return {
+      access_token: token.accessToken,
+      refresh_token: token.refreshToken || "",
+      expires_at: token.expiresAt.getTime(),
+    };
   } catch {
     return null;
   }
