@@ -459,17 +459,10 @@ async function generateRendition(
       },
     });
 
-    console.log(`      POST rendition ${renditionType}: status=${response.status}`);
-    if (!response.ok) {
-      const text = await response.text();
-      console.log(`      POST response: ${text.substring(0, 200)}`);
-    }
-
     // 202 Accepted means generation started
     // 201 Created means already exists
     return response.status === 202 || response.status === 201 || response.ok;
-  } catch (error) {
-    console.log(`      POST rendition error:`, error);
+  } catch {
     return false;
   }
 }
@@ -530,8 +523,6 @@ async function getAssetRenditionUrl(
         },
         redirect: "manual",
       });
-
-      console.log(`      GET ${renditionType}: status=${response.status}`);
 
       if (response.status === 302 || response.status === 303) {
         const location = response.headers.get("location");
