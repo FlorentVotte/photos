@@ -68,9 +68,18 @@ export async function GET(request: NextRequest) {
       updated_at: new Date().toISOString(),
     };
 
+    // Ensure directory exists
+    const dir = path.dirname(TOKENS_FILE);
+    try {
+      await fs.mkdir(dir, { recursive: true });
+    } catch {
+      // Directory may already exist
+    }
+
+    console.log("Saving tokens to:", TOKENS_FILE);
     await fs.writeFile(TOKENS_FILE, JSON.stringify(tokenData, null, 2));
 
-    console.log("Adobe tokens saved successfully");
+    console.log("Adobe tokens saved successfully to:", TOKENS_FILE);
 
     // Redirect to admin page with success message
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
