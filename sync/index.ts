@@ -435,16 +435,14 @@ async function getAssetRenditionUrl(
   accessToken: string
 ): Promise<string | null> {
   try {
-    const response = await fetch(
-      `https://lr.adobe.io/v2/catalogs/${catId}/assets/${assetId}/renditions/2048`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "X-API-Key": process.env.ADOBE_CLIENT_ID!,
-        },
-        redirect: "manual",
-      }
-    );
+    const url = `https://lr.adobe.io/v2/catalogs/${catId}/assets/${assetId}/renditions/2048`;
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "X-API-Key": process.env.ADOBE_CLIENT_ID!,
+      },
+      redirect: "manual",
+    });
 
     if (response.status === 302 || response.status === 303) {
       return response.headers.get("location");
@@ -455,8 +453,11 @@ async function getAssetRenditionUrl(
       return data.href || data.url || null;
     }
 
+    // Log the error for debugging
+    console.log(`    Rendition error for ${assetId}: ${response.status}`);
     return null;
-  } catch {
+  } catch (error) {
+    console.log(`    Rendition exception for ${assetId}:`, error);
     return null;
   }
 }
