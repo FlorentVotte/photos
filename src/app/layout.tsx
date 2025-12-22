@@ -17,6 +17,11 @@ const notoSans = Noto_Sans({
 export const metadata: Metadata = {
   title: "Travelogue - Photo Portfolio",
   description: "Capturing the fleeting moments between departures and arrivals. A visual journey through the world.",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
   openGraph: {
     title: "Travelogue - Photo Portfolio",
     description: "Capturing the fleeting moments between departures and arrivals.",

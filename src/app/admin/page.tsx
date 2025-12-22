@@ -138,10 +138,10 @@ export default function AdminPage() {
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />
 
-      <main className="flex-1 py-12 px-4 md:px-8 lg:px-16">
+      <main className="flex-1 py-6 md:py-12 px-4 md:px-8 lg:px-16">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold text-white">Album Manager</h1>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-white">Album Manager</h1>
             <button
               onClick={async () => {
                 await fetch("/api/auth/logout", { method: "POST" });

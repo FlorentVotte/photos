@@ -52,9 +52,9 @@ export default function AlbumPage({ params }: Props) {
 
       <main className="flex-1 flex flex-col items-center w-full">
         {/* Cinematic Hero Header */}
-        <div className="w-full relative h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden">
+        <div className="w-full relative h-[70vh] md:h-[85vh] min-h-[400px] md:min-h-[600px] flex items-center justify-center overflow-hidden">
           <div
-            className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat bg-fixed"
+            className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
             style={{ backgroundImage: `url("${album.coverImage}")` }}
           />
           <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-black/20 to-background-dark" />
@@ -63,7 +63,7 @@ export default function AlbumPage({ params }: Props) {
             <span className="inline-block py-1 px-3 rounded-full border border-white/30 bg-black/20 text-xs font-sans tracking-widest uppercase text-white backdrop-blur-sm">
               Travel Diary
             </span>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight drop-shadow-2xl">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight drop-shadow-2xl">
               {album.title.split(" ")[0]}{" "}
               <span className="italic text-primary font-serif font-medium">
                 {album.subtitle || album.title.split(" ").slice(1).join(" ")}

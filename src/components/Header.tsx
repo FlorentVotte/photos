@@ -12,7 +12,7 @@ export default function Header({ transparent = false }: HeaderProps) {
 
   return (
     <header
-      className={`sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-surface-border px-6 py-4 lg:px-40 transition-all duration-300 ${
+      className={`sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-surface-border px-4 py-3 md:px-6 md:py-4 lg:px-16 transition-all duration-300 ${
         transparent
           ? "bg-background-dark/80 backdrop-blur-md"
           : "bg-background-dark/95 backdrop-blur-md"
