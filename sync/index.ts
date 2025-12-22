@@ -146,18 +146,20 @@ async function syncPrivateAlbum(
   }
 
   // Get catalog ID if not already loaded
-  if (!catalogId) {
+  let catId = catalogId;
+  if (!catId) {
     const catalog = await fetchAuthenticatedCatalog();
     if (!catalog?.id) {
       console.log("  Could not fetch catalog");
       return manifest;
     }
-    catalogId = catalog.id;
+    catId = catalog.id;
+    catalogId = catId;
   }
 
   try {
     // Fetch assets from the private album
-    const assets = await fetchAuthenticatedAlbumAssets(catalogId, albumId);
+    const assets = await fetchAuthenticatedAlbumAssets(catId, albumId);
 
     if (assets.length === 0) {
       console.log("  No assets found in album");
@@ -192,7 +194,7 @@ async function syncPrivateAlbum(
       const assetId = asset.id;
 
       // Get rendition URL from authenticated API
-      const renditionUrl = await getAssetRenditionUrl(catalogId, assetId);
+      const renditionUrl = await getAssetRenditionUrl(catId, assetId);
       if (!renditionUrl) {
         console.log(`  No rendition URL for ${assetId}, skipping`);
         continue;
