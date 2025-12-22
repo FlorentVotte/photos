@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Photo Details - Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&amp;family=Noto+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1dc964",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#112118",
+                        "surface-dark": "#122118",
+                        "surface-border": "#254633",
+                        "text-muted": "#95c6a9",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Serif", "serif"],
+                        "sans": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #112118;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #254633;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #366349;
+        }
+        /* Disable image selection/dragging for basic protection */
+        img {
+            -webkit-user-drag: none;
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white overflow-x-hidden antialiased selection:bg-primary/30">
+<div class="relative flex min-h-screen w-full flex-col bg-[#122118] dark group/design-root">
+<!-- Header -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-surface-border bg-[#122118]/95 backdrop-blur-md px-6 py-4 lg:px-10">
+<div class="flex items-center gap-4 text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined text-[24px]">photo_camera</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-tight">Lens &amp; Light</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-white hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Home</a>
+<a class="text-primary text-sm font-medium leading-normal" href="#">Albums</a>
+<a class="text-white hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">About</a>
+<a class="text-white hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Contact</a>
+</div>
+<button class="flex items-center justify-center rounded-lg size-10 bg-surface-border text-white hover:bg-primary hover:text-[#122118] transition-all">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<div class="layout-container flex h-full grow flex-col">
+<div class="flex flex-1 justify-center py-5 px-4 md:px-10 lg:px-40">
+<div class="layout-content-container flex flex-col max-w-[1080px] flex-1">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap items-center gap-2 py-4 mb-2">
+<a class="text-text-muted hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Home</a>
+<span class="material-symbols-outlined text-text-muted text-[14px]">chevron_right</span>
+<a class="text-text-muted hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Japan Trip</a>
+<span class="material-symbols-outlined text-text-muted text-[14px]">chevron_right</span>
+<span class="text-white text-sm font-medium leading-normal">Kyoto</span>
+</div>
+<!-- Main Photo Stage -->
+<div class="relative group w-full bg-[#0a140f] rounded-xl overflow-hidden shadow-2xl shadow-black/40 border border-[#254633]">
+<!-- Navigation Overlays -->
+<div class="absolute inset-y-0 left-0 w-16 md:w-24 bg-gradient-to-r from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+<button class="size-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-primary hover:text-black transition-colors">
+<span class="material-symbols-outlined text-white hover:text-black">arrow_back</span>
+</button>
+</div>
+<div class="absolute inset-y-0 right-0 w-16 md:w-24 bg-gradient-to-l from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+<button class="size-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-primary hover:text-black transition-colors">
+<span class="material-symbols-outlined text-white hover:text-black">arrow_forward</span>
+</button>
+</div>
+<!-- The Image -->
+<div class="relative w-full aspect-[4/3] md:aspect-[16/10] flex items-center justify-center bg-[#0e1a13]">
+<img alt="Misty sunrise view of traditional torii gates in Kyoto forest" class="max-h-full max-w-full object-contain shadow-lg" data-alt="Misty sunrise view of traditional torii gates in Kyoto forest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzhiLI7hd0I23CtkO5VAwlkgPnPGlPUCMN1A-clfzGQtd7puDPCJ692fg3G8I3ysHnpwXKqtfbp-oC4SFzCGtB9ZzBSrNMISPLVNFAvSlWPwrFPL2Au2Tm1wENQjy9p7UwJVOe2LMY4ASzO004XcKDkHqKq_9v6zuDfd2HPHcKDyDD0Yi9rUtvODNyrbWr_fxzB-Bog_rYZOBpKP53vxXD-iNplFHQsOL5fhYGsSbAFBetGMmnK8Ph-gnYA9eefXcTJ3kX7LDsl1g"/>
+</div>
+<!-- Mobile Nav Controls (Visible always on small screens) -->
+<div class="md:hidden absolute bottom-4 right-4 flex gap-2">
+<button class="size-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white border border-white/10">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<button class="size-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white border border-white/10">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Details Section -->
+<div class="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 pb-20">
+<!-- Narrative Column -->
+<div class="lg:col-span-7 flex flex-col gap-6">
+<div>
+<h1 class="text-white text-3xl md:text-4xl font-bold leading-tight tracking-[-0.015em] font-display">Sunrise at Fushimi Inari</h1>
+<p class="text-text-muted text-lg mt-4 leading-relaxed font-light italic opacity-90">
+                                    Captured during the golden hour, the endless path of vermilion torii gates creates a mesmerizing tunnel of light and shadow. The early morning mist added a layer of mystery to the sacred mountain path, keeping the usual crowds at bay.
+                                </p>
+</div>
+<!-- Social Sharing Dock -->
+<div class="pt-6 border-t border-[#254633] mt-2">
+<span class="text-xs font-bold uppercase tracking-widest text-[#5c8a6f] mb-4 block">Share this moment</span>
+<div class="flex flex-wrap gap-3">
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-[#254633]/50 hover:bg-[#254633] text-white text-sm transition-all border border-[#366349] group">
+<span class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors">share</span>
+<span>Facebook</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-[#254633]/50 hover:bg-[#254633] text-white text-sm transition-all border border-[#366349] group">
+<span class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors">post_add</span>
+<span>Twitter</span>
+</button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-[#254633]/50 hover:bg-[#254633] text-white text-sm transition-all border border-[#366349] group">
+<span class="material-symbols-outlined text-[18px] group-hover:text-primary transition-colors">push_pin</span>
+<span>Pinterest</span>
+</button>
+<button class="flex items-center justify-center size-9 rounded-full bg-[#254633]/30 hover:bg-[#254633] text-white text-sm transition-all border border-[#366349] ml-auto" title="Copy Link">
+<span class="material-symbols-outlined text-[18px]">link</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Technical & Location Sidebar -->
+<div class="lg:col-span-5 bg-[#1a2e23] rounded-xl p-6 border border-[#254633] h-fit">
+<div class="flex items-center gap-3 mb-6 pb-6 border-b border-[#366349]">
+<div class="size-10 rounded-full bg-[#254633] flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<div>
+<h3 class="text-white text-base font-bold">Kyoto, Japan</h3>
+<p class="text-text-muted text-sm">Fushimi Inari Taisha</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-y-6 gap-x-4">
+<div class="flex flex-col gap-1">
+<span class="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">Date</span>
+<div class="flex items-center gap-2 text-white">
+<span class="material-symbols-outlined text-[16px] text-text-muted">calendar_today</span>
+<span class="text-sm">Oct 14, 2023</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">Camera</span>
+<div class="flex items-center gap-2 text-white">
+<span class="material-symbols-outlined text-[16px] text-text-muted">photo_camera</span>
+<span class="text-sm">Sony A7R IV</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">Lens</span>
+<div class="flex items-center gap-2 text-white">
+<span class="material-symbols-outlined text-[16px] text-text-muted">lens</span>
+<span class="text-sm">35mm f/1.4 GM</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">Settings</span>
+<div class="flex items-center gap-2 text-white">
+<span class="material-symbols-outlined text-[16px] text-text-muted">tune</span>
+<span class="text-sm">f/2.8 • 1/200s</span>
+</div>
+</div>
+<div class="flex flex-col gap-1 col-span-2">
+<span class="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">ISO</span>
+<div class="flex items-center gap-2 text-white">
+<span class="material-symbols-outlined text-[16px] text-text-muted">iso</span>
+<span class="text-sm">100</span>
+<div class="h-1 w-24 bg-[#254633] rounded-full ml-2 overflow-hidden">
+<div class="h-full w-[10%] bg-primary rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Map placeholder -->
+<div class="mt-8 pt-6 border-t border-[#366349]">
+<div class="w-full h-32 rounded-lg bg-[#0e1a13] flex items-center justify-center relative overflow-hidden group/map cursor-pointer border border-[#254633] hover:border-primary/50 transition-colors">
+<div class="absolute inset-0 opacity-40 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=Kyoto,Japan&amp;zoom=12&amp;size=400x200&amp;sensor=false&amp;style=feature:all|element:all|saturation:-100|lightness:-50|visibility:simplified&amp;style=feature:landscape|element:geometry|color:0x122118&amp;key=YOUR_API_KEY_HERE')] bg-cover bg-center grayscale mix-blend-overlay" data-alt="Map view of Kyoto location" data-location="Kyoto, Japan" style="https://lh3.googleusercontent.com/aida-public/AB6AXuBz85ZNRSh6ITOpS7GzWrjVqkT8ZsuK-cTjXRo87-BCVkYjx-J9I2WzSkGe871UHTOBuVOFgao07e0E44iAvi00Du9e4dxAIeRegmOckruRy17GtA3L4e-BmJg0Uj36uq3A-40xvwNaH0O4r_uXbmOxt5NcMAGFgUVg99jpdz6BM-ZeORP29cLThT782o7Pwr8DLFaKsQlKrMZh0qBIfPwikgo-YTqYnfbkwb1p5_X25X-un81euMofQN5SdvbVVP3NtPaiHJjB6ro"></div>
+<!-- Fallback pattern if no API key image -->
+<div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 to-transparent"></div>
+<div class="z-10 flex items-center gap-2 text-text-muted group-hover/map:text-white transition-colors">
+<span class="material-symbols-outlined">map</span>
+<span class="text-xs font-bold uppercase tracking-widest">View on Map</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

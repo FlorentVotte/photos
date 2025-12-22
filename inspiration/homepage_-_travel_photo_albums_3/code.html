@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Homepage - Travel Photo Albums</title>
+<!-- Google Fonts: Noto Serif -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#16169c",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121212", // Deep charcoal as requested
+                        "surface-dark": "#1a1a2e",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Serif", "serif"],
+                        "sans": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem", 
+                        "lg": "0.5rem", 
+                        "xl": "0.75rem", 
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased overflow-x-hidden selection:bg-primary selection:text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+<!-- Navigation -->
+<header class="sticky top-0 z-50 w-full backdrop-blur-md bg-background-light/80 dark:bg-background-dark/80 border-b border-gray-200 dark:border-gray-800">
+<div class="px-6 md:px-12 lg:px-20 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-3xl text-primary">photo_camera_back</span>
+<h2 class="text-xl font-bold tracking-tight">Travel Portfolio</h2>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Destinations</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">About</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Contact</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="bg-primary hover:bg-primary/90 text-white text-sm font-bold py-2 px-6 rounded-lg transition-all shadow-lg shadow-primary/20">
+                        Subscribe
+                    </button>
+<!-- Mobile Menu Icon -->
+<button class="md:hidden p-2 text-slate-900 dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="w-full px-4 md:px-8 lg:px-12 py-6">
+<div class="relative w-full h-[600px] md:h-[80vh] rounded-xl overflow-hidden group">
+<!-- Background Image -->
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105" data-alt="Cherry blossoms framing a traditional Japanese pagoda in Kyoto" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAANi8hado7Ksu45cnEZvuU9wh4PCvKSEFew7YepXSTU0LcQnhIYq30a19i9KUM10vX4d0yI1Yz_ytixiLPJ-Mx4W_6hfG3MPdF-viYnS5evA2I35YnMtosM8MmJy7G76su1KLHSzvMrEXOG6POH2DA-4JkDv9gVJhmlXa3GcNDQCn7Pv5U36Y8u_uHlmlU89Yq0kFrSOy6ngGCVezt1PPLer0mIENW4uNxBCHPf9BzdBoEVbG3PjbYzInvatdpkPgJdm8a2PwYoMk");'>
+</div>
+<!-- Overlay Gradient -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+<!-- Content -->
+<div class="absolute bottom-0 left-0 w-full p-8 md:p-16 lg:p-24 flex flex-col items-start gap-6 max-w-4xl">
+<div class="space-y-2">
+<span class="inline-block px-3 py-1 bg-primary/80 backdrop-blur-sm text-white text-xs font-bold tracking-wider uppercase rounded-full mb-2">Featured Journey</span>
+<h1 class="text-white text-5xl md:text-7xl font-black leading-tight tracking-tight drop-shadow-lg">
+                            Kyoto in Bloom
+                        </h1>
+<p class="text-gray-200 text-lg md:text-xl font-normal leading-relaxed max-w-2xl drop-shadow-md">
+                            A visual story of Japan’s ancient capital. Experience the quiet beauty of the old world through 35mm film.
+                        </p>
+</div>
+<button class="flex items-center gap-2 bg-white text-primary hover:bg-gray-100 font-bold py-3 px-8 rounded-lg transition-colors mt-4">
+<span>Explore Gallery</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Editorial Interstitial -->
+<section class="w-full px-6 md:px-40 py-20 flex justify-center bg-background-light dark:bg-background-dark">
+<div class="max-w-[800px] text-center space-y-6 relative">
+<!-- Decorative Icon -->
+<span class="material-symbols-outlined text-4xl text-primary/40 block mb-4">flight</span>
+<h2 class="text-2xl md:text-4xl font-serif italic leading-relaxed text-slate-800 dark:text-gray-200">
+                    "Capturing the fleeting moments between departures and arrivals. A collection of visual memoirs from the corners of the world."
+                </h2>
+<div class="h-1 w-20 bg-primary mx-auto mt-8 rounded-full opacity-50"></div>
+</div>
+</section>
+<!-- Album Grid -->
+<section class="w-full px-4 md:px-12 lg:px-20 pb-20">
+<div class="flex items-end justify-between mb-10 border-b border-gray-200 dark:border-gray-800 pb-4">
+<h3 class="text-3xl font-bold">Latest Albums</h3>
+<a class="text-sm font-medium text-primary hover:text-white hover:underline decoration-primary flex items-center gap-1" href="#">
+                    View Archive <span class="material-symbols-outlined text-sm">arrow_outward</span>
+</a>
+</div>
+<!-- Masonry-style Grid using standard CSS Grid columns but varied heights could be achieved with masonry JS, keeping it clean uniform grid as per modern editorial standards often do -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-8">
+<!-- Album Card 1 -->
+<div class="group cursor-pointer flex flex-col gap-4">
+<div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg bg-gray-900">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" data-alt="Snow covered mountains in Iceland with a moody sky" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBJUGyndUF3JrjwkfpMBFHmAif4Z7zh8Nqk6KuPciTMOV31ep36lMb3FK24GdkRp60u5d5vujvl7RLg3qNg_nUQwgo59y_jRSGnpfNiWyeivt5Bf0TXM1PmBz6NLv0t5JxcIdz-cXNWHy2pDFaC06Zve29z1QqbzaYWkS8T-CoKThTT2ui4U29dfwbfKxeQawIi-1Tq7Oc7bpyq_MgQqhxkVd4WAb6O_UGuY_Hc0N99ujdmeK-jwuYk882xrBEaG50Ob6VOWljipG0");'>
+</div>
+<div class="absolute inset-0 bg-black/0 group-hover:bg-primary/10 transition-colors duration-300"></div>
+<button class="absolute bottom-4 right-4 bg-white/90 dark:bg-black/80 p-3 rounded-full opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+<span class="material-symbols-outlined text-primary dark:text-white">visibility</span>
+</button>
+</div>
+<div class="space-y-1">
+<h4 class="text-xl font-bold group-hover:text-primary transition-colors">Nordic Winter</h4>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-sans tracking-wide uppercase">Iceland | Jan 2023</p>
+</div>
+</div>
+<!-- Album Card 2 -->
+<div class="group cursor-pointer flex flex-col gap-4">
+<div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg bg-gray-900">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" data-alt="Orange sand dunes in Namibia contrasting with blue sky" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDU13D4z_nykVloZzsp9zN8jRFvDIW6KIx1xgp9nrhhJOLuPtBj1eMEv7rSyagBL6wlCWXQxkmA5X_k7tN2N5lCDWYHfnE2-YesEZT7Vnw6ivzCChhLRaSR1xdJizgj2lCMj424KUlku49zQlxGk94BJyA_MgCf_afqu49Nc15L8hfVzLfkdPaXd0vHnChc0nZmb7gqIPELeoIpwvo-yJERdCP6kd_6oLrG4pWZm2G29noqnwXDp452-r3dy2Ashd9jcCZv-WfvmjY");'>
+</div>
+<div class="absolute inset-0 bg-black/0 group-hover:bg-primary/10 transition-colors duration-300"></div>
+<button class="absolute bottom-4 right-4 bg-white/90 dark:bg-black/80 p-3 rounded-full opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+<span class="material-symbols-outlined text-primary dark:text-white">visibility</span>
+</button>
+</div>
+<div class="space-y-1">
+<h4 class="text-xl font-bold group-hover:text-primary transition-colors">Desert Silence</h4>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-sans tracking-wide uppercase">Namibia | Nov 2022</p>
+</div>
+</div>
+<!-- Album Card 3 -->
+<div class="group cursor-pointer flex flex-col gap-4">
+<div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg bg-gray-900">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" data-alt="Busy New York City street with yellow taxis and skyscrapers" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBEROuDmXl05ZQLziGmwfm3bqdrBIEQbX0__R2_fRZR9QI4VbaEeVmvcZYNjXpC_Ny3oYVT8mUMD0NexEXjdahausSJsTMp4EgXPNbnx24ESov6u5DPyqZhEpWDdLGMVebmXa59NSH6llZYRNBv5blySYBZ7yFQbJ1oYyhaPCx6ketAG5n2zUdqhwfeM4WEdXUA1Uksg4u9rK0-Han4qgznhK4RlQ76Ox2d8OenRSk4fwsUZBIwIwKx9HYy2ZjIj30EVHkberFDiYA");'>
+</div>
+<div class="absolute inset-0 bg-black/0 group-hover:bg-primary/10 transition-colors duration-300"></div>
+<button class="absolute bottom-4 right-4 bg-white/90 dark:bg-black/80 p-3 rounded-full opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+<span class="material-symbols-outlined text-primary dark:text-white">visibility</span>
+</button>
+</div>
+<div class="space-y-1">
+<h4 class="text-xl font-bold group-hover:text-primary transition-colors">Urban Pulse</h4>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-sans tracking-wide uppercase">New York City | Sept 2022</p>
+</div>
+</div>
+<!-- Album Card 4 -->
+<div class="group cursor-pointer flex flex-col gap-4">
+<div class="relative w-full aspect-[3/4] overflow-hidden rounded-lg bg-gray-900">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" data-alt="Colorful houses on the cliffside of Amalfi Coast overlooking the sea" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAxERFj_ooZ7ySey-0KCduAyZLbfUhX_nF3AHOERhBh6oBmqiNNiXHZJmWC5GWRX1nbPvpBM4bCwCuGbZEPi2hkK8VNdQYvXrEeDZpjriSdS8cl8Gm0p71u8mU5HuIaJJrWKWQC_ga_wku_AuRXhzleItOZgTH_6CviZhUPsGejA_umQatQCJKn048NdDg_YoBjBmFpyXXCPE7sh0WyBb6cZn9GwXl69yGfmIhaeTb6Qa7LxYFzsaUdD2GrrXcTREZ7uD-WXmxRuO0");'>
+</div>
+<div class="absolute inset-0 bg-black/0 group-hover:bg-primary/10 transition-colors duration-300"></div>
+<button class="absolute bottom-4 right-4 bg-white/90 dark:bg-black/80 p-3 rounded-full opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+<span class="material-symbols-outlined text-primary dark:text-white">visibility</span>
+</button>
+</div>
+<div class="space-y-1">
+<h4 class="text-xl font-bold group-hover:text-primary transition-colors">Mediterranean Blue</h4>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-sans tracking-wide uppercase">Amalfi Coast | July 2022</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter & Footer -->
+<footer class="mt-auto border-t border-gray-200 dark:border-gray-800 bg-background-light dark:bg-background-dark">
+<div class="px-6 md:px-20 py-16 md:py-24 flex flex-col items-center text-center">
+<div class="max-w-2xl space-y-6">
+<h2 class="text-4xl font-bold tracking-tight">Join the Journey</h2>
+<p class="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
+                        Receive our monthly editorial delivered straight to your inbox. No spam, just stories from the road.
+                    </p>
+<form class="flex flex-col sm:flex-row gap-4 w-full max-w-md mx-auto pt-6">
+<input class="flex-1 bg-white dark:bg-[#1a1a2e] border border-gray-300 dark:border-gray-700 text-slate-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow" placeholder="Email address" type="email"/>
+<button class="bg-primary hover:bg-primary/90 text-white font-bold px-8 py-3 rounded-lg transition-colors shadow-lg shadow-primary/25">
+                            Subscribe
+                        </button>
+</form>
+</div>
+</div>
+<div class="border-t border-gray-200 dark:border-gray-800 py-8 px-6 md:px-20">
+<div class="flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">photo_camera</span>
+<span class="text-sm text-gray-500 dark:text-gray-400">© 2023 Travel Portfolio. Shot on 35mm &amp; Digital.</span>
+</div>
+<div class="flex gap-6">
+<a class="text-gray-500 hover:text-primary transition-colors" href="#"><span class="sr-only">Instagram</span>IG</a>
+<a class="text-gray-500 hover:text-primary transition-colors" href="#"><span class="sr-only">Twitter</span>TW</a>
+<a class="text-gray-500 hover:text-primary transition-colors" href="#"><span class="sr-only">Unsplash</span>US</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

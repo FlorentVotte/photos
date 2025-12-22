@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wanderlust - Autumn in Kyoto</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#b36619",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#211911",
+                        "text-main": "#1b140e",
+                        "text-light": "#f3ede8",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Serif", "serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Drop Cap */
+        .drop-cap::first-letter {
+            float: left;
+            font-size: 4.5rem;
+            line-height: 0.85;
+            font-weight: 700;
+            margin-right: 0.75rem;
+            margin-top: 0.25rem;
+            color: #b36619; /* primary color */
+        }
+        
+        /* Hide scrollbar for clean horizontal scroll if needed */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main dark:text-text-light antialiased overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 w-full bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm border-b border-[#e6e1dc] dark:border-[#3a322a] transition-all duration-300">
+<div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-20">
+<!-- Logo -->
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">photo_camera</span>
+<h1 class="text-xl font-bold tracking-tight uppercase">Wanderlust</h1>
+</div>
+<!-- Desktop Nav -->
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Albums</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Journal</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Prints</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">About</a>
+</nav>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors">
+<span class="material-symbols-outlined text-xl">search</span>
+</button>
+<button class="hidden md:flex px-5 py-2 bg-primary text-white text-sm font-bold rounded-full hover:bg-primary/90 transition-colors">
+                        Subscribe
+                    </button>
+<!-- Mobile Menu Button -->
+<button class="md:hidden p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors">
+<span class="material-symbols-outlined text-xl">menu</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<main class="w-full flex flex-col items-center">
+<!-- Hero Section -->
+<section class="w-full max-w-[1400px] p-4 md:p-6 lg:p-8">
+<div class="relative w-full aspect-[4/5] md:aspect-[21/9] rounded-xl overflow-hidden group">
+<!-- Hero Image -->
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] ease-in-out group-hover:scale-105" data-alt="Cinematic wide shot of a traditional Japanese street in Kyoto during autumn with colorful maple leaves" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCy1d-aQd15UnEByF85MTQpNG3WeGYqcw-55gm2KlhppcpXzv7wtWoNw1NdMeQI8kdhkR4RhgC3vsxYUOoO41qxnFsl2SX4HUMrNLE05sNJMEnDROnI1GPRsG52S7v3SS3pZ9XjxwEVed-uEjlrN5SbcfPl2g1P9EDkXASyMnGW_A2SwR0lPwFxjGDxEEIWC78DkzJozM0oKVo1G01VPL9P5U8JjQAr7HSqy2c7knpLpTdHocL92BUiGMbzv_LvM4yB8Eo354qc77U');">
+</div>
+<!-- Overlay Gradient -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+<!-- Hero Text -->
+<div class="absolute bottom-0 left-0 w-full p-8 md:p-16 text-white">
+<div class="max-w-4xl">
+<div class="flex items-center gap-3 mb-4 text-primary font-bold tracking-widest text-xs uppercase">
+<span class="w-8 h-[1px] bg-primary"></span>
+<span>Travel Narrative</span>
+</div>
+<h1 class="text-5xl md:text-7xl lg:text-8xl font-black leading-tight mb-4 tracking-tight">
+                            Autumn in<br/>Kyoto
+                        </h1>
+<p class="text-lg md:text-xl text-white/90 font-light max-w-xl leading-relaxed">
+                            A visual pilgrimage through the ancient capital, capturing the fleeting moments of momiji.
+                        </p>
+<div class="mt-8 flex items-center gap-2 text-sm font-medium text-white/80">
+<span class="material-symbols-outlined text-lg">calendar_month</span>
+<span>November 2023</span>
+<span class="mx-2">•</span>
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span>Kyoto, Japan</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trip Metadata Bar -->
+<section class="w-full max-w-[960px] px-6 py-8 border-b border-[#e6e1dc] dark:border-[#3a322a] mb-12">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left">
+<div>
+<h4 class="text-xs uppercase tracking-widest text-gray-500 mb-1">Location</h4>
+<p class="text-sm font-bold">Kyoto, Japan</p>
+</div>
+<div>
+<h4 class="text-xs uppercase tracking-widest text-gray-500 mb-1">Duration</h4>
+<p class="text-sm font-bold">8 Days</p>
+</div>
+<div>
+<h4 class="text-xs uppercase tracking-widest text-gray-500 mb-1">Camera</h4>
+<p class="text-sm font-bold">Leica Q2</p>
+</div>
+<div>
+<h4 class="text-xs uppercase tracking-widest text-gray-500 mb-1">Mood</h4>
+<p class="text-sm font-bold">Nostalgic, Warm</p>
+</div>
+</div>
+</section>
+<!-- Intro Narrative -->
+<section class="w-full max-w-[800px] px-6 mb-20">
+<div class="prose prose-lg prose-neutral dark:prose-invert font-display mx-auto">
+<p class="drop-cap text-lg md:text-xl leading-relaxed text-gray-700 dark:text-gray-300">
+                    The air was crisp as we stepped off the train, the scent of burning incense already drifting through the streets. This wasn't just a trip; it was a pilgrimage to the heart of Japan's history. The colors of autumn were ablaze, painting the hillsides in vibrant hues of crimson and gold, a stark contrast to the weathered wood of the ancient temples.
+                </p>
+<p class="text-lg leading-relaxed text-gray-700 dark:text-gray-300 mt-6">
+                    We spent our days wandering aimlessly through the narrow alleys of Gion, hoping to catch a glimpse of a geiko on her way to an appointment, and our evenings sipping hot sake in tiny izakayas, listening to the murmurs of the city winding down.
+                </p>
+</div>
+</section>
+<!-- Mosaic Image Grid 1 -->
+<section class="w-full max-w-[1200px] px-4 md:px-6 mb-24">
+<h3 class="text-2xl font-bold mb-8 px-2 italic">I. The Streets of Gion</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[400px]">
+<!-- Tall Portrait -->
+<div class="relative group rounded-lg overflow-hidden md:row-span-2">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Vertical shot of a narrow Kyoto alleyway at dusk with glowing lanterns" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAGH9Oxr3raJJIHobLVvHg9EPy5RxPhLErqZEdlZNud2UybJGKDyzRk8qNNxm5CIuIfhp54DyDs4PWRuz_PMLJXyHjHmI3y9ypyha7trJcFuSIVTdZEwmZwrGEZhLMdNbDgLc17m6M6MAc6dtqMdnAbMRtBkeUoXU6D3aYnoL-h7wKGdfavLvxyuwunLB-_MfmLpIPtwIwG6_pYY-mLmQo6TpR-W5gOLzRf6pSpCek9mYEPkiE5PDfa2F2-wXUtJAOF3hu2ruhG3H4');">
+</div>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+<span class="text-primary text-xs font-bold uppercase tracking-wider mb-2">Gion District</span>
+<p class="text-white font-medium">Lanterns at Dusk</p>
+</div>
+</div>
+<!-- Wide Landscape -->
+<div class="relative group rounded-lg overflow-hidden md:col-span-2">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Wide shot of people walking near Yasaka Pagoda with sunset colors" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA30QF22IwYSjamwX4RNx4H-FKegm2Rd6fcUrwlSTk1HxtjZPG5uKGdvqZEfWyUnBUK2U0I0BkQBqoxtjGry_kV_IMS17kPFR5UePNzuIOUrhYdmSLdZOK7QAM4YozzhRCVKLMVVOJBS34YydaQtX7ccXRsIZFIwNpDavp9XRGKhyPlt-r6Sa9FVYusJl65aAUd09bA8LkzO_PJbTbf6Eic_F99qLKcWLuDTGL3BkyGk8DRWqsOppy9om_h5v-qrVV9B1HDTDG_2Yg');">
+</div>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+<span class="text-primary text-xs font-bold uppercase tracking-wider mb-2">Higashiyama</span>
+<p class="text-white font-medium">Yasaka Pagoda Sunset</p>
+</div>
+</div>
+<!-- Standard Square 1 -->
+<div class="relative group rounded-lg overflow-hidden">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Close up of a red Japanese umbrella" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCK7FJquTLJl-9OWfBkuUxXbaybC6zFUcky9wsz4JdQaOjKyPFM9cyyUt5uyW6kxQ-8Rz-CW4R5jdwH7El_KvmJFu1eLBv6mjyxmItFbjejaBDaDR83RfkyCtQ4ntxFY892JQSSqxCiE3CkA1KuhFsaO2Ziphr9u88yPOp9oT0Jy4zhnpPej2WKvJ6wAFrv4_Cdi3E0QxXGbeRMv5TFdXY2cHCwFh9-5ylKm743cAQNttyNtAoUF9ngOs3MNQGQCWQj7sTohEL3dQo');">
+</div>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+<span class="text-primary text-xs font-bold uppercase tracking-wider mb-2">Detail</span>
+<p class="text-white font-medium">Traditional Wagasa</p>
+</div>
+</div>
+<!-- Standard Square 2 -->
+<div class="relative group rounded-lg overflow-hidden">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="A woman in a kimono walking away from the camera" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD5rz0xE_TngETP8hZ7428v-d4jPL3Ah774GOESvN2vJ-QpmRqoJalVN-g1iR21SsmdZxrkFg-_3IpVnuQVnyFJ3VR7f_S-uZipZDc9XetRTdPPm_AmzUAGbgaolFNIRQIfojFBkw-6xjHKgmoQjD0NuaDwzeaOqNBdPqi7C8qZKmk2ZIe149NbqKaFS_UihlvfnwwqiyBg6aWym5DmQy3yMmyqPSU9oTXZ_W49cJ42VxA8rw1ynSEv-qxdD36XuRGsuQ9SkzLxRB4');">
+</div>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+<span class="text-primary text-xs font-bold uppercase tracking-wider mb-2">Culture</span>
+<p class="text-white font-medium">Timeless Fashion</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Pull Quote -->
+<section class="w-full bg-[#f3ede8] dark:bg-[#2a221a] py-24 mb-24">
+<div class="max-w-[800px] mx-auto px-6 text-center">
+<span class="material-symbols-outlined text-primary text-5xl mb-6">format_quote</span>
+<blockquote class="text-3xl md:text-4xl italic font-serif leading-tight text-text-main dark:text-white mb-8">
+                    "There is a silence in the temples that speaks louder than words, a quietude that settles into your bones."
+                </blockquote>
+<cite class="text-sm uppercase tracking-widest font-bold text-gray-500 not-italic">— Travel Journal, Day 3</cite>
+</div>
+</section>
+<!-- Feature Image (Full Width) -->
+<section class="w-full max-w-[1400px] px-4 md:px-6 mb-24">
+<div class="relative w-full aspect-[16/9] md:aspect-[21/9] rounded-xl overflow-hidden shadow-xl">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Panoramic view of the Golden Pavilion Kinkaku-ji reflecting in the pond" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBL_fyCk-CYWzm-OsDhKuvvOLFlVijWYcNd0_bDWJ5nIMX7cWN3Igr01B7wtk64s4XgHQQMT7Jj1ts0runwqYy_aWb97LqMXlq5ifGuwdK_Rj5KS9sOB1CPm-z65_iirQKNfzFx2DaE3zpi9uCjrbHp3dYtGbyUpgOBxd1-ALcsHS-6_7IiZ0dyCgBaQErJu_IO7Zu-SJOfohHvChfJ7LOJ-ONeOhOQFUbwJn1cdQKq1RLZ8fo0yD8xeFJbGKOaTPXxpY9_-5RlUCQ');">
+</div>
+<div class="absolute bottom-6 left-6 md:bottom-10 md:left-10 bg-white/90 dark:bg-black/80 backdrop-blur px-6 py-4 rounded-lg max-w-sm">
+<h3 class="text-xl font-bold mb-1 text-text-main dark:text-white">The Golden Pavilion</h3>
+<p class="text-sm text-gray-600 dark:text-gray-300">Kinkaku-ji reflected in the mirror pond, a vision of pure zen.</p>
+</div>
+</div>
+</section>
+<!-- Narrative Section 2 -->
+<section class="w-full max-w-[800px] px-6 mb-16">
+<div class="flex flex-col md:flex-row gap-12 items-start">
+<div class="flex-1">
+<h3 class="text-2xl font-bold mb-4">Tea &amp; Tradition</h3>
+<p class="text-base leading-relaxed text-gray-700 dark:text-gray-300 mb-6">
+                        We participated in a traditional tea ceremony in a small tearoom overlooking a moss garden. The precision of every movement, the whisking of the matcha, the bow—it was a choreographed dance of respect and mindfulness.
+                    </p>
+</div>
+<div class="flex-1">
+<p class="text-base leading-relaxed text-gray-700 dark:text-gray-300">
+                        Outside, the rain began to fall, tapping gently on the roof tiles. It was the perfect accompaniment to the bitter warmth of the tea. In that moment, Kyoto felt not like a city of millions, but like a personal sanctuary.
+                    </p>
+</div>
+</div>
+</section>
+<!-- Detail Grid (Smaller items) -->
+<section class="w-full max-w-[960px] px-4 md:px-6 mb-32">
+<h3 class="text-2xl font-bold mb-8 px-2 italic text-center">II. Details of Autumn</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="aspect-square bg-gray-200 rounded-lg overflow-hidden relative group">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Close up of matcha tea being whisked" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDtML6SBjtmUPydu0oDRZ1WtnCtMV7SMmIhOluB85PkU_scWJdXhWdWeNPOxYR5WgpQFKFlXBDDmsXjkiOGuULxDYk-KpA-Ez_wuwytWq5ghLRw8WrCxXOSpCPUrqm1LbpJd9GqDuQnLSxjDpu0qCF6fA7p_1E9YTCPOajHA-dVAUXnxIvpGtj70iFhJkp0o2HVGXNBTMa90YmFMI7G5f3Qss9bpfJl7DjgKA526BaKwrn033X0BnjQlrEuiJv-IBAIG7NjxMwDN_o');"></div>
+</div>
+<div class="aspect-square bg-gray-200 rounded-lg overflow-hidden relative group">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Macro shot of red maple leaves" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBi4MIneZdFDjjLrDyPSFHEyNhxFlOGNl5iqFnwA6Loxjj5XfjW6S1fHyT7c1mfzlYaFH6hyW7LVUDnfZgUukCQ2tWxyd6hfDKOoe_hUYoRIoJ6kPnHB3dIvVtVwbj_G9b_F_r2KiZB4nISS_x3rk37mgZ2K2DgwkxERO1FTpxxEohmbxAASprX5Zma67q23hzvd0h8d8GFCaJ3TVg0MPlTB99-EArx21U2dSJnPt2J9ZaLOgXc1aBfANcoH0JQhShXjIW7udzlHo');"></div>
+</div>
+<div class="aspect-square bg-gray-200 rounded-lg overflow-hidden relative group">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Wooden texture of a temple gate" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHCg8aLdyEK9QpF38oUFu1axHTUBKrRmhGQor35jpizA_82Z-fqiAi_Y3sVn0Bl4l1VG-0GFrZE53IWF2YyJtjPVcbQRm50arwp3sKpxDGWQG2fj39Cu_mUpewxMMSdEJsojRp3XC9Ak3TtJ5KIbtpdfHksiqQWZVZVabBFJuAHWXo_O_8kZ2wKnUvuBnTETihuaAasjCWvpWrqgzfk10xytdAo0Q6A_MjYC4si3dgExb-OHEkcUpU5vt960FJC2KX-ZlT74F8U1w');"></div>
+</div>
+<div class="aspect-square bg-gray-200 rounded-lg overflow-hidden relative group">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Japanese ceramic tea cup" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCwz4FfCFiBGbeW6ggQFN_sCjOcFvNS2VR3KxEYIdSxooHr8IsMxYFPihAqtvDWwvDBwDHPUf_h3uHQ6v9Pd9x01OUJIlx1WUyR3UPdpfYNYhALm2_k66TzuP4hBOWSenPalJ6cIVKhQ5_hGc2YdqFEIPVxAfjvpdS3qbiopKh0Gb-pcrLjCcCEfnXsXALyeNdmwThACbBL8cyIGwM1q3wRsmVOjK1ahshWDunPstCaRxP4ZKdOtQQeVWfOUNOsgho-9W86qETF1eY');"></div>
+</div>
+</div>
+</section>
+<!-- Footer Navigation / Next Project -->
+<section class="w-full bg-white dark:bg-[#1a140e] border-t border-[#e6e1dc] dark:border-[#3a322a]">
+<div class="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2">
+<!-- Previous -->
+<a class="group relative block h-64 md:h-80 overflow-hidden border-b md:border-b-0 md:border-r border-[#e6e1dc] dark:border-[#3a322a]" href="#">
+<div class="absolute inset-0 bg-cover bg-center opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-500 transform group-hover:scale-105" data-alt="Night cityscape of Tokyo with neon lights" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBePDI_fEYx5pv2E-6AMkQATVRAhL5TP9-obwpByWG7tFBQizFfiD1NdGcnsgzgM_JonWn2gXD4UQKeLkDPKEVl6JUSI6BAhYeSyvr36IVdfPXp9yqCcl0kz1dPtihe7sqjq1_jHKtQeILrwW66A7JO77hAP6XuotNk_rE_8TJ1ObCF4f69iaqrh0-m8LpIICwV-We3ILv3T9eOHN6MNW0eR5jnk2sqZL6PR2MHkjgnqoamdD2vfEv-I_80SsEuJ0TxR9pqmOFGyPc');">
+</div>
+<div class="absolute inset-0 flex flex-col items-center justify-center z-10 p-6 text-center">
+<span class="text-xs uppercase tracking-widest font-bold mb-2 text-text-main dark:text-white bg-white/50 dark:bg-black/50 px-3 py-1 rounded backdrop-blur-sm">Previous Album</span>
+<h2 class="text-3xl font-bold text-text-main dark:text-white group-hover:text-primary transition-colors">Tokyo Nights</h2>
+</div>
+</a>
+<!-- Next -->
+<a class="group relative block h-64 md:h-80 overflow-hidden" href="#">
+<div class="absolute inset-0 bg-cover bg-center opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-500 transform group-hover:scale-105" data-alt="Snowy landscape in Hokkaido" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD3RxYPOBrWmKRa0qsydjTskieEhxW5aYZxuZhmtO_NwD5vAJ8p91rfu5b9sc2-I8W_eiD8-mW6Gso7UL76AF4eTuRJjBYgRCXomkoWyYk3wJxePVYP4yNncqy2x6SxMkZrnOoa17gGZXMK40u4tCagggNOQ8iK-xep89yR4JzvzrHwNxGNVbZFJb_Df2f-GlLTykf4nWrs-8PhnWerJjJAGP3iqm3-A50JI9dat1hTBcoqjRat_Xz-iFZtCUdAVzV3vwi5k25gF_I');">
+</div>
+<div class="absolute inset-0 flex flex-col items-center justify-center z-10 p-6 text-center">
+<span class="text-xs uppercase tracking-widest font-bold mb-2 text-text-main dark:text-white bg-white/50 dark:bg-black/50 px-3 py-1 rounded backdrop-blur-sm">Next Album</span>
+<h2 class="text-3xl font-bold text-text-main dark:text-white group-hover:text-primary transition-colors">Hokkaido Winter</h2>
+</div>
+</a>
+</div>
+</section>
+<!-- Simple Footer -->
+<footer class="w-full py-12 px-6 text-center">
+<div class="flex items-center justify-center gap-2 mb-6 text-primary">
+<span class="material-symbols-outlined">photo_camera</span>
+<span class="font-bold tracking-tight uppercase">Wanderlust</span>
+</div>
+<div class="flex justify-center gap-8 mb-8 text-sm font-medium text-gray-500">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<a class="hover:text-primary transition-colors" href="#">Portfolio</a>
+<a class="hover:text-primary transition-colors" href="#">Prints</a>
+<a class="hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+<p class="text-xs text-gray-400">© 2024 Wanderlust Photography. All rights reserved.</p>
+</footer>
+</main>
+</body></html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Individual Photo Page - Details &amp; Sharing</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1754cf",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                        "surface-dark": "#1e2736",
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner look in the sidebar if needed */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+        
+        .glass-panel {
+            background: rgba(30, 39, 54, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased min-h-screen flex flex-col selection:bg-primary/30">
+<!-- Header -->
+<header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+<div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex h-16 items-center justify-between">
+<!-- Logo -->
+<div class="flex items-center gap-3">
+<div class="size-8 text-primary flex items-center justify-center">
+<svg class="w-full h-full" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
+</svg>
+</div>
+<span class="text-xl font-bold tracking-tight">Portfolio</span>
+</div>
+<!-- Desktop Nav -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Home</a>
+<a class="text-sm font-medium text-slate-900 dark:text-white hover:text-primary transition-colors" href="#">Albums</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors" href="#">About</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-white transition-colors" href="#">Contact</a>
+</nav>
+<!-- Action -->
+<button class="hidden md:flex bg-primary hover:bg-blue-700 text-white text-sm font-bold h-9 px-5 rounded-lg items-center justify-center transition-all shadow-lg shadow-primary/20">
+                    Subscribe
+                </button>
+<!-- Mobile Menu Icon -->
+<button class="md:hidden text-slate-900 dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 text-sm mb-6 overflow-x-auto whitespace-nowrap scrollbar-hide">
+<a class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors" href="#">Home</a>
+<span class="text-slate-300 dark:text-slate-600">/</span>
+<a class="text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors" href="#">Greece Holiday 2023</a>
+<span class="text-slate-300 dark:text-slate-600">/</span>
+<span class="text-slate-900 dark:text-white font-medium">Oia's Golden Hour</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">
+<!-- Left Column: The Photo (Dominant) -->
+<div class="lg:col-span-8 xl:col-span-9 flex flex-col">
+<div class="relative w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-surface-dark/50 border border-slate-200 dark:border-slate-800 shadow-xl group">
+<!-- Image Wrapper -->
+<div class="w-full h-[60vh] md:h-[75vh] flex items-center justify-center bg-[#050505]">
+<img alt="Sunset view of white washed buildings in Santorini Greece with golden light" class="max-w-full max-h-full object-contain w-auto h-auto shadow-2xl" data-alt="Sunset view of white washed buildings in Santorini Greece with golden light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAW-tSlCkSboV0v8MlPvbiL4jYwACjiBuIptkhWzNvvRmE_N4wYzkCFmFhxgOOj09SPgC0PJjTL5wkPWEH9xwfQT6KssJV2u_DVJ-eIEIkUFMzIFQLFAq9uGMWNNFpVmwlc2gR0yBQHpMnQeCKN-VSIx2KEaLn3UMu30HWcIj6diMbG413grKQaJdSG-aveWk6hteQuuWT6_Sf3aRoE_3NmbKsafkKtsSdV0h8YIwIKlKcAiPNBEixi9JRyvWVxfQJ2nNWE01vNmAc"/>
+</div>
+<!-- Hover Actions (Subtle overlay for full screen view if implemented later) -->
+<div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<button class="size-10 flex items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 transition-colors" title="Expand">
+<span class="material-symbols-outlined text-[20px]">fullscreen</span>
+</button>
+</div>
+</div>
+<!-- Mobile-only Details (Hidden on Desktop to avoid duplication, visible on small screens below image) -->
+<div class="lg:hidden mt-6 space-y-4">
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white">Oia's Golden Hour</h1>
+<p class="text-slate-500 dark:text-slate-400 flex items-center gap-1.5 text-sm">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+                        Santorini, Greece • September 14, 2023
+                    </p>
+</div>
+</div>
+<!-- Right Column: Sidebar (Metadata & Sharing) -->
+<div class="lg:col-span-4 xl:col-span-3 flex flex-col gap-6 lg:h-[75vh] lg:sticky lg:top-24">
+<!-- Navigation -->
+<div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+<a class="group flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors" href="#">
+<div class="size-8 rounded-full bg-slate-100 dark:bg-surface-dark flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</div>
+<span class="hidden sm:inline">Previous</span>
+</a>
+<a class="group flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white transition-colors" href="#">
+<span class="hidden sm:inline">Next</span>
+<div class="size-8 rounded-full bg-slate-100 dark:bg-surface-dark flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</div>
+</a>
+</div>
+<!-- Info Panel -->
+<div class="flex flex-col gap-1 hidden lg:flex">
+<h1 class="text-3xl font-bold leading-tight text-slate-900 dark:text-white tracking-tight">Oia's Golden Hour</h1>
+<div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 mt-2">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+<span class="text-sm font-medium">September 14, 2023</span>
+</div>
+<div class="flex items-center gap-2 text-primary mt-1">
+<span class="material-symbols-outlined text-[20px] fill-current">location_on</span>
+<a class="text-sm font-bold hover:underline" href="#">Santorini, Greece</a>
+</div>
+</div>
+<!-- EXIF Data Card -->
+<div class="bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700/50 rounded-xl p-5 shadow-sm">
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span>
+                        Camera Settings
+                    </h3>
+<div class="grid grid-cols-2 gap-y-5 gap-x-2">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold">Camera</span>
+<span class="text-sm font-medium text-slate-900 dark:text-slate-200">Sony A7III</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold">Lens</span>
+<span class="text-sm font-medium text-slate-900 dark:text-slate-200">35mm f/1.4</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold">Aperture</span>
+<span class="text-sm font-medium text-slate-900 dark:text-slate-200">f/2.8</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold">ISO</span>
+<span class="text-sm font-medium text-slate-900 dark:text-slate-200">100</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold">Shutter</span>
+<span class="text-sm font-medium text-slate-900 dark:text-slate-200">1/200s</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold">Dimensions</span>
+<span class="text-sm font-medium text-slate-900 dark:text-slate-200">6000 x 4000</span>
+</div>
+</div>
+</div>
+<div class="flex-grow"></div>
+<!-- Spacer to push sharing to bottom of sticky area if needed, or just let it flow -->
+<!-- Sharing -->
+<div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+<p class="text-sm font-medium text-slate-900 dark:text-white mb-3">Share this memory</p>
+<div class="flex items-center gap-3">
+<!-- Facebook -->
+<button class="group flex items-center justify-center size-10 rounded-lg bg-[#1877F2]/10 hover:bg-[#1877F2] transition-colors">
+<svg aria-hidden="true" class="size-5 text-[#1877F2] group-hover:text-white transition-colors" fill="currentColor" viewbox="0 0 24 24">
+<path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"></path>
+</svg>
+</button>
+<!-- Twitter/X -->
+<button class="group flex items-center justify-center size-10 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-black dark:hover:bg-white transition-colors">
+<svg aria-hidden="true" class="size-4 text-slate-700 dark:text-slate-300 group-hover:text-white dark:group-hover:text-black transition-colors" fill="currentColor" viewbox="0 0 24 24">
+<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+</svg>
+</button>
+<!-- Pinterest -->
+<button class="group flex items-center justify-center size-10 rounded-lg bg-[#E60023]/10 hover:bg-[#E60023] transition-colors">
+<svg aria-hidden="true" class="size-5 text-[#E60023] group-hover:text-white transition-colors" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.399.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.951-7.252 4.173 0 7.41 2.967 7.41 6.923 0 4.133-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.367 18.62 0 12.017 0z"></path>
+</svg>
+</button>
+<!-- Link Copy -->
+<button class="group flex items-center justify-center size-10 rounded-lg bg-slate-100 dark:bg-surface-dark hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors ml-auto">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">link</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Simple Footer -->
+<footer class="mt-12 py-8 border-t border-slate-200 dark:border-slate-800">
+<div class="max-w-[1600px] mx-auto px-4 text-center">
+<p class="text-sm text-slate-500 dark:text-slate-500">© 2023 Photography Portfolio. All rights reserved.</p>
+</div>
+</footer>
+</body></html>

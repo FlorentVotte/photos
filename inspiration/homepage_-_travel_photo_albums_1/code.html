@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Homepage - Travel Photo Albums</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&amp;family=Noto+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#1dc964",
+              "background-light": "#f6f8f7",
+              "background-dark": "#112118",
+            },
+            fontFamily: {
+              "display": ["Noto Serif", "serif"],
+              "body": ["Noto Sans", "sans-serif"],
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner magazine look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #112118;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #254633;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1dc964;
+        }
+        
+        .aspect-3-4 {
+            aspect-ratio: 3 / 4;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#112118] dark:text-white font-display transition-colors duration-300">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 dark:border-[#254633] bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-md px-6 py-4 lg:px-40">
+<div class="flex items-center gap-4">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">public</span>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-[-0.015em] hidden sm:block">TRAVELOGUE</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Destinations</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Journal</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">About</a>
+</div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-[#122118] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-opacity-90 transition-opacity">
+<span class="truncate">Subscribe</span>
+</button>
+</div>
+</header>
+<div class="layout-container flex h-full grow flex-col">
+<div class="flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1 px-4 lg:px-8">
+<!-- Hero Section -->
+<div class="@container mb-12">
+<div class="flex min-h-[560px] flex-col gap-6 bg-cover bg-center bg-no-repeat rounded-xl items-start justify-end px-6 pb-12 pt-40 md:px-12" data-alt="misty autumn morning at a japanese temple with red maple leaves" style='background-image: linear-gradient(rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 40%, rgba(0, 0, 0, 0.8) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDye5slRmUThZe5WiDW5H6mBKOwGzvXUPHbDAkXUcJ5bzjTT6DAIxO2T7zUleXiB0_aJuAuR8HuBiGhIjU0P4Sxm2a61Qy1oIMvM1VcDWNdEiPBLsxLaOcs8Ct9_gmBvrX5rJNMpuAu3F5E5hZodCvp7tSF4d69eZNVu1jfme1LbjUv4JzjPoJSjaHmRHZxslBRfSUG-bP4cci1oQNiy1tOHa2xmgbGId1r21e0JxFjKJ0b-CSYx2bwaySvV-QDEUqQNrEoi0L9M1k");'>
+<div class="flex flex-col gap-3 text-left max-w-2xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 backdrop-blur-sm border border-primary/30 w-fit mb-2">
+<span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+<span class="text-white text-xs font-bold uppercase tracking-widest">Featured Story</span>
+</div>
+<h1 class="text-white text-4xl md:text-6xl font-black leading-tight tracking-[-0.033em]">
+                                    Lost in Kyoto: Autumn 2023
+                                </h1>
+<p class="text-gray-200 text-base md:text-lg font-normal leading-relaxed font-body max-w-xl">
+                                    Capturing the fleeting moments between departures and arrivals. Experience the silence of the temples and the vibrant colors of the fall season.
+                                </p>
+</div>
+<button class="flex items-center gap-2 cursor-pointer overflow-hidden rounded-lg h-12 px-6 bg-white text-background-dark hover:bg-gray-100 transition-colors text-base font-bold leading-normal tracking-[0.015em]">
+<span>Read Story</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Intro Text -->
+<div class="py-8 md:py-16 px-4 md:px-20 text-center border-b border-gray-200 dark:border-[#254633] mb-12">
+<span class="material-symbols-outlined text-4xl text-primary mb-4">camera</span>
+<h2 class="text-2xl md:text-4xl font-bold leading-tight tracking-tight max-w-3xl mx-auto italic">
+                            "The world is a book and those who do not travel read only one page."
+                        </h2>
+<p class="mt-4 text-gray-500 dark:text-gray-400 font-body">Exploring the unseen corners of the globe, one frame at a time.</p>
+</div>
+<!-- Section Title -->
+<div class="flex items-end justify-between px-4 pb-6 pt-2">
+<h2 class="text-3xl font-bold leading-tight tracking-tight">Recent Albums</h2>
+<a class="hidden md:flex items-center gap-1 text-sm font-medium text-primary hover:text-white transition-colors" href="#">
+                            View Archive <span class="material-symbols-outlined text-sm">arrow_outward</span>
+</a>
+</div>
+<!-- Magazine Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+<!-- Item 1: Large Featured -->
+<div class="group relative col-span-1 lg:col-span-2 aspect-video md:aspect-auto md:h-auto overflow-hidden rounded-xl cursor-pointer">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="vast green landscape with a winding road in iceland" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuActuI4_JGT32MW0SSscbxC4qJTbciTg3Gt18JTay34pRdoxk0Wu8FnVpo6Wbm-3M_5cDwCw4GiJBHKRTmMaaKps6dFuq4Dwa0_OiEBd69zB-bnXmL2kLK4BnS3SArVWKbFPx8betkXKxPCS8hzi9wvK9wSpvSBAKJOF5LG6FUNJ8ajzIPAnOdmeSaouviFcKrFjg3lwuHFlLVxURL1gEYpUqjsRT8qcxUmlzzYNt7fKN9uq_hOte3UdEylfLKUJlrjtNSkartlBqM");'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-8">
+<div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+<div class="flex items-center gap-2 text-primary text-sm font-bold uppercase tracking-wider mb-2">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                        Iceland
+                                    </div>
+<h3 class="text-white text-3xl font-bold leading-tight mb-2">Ring Road Expedition</h3>
+<p class="text-gray-300 text-sm font-body">July 2022 • 42 Photos</p>
+</div>
+</div>
+</div>
+<!-- Item 2: Portrait -->
+<div class="group relative col-span-1 aspect-[4/5] lg:aspect-auto overflow-hidden rounded-xl cursor-pointer">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="yellow tram on a narrow cobblestone street in lisbon" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDgQwNC0YqfptkVgI6JdKGSR2qX_zAYCmNjVoNQ_vArEnMIQL2TNlLH7kck6s3GqE13TTiWQK53DFxhEVU5UXcXBbVUCruKU3E_gIzlF_1D2L962eD-oiZpM17GPwzFc9bj7nZNqE_Mmo4TqbderqgCE3KXH4XiqlfZGUt4a4z1uAfzM-qwWfOP9rd-mFLOcFSua0xGrbZvA5VcJDxa2IArKtPAvWLSdt56UZaeyC4zP-Xzd1yYtSKKxUm9ogkeJ_9kVuznPeIU0zE");'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+<div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+<div class="flex items-center gap-2 text-primary text-sm font-bold uppercase tracking-wider mb-2">
+<span class="material-symbols-outlined text-sm">location_on</span>
+                                        Portugal
+                                    </div>
+<h3 class="text-white text-2xl font-bold leading-tight mb-1">Streets of Lisbon</h3>
+<p class="text-gray-300 text-sm font-body">May 2023 • 18 Photos</p>
+</div>
+</div>
+</div>
+<!-- Item 3: Square -->
+<div class="group relative col-span-1 aspect-square overflow-hidden rounded-xl cursor-pointer">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="snow capped jagged mountain peaks in patagonia" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBkz6LX6xgDblO56IoNeaQGvS_iXYdWsr_m5ZqsM98y0VadyfKCvPwMrxsoktbDLKJiIyi-X6QG6mmcE7QLUyoB7XYzUlV5qhBuI08-pAWICHEjUNqHLlQyJo3ETRXcsNYpSUs14gXt3JLOm3j03IQ-fy_8Z62PaITncxLuQvYtm-m-MClVSpGKc4KjIdrw4ZLGPEALQQiIRaMpH4ZuIuBi7yYuDj9nla_6hh6aFzeY6-7XCtdn5Wc0DQAsOYD_-SFmYqspgigXseM");'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
+<div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+<h3 class="text-white text-xl font-bold leading-tight mb-1">Patagonia Trek</h3>
+<p class="text-gray-300 text-xs font-body">Jan 2021</p>
+</div>
+</div>
+</div>
+<!-- Item 4: Square -->
+<div class="group relative col-span-1 aspect-square overflow-hidden rounded-xl cursor-pointer">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="colorful spices and lamps in a moroccan market" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCseTR5DP-jfnKip_jIgz83zm9beqlkL39wfL8Amcf8wUkQorZX6M02DjksObiMIBNPUm_38BftVGN0UppLx-Nw-xKKEU6RCDrTu4olomNw12BmXdOM2D-Fl4V1H1JHrHjg38eLgIB9vZIakfTpzfJAq0gKL596wgw6gJCoBF-KBogcLzzFKNEPxskLpmDhm3Usa2iyPsW6uHc0ibT8dAo4LnODFLVnynKnDhls8_7j4_CEaJabdFSrjFThjHSA1nF6c1TWEIVX9Us");'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
+<div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+<h3 class="text-white text-xl font-bold leading-tight mb-1">Marrakech Souks</h3>
+<p class="text-gray-300 text-xs font-body">Oct 2023</p>
+</div>
+</div>
+</div>
+<!-- Item 5: Square -->
+<div class="group relative col-span-1 aspect-square overflow-hidden rounded-xl cursor-pointer">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="safari jeep in the african savanna at sunset" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDF_Ew-cP74LrxCRKVRqGfmKCqRtxR5t4mGbPDMaGh6dyfRjIMP28SG3CsuGoItHQz9XrNg4DiaRaxFgP6DAYQu27HDoTNFBDYOhsFKZ80p13EUiOwH3Pdq-hOqdxAwlwB57m1i7ex__zb7hdxLSM_GQ7UnGTCD9sKs1f0E3DtYV7NfhBtRtgbZHCN6_xx4XXChw2rlaBVMwOrxUYLoEekVQFZG08oiUMsJGIE3LiSwJKasCLCPchv09Z9jrE-RAg_nownn9--Tbns");'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
+<div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+<h3 class="text-white text-xl font-bold leading-tight mb-1">Kenya Safari</h3>
+<p class="text-gray-300 text-xs font-body">Sep 2022</p>
+</div>
+</div>
+</div>
+</div>
+<!-- About / Newsletter Section -->
+<div class="mt-20 mb-12 bg-white dark:bg-[#1c2e24] rounded-2xl overflow-hidden shadow-sm">
+<div class="flex flex-col md:flex-row">
+<div class="w-full md:w-1/2 aspect-video md:aspect-auto bg-cover bg-center" data-alt="photographer holding a camera looking at a map" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAQ_qTCfjrgJAxFo4HyWrBz7gLJfCi-8Dg1lfHXZrulqTrtpghrsbjFxPPb_S7KHP7AkYone8lAYCUwurrBvVUQrVYKUS2dRPcHpMJGIS86e4dErWXSc5bCTerqbWAb_M2LXUFxwWSexEdTd_enPg0AIVNiodmVAW3bCtRAJ_o6bmOYOwqAl_pBvc-sQW6cs8TCEw56jU_iDN8FyskEouy_hfFuj0Mw-PEb8NX9upGalvDpjq5CGL3R8SabAHS3QVoejgPC40QKnpk");'>
+</div>
+<div class="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center items-start">
+<p class="text-primary font-bold uppercase tracking-widest text-xs mb-3">About the Photographer</p>
+<h2 class="text-3xl font-bold mb-4">Chasing Light &amp; Shadow</h2>
+<p class="text-gray-600 dark:text-gray-300 font-body mb-8 leading-relaxed">
+                                    Hi, I'm Alex. I travel the world documenting landscapes, cultures, and the quiet moments in between. Join me as I explore the intersection of nature and humanity.
+                                </p>
+<div class="flex flex-col w-full gap-3">
+<div class="flex gap-2">
+<input class="flex-1 bg-gray-50 dark:bg-background-dark border border-gray-200 dark:border-[#254633] rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-900 dark:text-white" placeholder="Enter your email address" type="email"/>
+<button class="bg-primary hover:bg-opacity-90 text-[#122118] font-bold px-6 py-3 rounded-lg text-sm transition-colors">
+                                            Join List
+                                        </button>
+</div>
+<p class="text-xs text-gray-400">Receive a weekly digest of new stories. No spam, ever.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="flex flex-col md:flex-row items-center justify-between py-10 border-t border-gray-200 dark:border-[#254633] mt-8 text-gray-500 dark:text-gray-400">
+<div class="flex items-center gap-2 mb-4 md:mb-0">
+<span class="material-symbols-outlined">public</span>
+<span class="text-sm font-bold tracking-wide">TRAVELOGUE</span>
+</div>
+<div class="flex items-center gap-6 mb-4 md:mb-0">
+<a class="text-sm hover:text-primary transition-colors" href="#">Instagram</a>
+<a class="text-sm hover:text-primary transition-colors" href="#">Twitter</a>
+<a class="text-sm hover:text-primary transition-colors" href="#">Unsplash</a>
+</div>
+<div class="text-xs">
+                            © 2024 Travelogue Portfolio. All rights reserved.
+                        </div>
+</footer>
+</div>
+</div>
+</div>
+</div>
+</body></html>

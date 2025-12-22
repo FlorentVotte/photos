@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Individual Photo Page - Details &amp; Sharing</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#194cb3",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                        "surface-dark": "#1a212e",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for modern feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111621;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #253046;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #194cb3;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased selection:bg-primary/30">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<!-- Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-[#253046] px-6 py-4 bg-white/80 dark:bg-[#121721]/90 backdrop-blur-md z-50">
+<div class="flex items-center gap-4">
+<a class="flex items-center gap-2 group" href="#">
+<div class="p-1 rounded-full group-hover:bg-slate-100 dark:group-hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">arrow_back</span>
+</div>
+<span class="text-sm font-medium text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors">Back to Album</span>
+</a>
+</div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[28px]">photo_camera</span>
+<h2 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white">Portfolio</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-6">
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary transition-colors" href="#">Albums</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary transition-colors" href="#">Journal</a>
+<a class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary transition-colors" href="#">About</a>
+</div>
+<div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2 hidden md:block"></div>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-9 ring-2 ring-slate-100 dark:ring-slate-700" data-alt="User profile picture showing a smiling photographer" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDCJSdRMJcY-WOGgt-D2LwxMcl_vXv8e5EYwil4O6AZ2NFIC5zm0LM3GVv9N9weAWVbH8RrA3FgwIDZYtvESL11fBcO3g_6JnvCHyABgnf8qFr3FlazWLCsPtKx72mbyUv6o-GTFKHM9GBeQXDANJ9ZmQ6XDzyH2DWpf7OGJofaOPlKdVgSCpW6sSKTh_0OKhUC2VHf2GIAdK-D22XBNutEMO2AnzSWZRGyn6BaBSRs_HJ_BKxWC5_MmmKKZBqrhqatUm9KsuBj0hg");'>
+</div>
+</div>
+</header>
+<!-- Main Content Area: Split View -->
+<main class="flex flex-1 overflow-hidden h-full flex-col lg:flex-row">
+<!-- Left Side: Image Viewer (Dominant) -->
+<div class="relative flex-1 bg-slate-100 dark:bg-black/40 flex items-center justify-center p-4 lg:p-10 overflow-hidden group/image">
+<!-- Navigation Arrows Floating -->
+<button class="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white hover:bg-primary hover:border-primary hover:scale-105 transition-all duration-300 opacity-0 group-hover/image:opacity-100 lg:opacity-0 lg:group-hover/image:opacity-100">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white hover:bg-primary hover:border-primary hover:scale-105 transition-all duration-300 opacity-0 group-hover/image:opacity-100 lg:opacity-0 lg:group-hover/image:opacity-100">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+<!-- Main Image Container -->
+<div class="relative w-full h-full flex items-center justify-center">
+<!-- Invisible overlay to prevent right click save context (simulated) -->
+<div class="absolute inset-0 z-10" oncontextmenu="return false;"></div>
+<img alt="Stunning sunset view over the white washed buildings of Oia in Santorini, Greece with golden light hitting the architecture" class="max-w-full max-h-full object-contain shadow-2xl rounded-sm" data-alt="Stunning sunset view over the white washed buildings of Oia in Santorini, Greece" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEbnXUyfX9NDIarOHLEXmZg_0zV9EvAzcmm136KkmUToTMFGZtlRTC36HJu3UBljLarChMVgSxBR5x5gmv_4wFej3tqHt4IW3ZTmU8IN0vq7ASHbiViTFsESyv3hr_XHI47HjvgQm7_gvz_LX1RsZtdKXqbYbcwKqwIYNNssTGTCKt9Uw4fiXRyXophHRfMhYUYLYUTecSfSxPgtPKt7G90LAGYYvI2kd6MBKmn8cNFDwc60_SR9sRFJlSsvT3IREJgoNj6XBwc9c"/>
+</div>
+<!-- Fullscreen Toggle -->
+<button class="absolute bottom-6 right-6 z-20 p-2 rounded-lg bg-black/50 text-white/70 hover:text-white hover:bg-black/70 transition-colors">
+<span class="material-symbols-outlined text-[20px]">fullscreen</span>
+</button>
+</div>
+<!-- Right Side: Details Panel -->
+<aside class="w-full lg:w-[400px] xl:w-[450px] bg-white dark:bg-[#111621] border-l border-slate-200 dark:border-[#253046] flex flex-col h-auto lg:h-full overflow-y-auto z-30 shadow-xl lg:shadow-none">
+<!-- Scrollable Content -->
+<div class="p-8 flex flex-col gap-8">
+<!-- Breadcrumb Context -->
+<div class="flex items-center gap-2 text-xs font-medium tracking-wide uppercase text-primary/80">
+<span>Europe</span>
+<span class="text-slate-300 dark:text-slate-600">/</span>
+<span>Greece 2024</span>
+</div>
+<!-- Title & Description -->
+<div class="space-y-4">
+<h1 class="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white leading-tight font-display tracking-tight">
+                            Sunset at Oia
+                        </h1>
+<p class="text-slate-600 dark:text-slate-400 leading-relaxed text-base font-light">
+                            The golden hour light hitting the whitewashed buildings creates a magical contrast against the deep blue Aegean Sea. Captured from the northern castle ruins just as the sun dipped below the horizon.
+                        </p>
+</div>
+<div class="h-px w-full bg-slate-100 dark:bg-slate-800"></div>
+<!-- Location -->
+<div class="flex items-start gap-4 group cursor-pointer">
+<div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-slate-900 dark:text-slate-200">Santorini, Greece</h4>
+<p class="text-xs text-slate-500 dark:text-slate-500 mt-1">36.4618° N, 25.3753° E</p>
+<!-- Mini Map Preview -->
+<div class="mt-3 w-full h-24 rounded-lg overflow-hidden relative grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+<img class="w-full h-full object-cover" data-alt="Map view showing the island of Santorini" data-location="Santorini" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAikzx7_Mqd4IlczJIUPauxxNU90O_CVG881xC7thB3dG_BD1dspBrrVqcjUFNfEEP2CqL3MpYJJgsZSHaurQlH_P5F5eeHwJa0ZhRyNclusjVBGiOVEaht9g852KwdJb6Q-JB69nHecTen3PBLZfieV7giZuozm6Hm69c5vgWSDAlQvPUoZ-Bu88P1g-KfdMTROk7MP7qTtuQPG34_j-zN8LJ13I7gFRWOnpGA7qdLfUwiLUT_OrQgb3Ic8JRybAS9eKBt8iCSt4U"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-2">
+<span class="text-[10px] text-white font-medium uppercase tracking-wider">View on Map</span>
+</div>
+</div>
+</div>
+</div>
+<div class="h-px w-full bg-slate-100 dark:bg-slate-800"></div>
+<!-- EXIF Data Grid -->
+<div>
+<h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Technical Details</h3>
+<div class="grid grid-cols-2 gap-y-6 gap-x-4">
+<!-- Camera -->
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-600 text-[20px]">photo_camera</span>
+<div>
+<p class="text-[10px] text-slate-400 uppercase tracking-wider">Camera</p>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">Canon EOS R5</p>
+</div>
+</div>
+<!-- Lens -->
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-600 text-[20px]">lens</span>
+<div>
+<p class="text-[10px] text-slate-400 uppercase tracking-wider">Focal Length</p>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">35mm</p>
+</div>
+</div>
+<!-- Aperture -->
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-600 text-[20px]">camera</span>
+<div>
+<p class="text-[10px] text-slate-400 uppercase tracking-wider">Aperture</p>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">f/1.8</p>
+</div>
+</div>
+<!-- Shutter -->
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-600 text-[20px]">shutter_speed</span>
+<div>
+<p class="text-[10px] text-slate-400 uppercase tracking-wider">Shutter</p>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">1/200s</p>
+</div>
+</div>
+<!-- ISO -->
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-600 text-[20px]">iso</span>
+<div>
+<p class="text-[10px] text-slate-400 uppercase tracking-wider">ISO</p>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">100</p>
+</div>
+</div>
+<!-- Date -->
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-600 text-[20px]">calendar_today</span>
+<div>
+<p class="text-[10px] text-slate-400 uppercase tracking-wider">Date Taken</p>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-300">Sept 14, 2024</p>
+</div>
+</div>
+</div>
+</div>
+<div class="h-px w-full bg-slate-100 dark:bg-slate-800"></div>
+<!-- Social Sharing -->
+<div class="mt-auto pt-4">
+<h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Share this shot</h3>
+<div class="flex gap-3">
+<button class="flex-1 h-12 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-[#1877F2] hover:text-white text-slate-600 dark:text-slate-400 transition-all duration-300 flex items-center justify-center gap-2 group">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg>
+<span class="text-sm font-medium hidden sm:block">Facebook</span>
+</button>
+<button class="flex-1 h-12 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-[#1DA1F2] hover:text-white text-slate-600 dark:text-slate-400 transition-all duration-300 flex items-center justify-center gap-2 group">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"></path></svg>
+<span class="text-sm font-medium hidden sm:block">Twitter</span>
+</button>
+<button class="flex-1 h-12 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-[#BD081C] hover:text-white text-slate-600 dark:text-slate-400 transition-all duration-300 flex items-center justify-center gap-2 group">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.399.165-1.495-.69-2.433-2.852-2.433-4.587 0-3.728 2.705-7.149 7.822-7.149 4.104 0 7.296 2.924 7.296 6.828 0 4.075-2.57 7.355-6.138 7.355-1.198 0-2.328-.62-2.716-1.356l-.738 2.813c-.266 1.03-1.002 2.315-1.492 3.102 1.119.333 2.308.514 3.538.514 6.609 0 11.979-5.368 11.979-11.989C23.996 5.373 18.63 0 12.017 0z"></path></svg>
+<span class="text-sm font-medium hidden sm:block">Pinterest</span>
+</button>
+</div>
+</div>
+<!-- Bottom Nav for Mobile/Tablet only (within sidebar flow) -->
+<div class="lg:hidden flex justify-between pt-6">
+<button class="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                            Previous Shot
+                        </button>
+<button class="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-primary transition-colors">
+                            Next Shot
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

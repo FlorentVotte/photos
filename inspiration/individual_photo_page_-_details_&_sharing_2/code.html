@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Individual Photo Page - Details &amp; Sharing</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#194cb3",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                        "text-main": "#0e121b",
+                        "text-muted": "#506795",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner feel if needed */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main dark:text-white transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- Navigation Bar -->
+<header class="sticky top-0 z-50 w-full border-b border-solid border-b-[#e8ebf3] bg-[#f8f9fb]/95 backdrop-blur-sm dark:bg-background-dark/95 dark:border-b-gray-800">
+<div class="flex items-center justify-between whitespace-nowrap px-4 md:px-10 py-3 max-w-[1400px] mx-auto w-full">
+<div class="flex items-center gap-4 text-text-main dark:text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined text-2xl">photo_camera</span>
+</div>
+<h2 class="text-text-main dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">LENS &amp; TRAVEL</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8">
+<nav class="flex items-center gap-9">
+<a class="text-text-main dark:text-gray-300 hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">Home</a>
+<a class="text-text-main dark:text-gray-300 hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">Gallery</a>
+<a class="text-text-main dark:text-gray-300 hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">Journal</a>
+<a class="text-text-main dark:text-gray-300 hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">About</a>
+</nav>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded h-9 px-5 bg-primary hover:bg-primary/90 transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Subscribe</span>
+</button>
+</div>
+<!-- Mobile Menu Icon -->
+<div class="md:hidden text-text-main dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</div>
+</div>
+</header>
+<main class="flex-1 w-full max-w-[1400px] mx-auto px-4 md:px-10 py-6 md:py-10">
+<!-- Breadcrumbs -->
+<div class="mb-6 flex flex-wrap gap-2 text-sm">
+<a class="text-text-muted hover:text-primary transition-colors font-medium leading-normal" href="#">Home</a>
+<span class="text-text-muted font-medium leading-normal">/</span>
+<a class="text-text-muted hover:text-primary transition-colors font-medium leading-normal" href="#">Travels</a>
+<span class="text-text-muted font-medium leading-normal">/</span>
+<a class="text-text-muted hover:text-primary transition-colors font-medium leading-normal" href="#">Japan</a>
+<span class="text-text-muted font-medium leading-normal">/</span>
+<span class="text-text-main dark:text-white font-medium leading-normal">Fushimi Inari</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-12 items-start">
+<!-- LEFT COLUMN: Main Image -->
+<div class="lg:col-span-8 flex flex-col gap-4">
+<div class="relative w-full overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 group shadow-sm" oncontextmenu="return false;">
+<!-- Main Photo -->
+<div class="w-full aspect-[4/3] md:aspect-[3/2] relative">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover absolute inset-0" data-alt="A vibrant sunrise illuminating the endless path of vermilion torii gates at Fushimi Inari Shrine in Kyoto, capturing the mystical morning atmosphere." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBpee5IKhwotfYliNza5oeG6LApKWWVE0u-w3NfM62LFOiS9FJ9JWbTo9UZSToZmrBh990uphPdf9WtES70rhWV962rOqev1D7hI2m6kd-thl66kFcTiLWEXVZ03hiU1CVqxswc-5KQdLFhiOCyCpxlj-jLC1RXdpPC5dPHHSlaz-RgujWK77M23o8d4cH4Oq2R8CWH1B-ggPEgiIDyHAs_ieVNMty9AtCHa_J1D33DbbreTjH9tdfTgX7qBLIW-GrQTOBrvB_M2_A");'>
+</div>
+</div>
+<!-- Image Overlay Controls (Hover) -->
+<div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none"></div>
+<!-- Fullscreen Toggle (Top Right) -->
+<button class="absolute top-4 right-4 p-2 bg-white/90 dark:bg-black/60 backdrop-blur text-text-main dark:text-white rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-white dark:hover:bg-black shadow-lg">
+<span class="material-symbols-outlined text-[20px]">fullscreen</span>
+</button>
+</div>
+<!-- Mobile Navigation (Visible only on small screens) -->
+<div class="flex lg:hidden justify-between items-center py-2 border-t border-gray-200 dark:border-gray-800">
+<button class="flex items-center gap-2 text-text-muted hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-lg">arrow_back</span>
+<span class="text-sm font-medium">Previous</span>
+</button>
+<button class="flex items-center gap-2 text-text-muted hover:text-primary transition-colors">
+<span class="text-sm font-medium">Next</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- RIGHT COLUMN: Details & Metadata -->
+<div class="lg:col-span-4 flex flex-col h-full">
+<div class="sticky top-24 flex flex-col gap-8">
+<!-- Header Section -->
+<div class="flex flex-col gap-3 pb-6 border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center justify-between">
+<span class="uppercase tracking-widest text-xs font-bold text-primary">Travel Photography</span>
+<div class="flex gap-2">
+<button aria-label="Add to favorites" class="text-text-muted hover:text-primary transition-colors p-1">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+</div>
+</div>
+<h1 class="text-3xl md:text-4xl font-bold text-text-main dark:text-white leading-tight">Sunrise at Fushimi Inari</h1>
+<div class="flex items-center gap-2 text-text-muted">
+<span class="material-symbols-outlined text-lg">location_on</span>
+<span class="text-sm font-medium">Kyoto, Japan</span>
+<span class="text-gray-300 dark:text-gray-700">•</span>
+<span class="text-sm font-medium">Oct 12, 2023</span>
+</div>
+</div>
+<!-- Description -->
+<div class="text-base text-gray-600 dark:text-gray-300 leading-relaxed">
+<p>
+                                Waking up at 4 AM was absolutely worth it to capture the empty torii gates bathed in the soft, golden morning light. The stillness of the shrine before the crowds arrived felt almost spiritual.
+                            </p>
+</div>
+<!-- EXIF Data Grid -->
+<div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-5">
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-muted mb-4">Camera Settings</h3>
+<div class="grid grid-cols-2 gap-y-4 gap-x-2">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-text-muted text-xl">photo_camera</span>
+<div class="flex flex-col">
+<span class="text-xs text-text-muted">Camera</span>
+<span class="text-sm font-semibold text-text-main dark:text-white">Sony A7III</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-text-muted text-xl">lens</span>
+<div class="flex flex-col">
+<span class="text-xs text-text-muted">Lens</span>
+<span class="text-sm font-semibold text-text-main dark:text-white">35mm f/1.4</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-text-muted text-xl">shutter_speed</span>
+<div class="flex flex-col">
+<span class="text-xs text-text-muted">Shutter</span>
+<span class="text-sm font-semibold text-text-main dark:text-white">1/200s</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-text-muted text-xl">iso</span>
+<div class="flex flex-col">
+<span class="text-xs text-text-muted">ISO</span>
+<span class="text-sm font-semibold text-text-main dark:text-white">100</span>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-text-muted text-xl">filter_center_focus</span>
+<div class="flex flex-col">
+<span class="text-xs text-text-muted">Aperture</span>
+<span class="text-sm font-semibold text-text-main dark:text-white">f/2.8</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sharing & Tags -->
+<div class="flex flex-col gap-4">
+<h3 class="text-xs font-bold uppercase tracking-wider text-text-muted">Share Photo</h3>
+<div class="flex gap-3">
+<button aria-label="Share on Facebook" class="flex items-center justify-center size-10 rounded bg-gray-100 dark:bg-gray-800 text-text-main dark:text-white hover:bg-[#1877F2] hover:text-white transition-all group">
+<!-- Using generic material icons to represent concept -->
+<span class="text-sm font-bold">FB</span>
+</button>
+<button aria-label="Share on Twitter" class="flex items-center justify-center size-10 rounded bg-gray-100 dark:bg-gray-800 text-text-main dark:text-white hover:bg-[#1DA1F2] hover:text-white transition-all group">
+<span class="text-sm font-bold">TW</span>
+</button>
+<button aria-label="Share on Pinterest" class="flex items-center justify-center size-10 rounded bg-gray-100 dark:bg-gray-800 text-text-main dark:text-white hover:bg-[#E60023] hover:text-white transition-all group">
+<span class="text-sm font-bold">PIN</span>
+</button>
+<button aria-label="Copy Link" class="flex items-center justify-center size-10 rounded bg-gray-100 dark:bg-gray-800 text-text-main dark:text-white hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined text-lg">link</span>
+</button>
+</div>
+</div>
+<!-- Desktop Navigation Controls -->
+<div class="hidden lg:flex flex-col gap-3 pt-6 mt-auto border-t border-gray-200 dark:border-gray-800">
+<div class="flex items-center justify-between">
+<button class="group flex items-center gap-3 text-left w-1/2 pr-2">
+<div class="size-10 flex items-center justify-center rounded bg-gray-100 dark:bg-gray-800 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-text-muted uppercase tracking-wide">Previous</span>
+<span class="text-sm font-semibold text-text-main dark:text-white truncate max-w-[100px]">Osaka Castle</span>
+</div>
+</button>
+<div class="h-8 w-px bg-gray-200 dark:bg-gray-800"></div>
+<button class="group flex items-center justify-end gap-3 text-right w-1/2 pl-2">
+<div class="flex flex-col items-end">
+<span class="text-xs text-text-muted uppercase tracking-wide">Next</span>
+<span class="text-sm font-semibold text-text-main dark:text-white truncate max-w-[100px]">Bamboo Forest</span>
+</div>
+<div class="size-10 flex items-center justify-center rounded bg-gray-100 dark:bg-gray-800 group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</button>
+</div>
+<a class="mt-4 flex items-center justify-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors py-2" href="#">
+<span class="material-symbols-outlined text-lg">grid_view</span>
+                                Back to Gallery
+                             </a>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Minimal Footer -->
+<footer class="border-t border-[#e8ebf3] dark:border-gray-800 py-8 px-4 md:px-10 mt-10 bg-white dark:bg-background-dark">
+<div class="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-text-muted text-sm">© 2023 Lens &amp; Travel Portfolio. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-text-muted hover:text-primary text-sm transition-colors" href="#">Privacy Policy</a>
+<a class="text-text-muted hover:text-primary text-sm transition-colors" href="#">Terms of Use</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>
