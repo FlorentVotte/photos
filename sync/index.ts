@@ -142,6 +142,19 @@ async function syncPrivateAlbum(gallery: {
     let albumLocation = "Unknown";
     let albumDate = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
+    // Create album first (required for photo foreign key)
+    await prisma.album.upsert({
+      where: { id: gallery.albumId },
+      update: {},
+      create: {
+        id: gallery.albumId,
+        slug: albumSlug,
+        title: gallery.albumName || "Untitled Album",
+        galleryUrl: `private:${gallery.albumId}`,
+        galleryId: gallery.id,
+      },
+    });
+
     // Process photos
     for (let i = 0; i < assets.length; i++) {
       const asset = assets[i];
