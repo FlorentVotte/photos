@@ -17,17 +17,36 @@ interface SyncStatus {
   lastSync?: string;
 }
 
+interface AdobeStatus {
+  configured: boolean;
+  connected: boolean;
+  expiresAt: string | null;
+  updatedAt: string | null;
+}
+
 export default function AdminPage() {
   const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [newUrl, setNewUrl] = useState("");
   const [isFeatured, setIsFeatured] = useState(false);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({ status: "idle" });
   const [loading, setLoading] = useState(true);
+  const [adobeStatus, setAdobeStatus] = useState<AdobeStatus | null>(null);
 
-  // Fetch current galleries on load
+  // Fetch current galleries and Adobe status on load
   useEffect(() => {
     fetchGalleries();
+    fetchAdobeStatus();
   }, []);
+
+  const fetchAdobeStatus = async () => {
+    try {
+      const res = await fetch("/api/auth/adobe/status");
+      const data = await res.json();
+      setAdobeStatus(data);
+    } catch (error) {
+      console.error("Failed to fetch Adobe status:", error);
+    }
+  };
 
   const fetchGalleries = async () => {
     try {
@@ -328,23 +347,57 @@ export default function AdminPage() {
           <section className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white mb-1">Adobe Lightroom API</h2>
+                <h2 className="text-xl font-semibold text-white mb-1 flex items-center gap-2">
+                  Adobe Lightroom API
+                  {adobeStatus && (
+                    <span
+                      className={`px-2 py-0.5 text-xs rounded ${
+                        adobeStatus.connected
+                          ? "bg-green-900/30 text-green-400 border border-green-800"
+                          : adobeStatus.configured
+                          ? "bg-yellow-900/30 text-yellow-400 border border-yellow-800"
+                          : "bg-red-900/30 text-red-400 border border-red-800"
+                      }`}
+                    >
+                      {adobeStatus.connected
+                        ? "Connected"
+                        : adobeStatus.configured
+                        ? "Not connected"
+                        : "Not configured"}
+                    </span>
+                  )}
+                </h2>
                 <p className="text-sm text-text-muted">
-                  Connect your Adobe account to sync photo titles and captions
+                  {adobeStatus?.connected
+                    ? "Your Adobe account is connected"
+                    : "Connect your Adobe account to sync photo titles and captions"}
                 </p>
+                {adobeStatus?.connected && adobeStatus.updatedAt && (
+                  <p className="text-xs text-text-muted mt-1">
+                    Connected on: {new Date(adobeStatus.updatedAt).toLocaleString()}
+                  </p>
+                )}
               </div>
               <a
                 href="/api/auth/adobe"
-                className="px-6 py-3 bg-[#FF0000] text-white font-semibold rounded-lg hover:bg-[#CC0000] transition-colors flex items-center gap-2"
+                className={`px-6 py-3 font-semibold rounded-lg transition-colors flex items-center gap-2 ${
+                  adobeStatus?.connected
+                    ? "bg-surface-border text-white hover:bg-surface-border/80"
+                    : "bg-[#FF0000] text-white hover:bg-[#CC0000]"
+                }`}
               >
-                <span className="material-symbols-outlined">link</span>
-                Connect Adobe
+                <span className="material-symbols-outlined">
+                  {adobeStatus?.connected ? "refresh" : "link"}
+                </span>
+                {adobeStatus?.connected ? "Reconnect" : "Connect Adobe"}
               </a>
             </div>
-            <p className="mt-4 text-xs text-text-muted/70">
-              Requires ADOBE_CLIENT_ID and ADOBE_CLIENT_SECRET in .env file.
-              Get credentials from <a href="https://developer.adobe.com/console" target="_blank" rel="noopener" className="text-primary hover:underline">Adobe Developer Console</a>.
-            </p>
+            {!adobeStatus?.configured && (
+              <p className="mt-4 text-xs text-text-muted/70">
+                Requires ADOBE_CLIENT_ID and ADOBE_CLIENT_SECRET in .env file.
+                Get credentials from <a href="https://developer.adobe.com/console" target="_blank" rel="noopener" className="text-primary hover:underline">Adobe Developer Console</a>.
+              </p>
+            )}
           </section>
 
           {/* Help */}
