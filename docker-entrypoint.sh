@@ -6,7 +6,7 @@ DB_PATH="/app/data/photobook.db"
 
 if [ ! -f "$DB_PATH" ]; then
   echo "Initializing database..."
-  npx prisma db push --skip-generate
+  npx prisma db push
   echo "Database initialized successfully"
 fi
 
