@@ -1,0 +1,27 @@
+services:
+  photobook:
+    build: .
+    container_name: photobook
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://photos.votte.eu}
+      - SYNC_WEBHOOK_SECRET=${SYNC_WEBHOOK_SECRET:-}
+      - ADOBE_CLIENT_ID=${ADOBE_CLIENT_ID:-}
+      - ADOBE_CLIENT_SECRET=${ADOBE_CLIENT_SECRET:-}
+    volumes:
+      # Persist synced photos and manifest (albums.json is read at runtime)
+      - ./data/photos:/app/public/photos
+      # Persist gallery config
+      - ./data/galleries.json:/app/sync/galleries.json
+      # Persist Adobe OAuth tokens
+      - ./data/adobe-tokens.json:/app/adobe-tokens.json
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
