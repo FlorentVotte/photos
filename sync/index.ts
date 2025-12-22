@@ -64,11 +64,13 @@ async function loadAuthenticatedMetadata(): Promise<void> {
       try {
         const assets = await fetchAuthenticatedAlbumAssets(catId, album.id);
         for (const asset of assets) {
+          // Use the actual catalog asset ID
+          const catalogAssetId = asset.asset?.id || asset.id;
           const title = asset.payload?.xmp?.dc?.title;
           const caption = asset.payload?.xmp?.dc?.description;
 
           if (title || caption) {
-            catalogAssets.set(asset.id, {
+            catalogAssets.set(catalogAssetId, {
               title: typeof title === "string" ? title : title?.[0],
               caption: typeof caption === "string" ? caption : caption?.[0],
             });
@@ -142,9 +144,12 @@ async function syncPrivateAlbum(gallery: {
     // Process photos
     for (let i = 0; i < assets.length; i++) {
       const asset = assets[i];
-      const assetId = asset.id;
+      // Use the actual catalog asset ID, not the album-asset relationship ID
+      const catalogAssetId = asset.asset?.id || asset.id;
+      // Use catalog asset ID for storage/display
+      const assetId = catalogAssetId;
 
-      const renditionUrl = await getAssetRenditionUrl(catId, assetId, token.accessToken);
+      const renditionUrl = await getAssetRenditionUrl(catId, catalogAssetId, token.accessToken);
       if (!renditionUrl) {
         console.log(`  No rendition URL for ${assetId}, skipping`);
         continue;

@@ -20,7 +20,13 @@ interface TokenData {
 }
 
 interface LightroomAsset {
-  id: string;
+  id: string; // Album-asset relationship ID
+  asset?: {
+    id: string; // Actual catalog asset ID - use this for renditions!
+    links?: {
+      self?: { href: string };
+    };
+  };
   payload: {
     captureDate?: string;
     importSource?: {
