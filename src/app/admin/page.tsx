@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 
 interface Gallery {
-  url: string;
+  url?: string;
+  albumId?: string;
+  albumName?: string;
+  type?: "public" | "private";
   featured: boolean;
   title?: string;
   photoCount?: number;
@@ -24,6 +27,14 @@ interface AdobeStatus {
   updatedAt: string | null;
 }
 
+interface LightroomAlbum {
+  id: string;
+  name: string;
+  created: string;
+  updated: string;
+  assetCount: number;
+}
+
 export default function AdminPage() {
   const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [newUrl, setNewUrl] = useState("");
@@ -31,6 +42,9 @@ export default function AdminPage() {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>({ status: "idle" });
   const [loading, setLoading] = useState(true);
   const [adobeStatus, setAdobeStatus] = useState<AdobeStatus | null>(null);
+  const [lightroomAlbums, setLightroomAlbums] = useState<LightroomAlbum[]>([]);
+  const [loadingAlbums, setLoadingAlbums] = useState(false);
+  const [showAlbumPicker, setShowAlbumPicker] = useState(false);
 
   // Fetch current galleries and Adobe status on load
   useEffect(() => {
@@ -45,6 +59,51 @@ export default function AdminPage() {
       setAdobeStatus(data);
     } catch (error) {
       console.error("Failed to fetch Adobe status:", error);
+    }
+  };
+
+  const fetchLightroomAlbums = async () => {
+    setLoadingAlbums(true);
+    try {
+      const res = await fetch("/api/adobe/albums");
+      const data = await res.json();
+      if (data.albums) {
+        setLightroomAlbums(data.albums);
+        setShowAlbumPicker(true);
+      } else {
+        alert(data.error || "Failed to fetch albums");
+      }
+    } catch (error) {
+      console.error("Failed to fetch Lightroom albums:", error);
+      alert("Failed to fetch albums from Adobe");
+    } finally {
+      setLoadingAlbums(false);
+    }
+  };
+
+  const addPrivateAlbum = async (album: LightroomAlbum, featured: boolean = false) => {
+    try {
+      const res = await fetch("/api/galleries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "private",
+          albumId: album.id,
+          albumName: album.name,
+          featured,
+        }),
+      });
+
+      if (res.ok) {
+        fetchGalleries();
+        // Don't close the picker so user can add more
+      } else {
+        const error = await res.json();
+        alert(error.error || "Failed to add album");
+      }
+    } catch (error) {
+      console.error("Failed to add album:", error);
+      alert("Failed to add album");
     }
   };
 
@@ -91,14 +150,18 @@ export default function AdminPage() {
     }
   };
 
-  const removeGallery = async (url: string) => {
+  const removeGallery = async (gallery: Gallery) => {
     if (!confirm("Are you sure you want to remove this gallery?")) return;
 
     try {
       const res = await fetch("/api/galleries", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify(
+          gallery.type === "private"
+            ? { albumId: gallery.albumId }
+            : { url: gallery.url }
+        ),
       });
 
       if (res.ok) {
@@ -109,12 +172,16 @@ export default function AdminPage() {
     }
   };
 
-  const toggleFeatured = async (url: string, featured: boolean) => {
+  const toggleFeatured = async (gallery: Gallery, featured: boolean) => {
     try {
       const res = await fetch("/api/galleries", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, featured }),
+        body: JSON.stringify(
+          gallery.type === "private"
+            ? { albumId: gallery.albumId, featured }
+            : { url: gallery.url, featured }
+        ),
       });
 
       if (res.ok) {
@@ -282,11 +349,20 @@ export default function AdminPage() {
                             Featured
                           </span>
                         )}
+                        {gallery.type === "private" && (
+                          <span className="px-2 py-0.5 text-xs bg-blue-900/30 text-blue-400 border border-blue-800 rounded">
+                            Private
+                          </span>
+                        )}
                         <span className="text-white font-medium truncate">
-                          {gallery.title || "Untitled Album"}
+                          {gallery.title || gallery.albumName || "Untitled Album"}
                         </span>
                       </div>
-                      <p className="text-xs text-text-muted truncate">{gallery.url}</p>
+                      <p className="text-xs text-text-muted truncate">
+                        {gallery.type === "private"
+                          ? `Lightroom Album: ${gallery.albumId?.slice(0, 8)}...`
+                          : gallery.url}
+                      </p>
                       {gallery.photoCount !== undefined && (
                         <p className="text-xs text-text-muted mt-1">
                           {gallery.photoCount} photos
@@ -298,7 +374,7 @@ export default function AdminPage() {
                     </div>
                     <div className="flex items-center gap-2 ml-4">
                       <button
-                        onClick={() => toggleFeatured(gallery.url, !gallery.featured)}
+                        onClick={() => toggleFeatured(gallery, !gallery.featured)}
                         className={`p-2 rounded-lg transition-colors ${
                           gallery.featured
                             ? "text-primary hover:bg-primary/10"
@@ -311,7 +387,7 @@ export default function AdminPage() {
                         </span>
                       </button>
                       <button
-                        onClick={() => removeGallery(gallery.url)}
+                        onClick={() => removeGallery(gallery)}
                         className="p-2 text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
                         title="Remove gallery"
                       >
@@ -398,22 +474,137 @@ export default function AdminPage() {
                 Get credentials from <a href="https://developer.adobe.com/console" target="_blank" rel="noopener" className="text-primary hover:underline">Adobe Developer Console</a>.
               </p>
             )}
+
+            {/* Browse Albums Button - shown when connected */}
+            {adobeStatus?.connected && (
+              <div className="mt-4 pt-4 border-t border-surface-border">
+                <button
+                  onClick={fetchLightroomAlbums}
+                  disabled={loadingAlbums}
+                  className="px-6 py-3 bg-primary text-black font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50"
+                >
+                  {loadingAlbums ? (
+                    <>
+                      <span className="material-symbols-outlined animate-spin">sync</span>
+                      Loading albums...
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined">photo_library</span>
+                      Browse Lightroom Albums
+                    </>
+                  )}
+                </button>
+                <p className="mt-2 text-xs text-text-muted">
+                  Add albums directly from your Lightroom catalog (no public sharing needed)
+                </p>
+              </div>
+            )}
           </section>
+
+          {/* Album Picker Modal */}
+          {showAlbumPicker && (
+            <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+              <div className="bg-surface-dark rounded-xl border border-surface-border max-w-2xl w-full max-h-[80vh] overflow-hidden">
+                <div className="p-6 border-b border-surface-border flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-white">
+                    Select Albums to Sync
+                  </h2>
+                  <button
+                    onClick={() => setShowAlbumPicker(false)}
+                    className="p-2 text-text-muted hover:text-white transition-colors"
+                  >
+                    <span className="material-symbols-outlined">close</span>
+                  </button>
+                </div>
+                <div className="p-6 overflow-y-auto max-h-[60vh]">
+                  {lightroomAlbums.length === 0 ? (
+                    <p className="text-text-muted text-center py-8">
+                      No albums found in your Lightroom catalog
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {lightroomAlbums.map((album) => {
+                        const isAdded = galleries.some(
+                          (g) => g.albumId === album.id
+                        );
+                        return (
+                          <div
+                            key={album.id}
+                            className={`flex items-center justify-between p-4 rounded-lg border ${
+                              isAdded
+                                ? "bg-primary/10 border-primary/30"
+                                : "bg-background-dark border-surface-border"
+                            }`}
+                          >
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-white font-medium">
+                                  {album.name}
+                                </span>
+                                {isAdded && (
+                                  <span className="px-2 py-0.5 text-xs bg-primary/20 text-primary rounded">
+                                    Added
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-text-muted">
+                                {album.assetCount} photos • Updated{" "}
+                                {new Date(album.updated).toLocaleDateString()}
+                              </p>
+                            </div>
+                            {!isAdded && (
+                              <button
+                                onClick={() => addPrivateAlbum(album)}
+                                className="px-4 py-2 bg-primary text-black font-semibold rounded-lg hover:bg-primary/90 transition-colors text-sm"
+                              >
+                                Add
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+                <div className="p-6 border-t border-surface-border flex justify-end">
+                  <button
+                    onClick={() => setShowAlbumPicker(false)}
+                    className="px-6 py-2 bg-surface-border text-white font-semibold rounded-lg hover:bg-surface-border/80 transition-colors"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Help */}
           <section className="mt-8 p-6 bg-surface-dark/50 rounded-xl border border-surface-border/50">
             <h3 className="text-lg font-semibold text-white mb-3">How to add albums</h3>
-            <ol className="list-decimal list-inside space-y-2 text-text-muted text-sm">
-              <li>Open Lightroom CC on web or desktop</li>
-              <li>Select the album you want to share</li>
-              <li>Click "Share" and enable "Allow public access"</li>
-              <li>Copy the share link (full URL or short adobe.ly link)</li>
-              <li>Paste it above and click "Add Gallery"</li>
-              <li>Click "Sync Now" to download the photos</li>
-            </ol>
-            <p className="mt-4 text-xs text-text-muted/70">
-              Both formats work: <code className="bg-surface-border/50 px-1 rounded">https://lightroom.adobe.com/shares/...</code> and <code className="bg-surface-border/50 px-1 rounded">https://adobe.ly/...</code>
-            </p>
+
+            <div className="mb-6">
+              <h4 className="text-sm font-semibold text-primary mb-2">Option 1: Private Albums (Recommended)</h4>
+              <ol className="list-decimal list-inside space-y-1 text-text-muted text-sm">
+                <li>Connect your Adobe account above</li>
+                <li>Click "Browse Lightroom Albums"</li>
+                <li>Select the albums you want to sync</li>
+                <li>Click "Sync Now" to download the photos</li>
+              </ol>
+              <p className="mt-2 text-xs text-text-muted/70">
+                This method gives you full metadata including titles and captions.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-semibold text-text-muted mb-2">Option 2: Public Share Links</h4>
+              <ol className="list-decimal list-inside space-y-1 text-text-muted text-sm">
+                <li>Open Lightroom CC and select an album</li>
+                <li>Click "Share" and enable "Allow public access"</li>
+                <li>Copy the share link and paste it above</li>
+                <li>Click "Sync Now" to download the photos</li>
+              </ol>
+            </div>
           </section>
         </div>
       </main>

@@ -40,8 +40,11 @@ const GALLERIES_FILE = path.join(
 );
 
 interface GalleryEntry {
-  url: string;
-  tag?: string; // Optional tag for filtering
+  url?: string;            // For public galleries
+  albumId?: string;        // For private albums (from authenticated API)
+  albumName?: string;      // Name of the private album
+  type?: "public" | "private";
+  tag?: string;            // Optional tag for filtering
   featured?: boolean;
 }
 
@@ -118,6 +121,246 @@ async function loadAuthenticatedMetadata(): Promise<void> {
  */
 function getAuthenticatedMetadata(assetId: string): { title?: string; caption?: string } {
   return catalogAssets.get(assetId) || {};
+}
+
+/**
+ * Sync a private album directly from authenticated Adobe API
+ */
+async function syncPrivateAlbum(
+  entry: GalleryEntry,
+  manifest: ReturnType<typeof loadManifest> extends Promise<infer T> ? T : never
+): Promise<typeof manifest> {
+  const { albumId, albumName, featured } = entry;
+
+  if (!albumId) {
+    console.log("  No album ID provided, skipping");
+    return manifest;
+  }
+
+  console.log(`\nSyncing private album: ${albumName || albumId}`);
+
+  const isAvailable = await isAuthenticatedApiAvailable();
+  if (!isAvailable) {
+    console.log("  Adobe API not authenticated - cannot sync private albums");
+    return manifest;
+  }
+
+  // Get catalog ID if not already loaded
+  if (!catalogId) {
+    const catalog = await fetchAuthenticatedCatalog();
+    if (!catalog?.id) {
+      console.log("  Could not fetch catalog");
+      return manifest;
+    }
+    catalogId = catalog.id;
+  }
+
+  try {
+    // Fetch assets from the private album
+    const assets = await fetchAuthenticatedAlbumAssets(catalogId, albumId);
+
+    if (assets.length === 0) {
+      console.log("  No assets found in album");
+      return manifest;
+    }
+
+    console.log(`  Found ${assets.length} assets`);
+
+    // Generate slug from album name
+    const albumSlug = generateSlug(albumName || albumId);
+
+    // Create album entry
+    const album: SyncAlbum = {
+      id: albumId,
+      slug: albumSlug,
+      title: albumName || "Untitled Album",
+      description: undefined,
+      location: "Unknown",
+      date: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+      coverImage: "",
+      photoCount: assets.length,
+      featured: featured || false,
+      galleryUrl: `private:${albumId}`,
+      lastSynced: new Date().toISOString(),
+    };
+
+    // Process photos
+    const photos: SyncPhoto[] = [];
+
+    for (let i = 0; i < assets.length; i++) {
+      const asset = assets[i];
+      const assetId = asset.id;
+
+      // Get rendition URL from authenticated API
+      const renditionUrl = await getAssetRenditionUrl(catalogId, assetId);
+      if (!renditionUrl) {
+        console.log(`  No rendition URL for ${assetId}, skipping`);
+        continue;
+      }
+
+      // Check if thumbnails already exist
+      const exists = await thumbnailsExist(albumSlug, assetId);
+      let thumbnails;
+
+      if (exists) {
+        console.log(`  Skipping ${assetId} (already exists)`);
+        thumbnails = {
+          thumb: `/photos/${albumSlug}/thumb/${assetId}.jpg`,
+          medium: `/photos/${albumSlug}/medium/${assetId}.jpg`,
+          full: `/photos/${albumSlug}/full/${assetId}.jpg`,
+        };
+      } else {
+        thumbnails = await generateThumbnails(renditionUrl, albumSlug, assetId);
+      }
+
+      if (!thumbnails) {
+        console.log(`  Failed to process ${assetId}, skipping`);
+        continue;
+      }
+
+      // Use first photo as cover
+      if (i === 0) {
+        album.coverImage = thumbnails.medium;
+      }
+
+      // Extract metadata from asset payload
+      const payload = asset.payload || {};
+      const xmp = payload.xmp || {};
+      const location = payload.location || {};
+
+      // Get title and caption from XMP (authenticated API has this!)
+      const title = xmp.dc?.title;
+      const caption = xmp.dc?.description;
+      const photoTitle = (typeof title === 'string' ? title : title?.[0]) ||
+                         payload.importSource?.fileName ||
+                         `Photo ${i + 1}`;
+      const photoCaption = typeof caption === 'string' ? caption : caption?.[0];
+
+      // Extract location from payload
+      if (location.country) {
+        album.location = location.city
+          ? `${location.city}, ${location.country}`
+          : location.country;
+      }
+
+      // Extract date from capture date
+      if (payload.captureDate && i === 0) {
+        album.date = formatDate(payload.captureDate) || album.date;
+      }
+
+      const photo: SyncPhoto = {
+        id: assetId,
+        title: photoTitle,
+        description: photoCaption,
+        src: {
+          thumb: thumbnails.thumb,
+          medium: thumbnails.medium,
+          full: thumbnails.full,
+          original: renditionUrl,
+        },
+        metadata: {
+          date: formatDate(payload.captureDate) || album.date,
+          location: location.country || album.location,
+          locationDetail: location.city || location.name || undefined,
+          camera: xmp.tiff?.Model || payload.importSource?.cameraModel,
+          lens: xmp.aux?.Lens || xmp.exifEX?.LensModel,
+          aperture: formatAperture(xmp.exif?.FNumber),
+          shutter: formatShutterSpeed(xmp.exif?.ExposureTime),
+          iso: xmp.exif?.ISOSpeedRatings?.toString(),
+          width: payload.develop?.croppedWidth || payload.importSource?.originalWidth,
+          height: payload.develop?.croppedHeight || payload.importSource?.originalHeight,
+          gps: location.latitude && location.longitude
+            ? { lat: location.latitude, lng: location.longitude }
+            : undefined,
+        },
+        albumId: albumId,
+        sortOrder: i,
+      };
+
+      photos.push(photo);
+    }
+
+    // Update manifest
+    manifest = updateAlbum(manifest, album);
+    manifest = updatePhotos(manifest, albumId, photos);
+
+    console.log(`  Synced ${photos.length} photos`);
+
+    return manifest;
+  } catch (error) {
+    console.error(`  Error syncing private album:`, error);
+    return manifest;
+  }
+}
+
+/**
+ * Get rendition URL for an asset from authenticated API
+ */
+async function getAssetRenditionUrl(catId: string, assetId: string): Promise<string | null> {
+  try {
+    const tokens = await loadTokensForSync();
+    if (!tokens) return null;
+
+    const response = await fetch(
+      `https://lr.adobe.io/v2/catalogs/${catId}/assets/${assetId}/renditions/2048`,
+      {
+        headers: {
+          Authorization: `Bearer ${tokens.access_token}`,
+          "X-API-Key": process.env.ADOBE_CLIENT_ID!,
+        },
+        redirect: "manual",
+      }
+    );
+
+    // The API returns a redirect to the actual image URL
+    if (response.status === 302 || response.status === 303) {
+      return response.headers.get("location");
+    }
+
+    // Or it might return the URL in JSON
+    if (response.ok) {
+      const data = await response.json();
+      return data.href || data.url || null;
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Load tokens for sync script
+ */
+async function loadTokensForSync() {
+  const tokensFile = path.join(
+    process.cwd(),
+    process.env.NODE_ENV === "production" ? "data/adobe-tokens.json" : "adobe-tokens.json"
+  );
+  try {
+    const data = await fs.readFile(tokensFile, "utf-8");
+    return JSON.parse(data);
+  } catch {
+    return null;
+  }
+}
+
+function formatAperture(fNumber: any): string | undefined {
+  if (!fNumber) return undefined;
+  const value = Array.isArray(fNumber) ? fNumber[0] : fNumber;
+  if (!value) return undefined;
+  const num = typeof value === "number" ? value : parseFloat(String(value));
+  if (isNaN(num)) return undefined;
+  return `f/${num.toFixed(1)}`;
+}
+
+function formatShutterSpeed(exposureTime: any): string | undefined {
+  if (!exposureTime) return undefined;
+  const value = Array.isArray(exposureTime) ? exposureTime[0] : exposureTime;
+  if (!value) return undefined;
+  const time = typeof value === "number" ? value : parseFloat(String(value));
+  if (isNaN(time)) return undefined;
+  return time >= 1 ? `${time}s` : `1/${Math.round(1 / time)}s`;
 }
 
 async function addGallery(url: string, tag?: string, featured?: boolean): Promise<void> {
@@ -403,7 +646,12 @@ async function runSync(): Promise<void> {
   console.log(`\nFound ${galleries.length} configured galleries`);
 
   for (const entry of galleries) {
-    manifest = await syncGallery(entry, manifest);
+    // Handle private albums vs public galleries
+    if (entry.type === "private" || entry.albumId) {
+      manifest = await syncPrivateAlbum(entry, manifest);
+    } else if (entry.url) {
+      manifest = await syncGallery(entry, manifest);
+    }
   }
 
   // Save manifest

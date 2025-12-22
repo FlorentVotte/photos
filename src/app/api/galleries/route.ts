@@ -31,8 +31,11 @@ async function resolveShortUrl(url: string): Promise<string> {
 }
 
 interface Gallery {
-  url: string;
+  url?: string;           // For public galleries
+  albumId?: string;       // For private albums (from authenticated API)
+  albumName?: string;     // Name of the private album
   featured: boolean;
+  type: "public" | "private";
 }
 
 interface AlbumManifest {
@@ -78,12 +81,14 @@ export async function GET() {
 
     // Enrich galleries with album info
     const enrichedGalleries = galleries.map((gallery) => {
-      const album = albumManifest?.albums.find(
-        (a) => a.galleryUrl === gallery.url
+      // Match by URL for public galleries, or by albumId for private
+      const album = albumManifest?.albums.find((a) =>
+        (gallery.type === "public" && a.galleryUrl === gallery.url) ||
+        (gallery.type === "private" && a.id === gallery.albumId)
       );
       return {
         ...gallery,
-        title: album?.title,
+        title: album?.title || gallery.albumName,
         photoCount: album?.photoCount,
         lastSynced: album?.lastSynced,
       };
@@ -99,13 +104,47 @@ export async function GET() {
   }
 }
 
-// POST - Add a new gallery
+// POST - Add a new gallery (public URL or private album)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    let { url, featured = false } = body;
+    const { url, albumId, albumName, featured = false, type = "public" } = body;
 
-    if (!url) {
+    const galleries = await readGalleries();
+
+    // Handle private album from authenticated API
+    if (type === "private") {
+      if (!albumId) {
+        return NextResponse.json(
+          { error: "Album ID is required for private albums" },
+          { status: 400 }
+        );
+      }
+
+      // Check for duplicates
+      if (galleries.some((g) => g.albumId === albumId)) {
+        return NextResponse.json(
+          { error: "Album already added" },
+          { status: 409 }
+        );
+      }
+
+      // If setting as featured, unset other featured
+      if (featured) {
+        galleries.forEach((g) => (g.featured = false));
+      }
+
+      const gallery: Gallery = { albumId, albumName, featured, type: "private" };
+      galleries.push(gallery);
+      await writeGalleries(galleries);
+
+      return NextResponse.json({ success: true, gallery });
+    }
+
+    // Handle public gallery URL
+    let resolvedUrl = url;
+
+    if (!resolvedUrl) {
       return NextResponse.json(
         { error: "URL is required" },
         { status: 400 }
@@ -113,7 +152,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate URL format (accept both full URLs and short links)
-    if (!url.includes("lightroom.adobe.com/shares/") && !url.includes("adobe.ly/")) {
+    if (!resolvedUrl.includes("lightroom.adobe.com/shares/") && !resolvedUrl.includes("adobe.ly/")) {
       return NextResponse.json(
         { error: "Invalid Lightroom share URL" },
         { status: 400 }
@@ -121,20 +160,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Resolve short URLs to full URLs
-    url = await resolveShortUrl(url);
+    resolvedUrl = await resolveShortUrl(resolvedUrl);
 
     // Verify the resolved URL is valid
-    if (!url.includes("lightroom.adobe.com/shares/")) {
+    if (!resolvedUrl.includes("lightroom.adobe.com/shares/")) {
       return NextResponse.json(
         { error: "Could not resolve short URL to a valid Lightroom gallery" },
         { status: 400 }
       );
     }
 
-    const galleries = await readGalleries();
-
     // Check for duplicates
-    if (galleries.some((g) => g.url === url)) {
+    if (galleries.some((g) => g.url === resolvedUrl)) {
       return NextResponse.json(
         { error: "Gallery already exists" },
         { status: 409 }
@@ -146,10 +183,11 @@ export async function POST(request: NextRequest) {
       galleries.forEach((g) => (g.featured = false));
     }
 
-    galleries.push({ url, featured });
+    const gallery: Gallery = { url: resolvedUrl, featured, type: "public" };
+    galleries.push(gallery);
     await writeGalleries(galleries);
 
-    return NextResponse.json({ success: true, gallery: { url, featured } });
+    return NextResponse.json({ success: true, gallery });
   } catch (error) {
     console.error("Error adding gallery:", error);
     return NextResponse.json(
@@ -163,17 +201,19 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json();
-    const { url } = body;
+    const { url, albumId } = body;
 
-    if (!url) {
+    if (!url && !albumId) {
       return NextResponse.json(
-        { error: "URL is required" },
+        { error: "URL or albumId is required" },
         { status: 400 }
       );
     }
 
     const galleries = await readGalleries();
-    const filtered = galleries.filter((g) => g.url !== url);
+    const filtered = galleries.filter((g) =>
+      albumId ? g.albumId !== albumId : g.url !== url
+    );
 
     if (filtered.length === galleries.length) {
       return NextResponse.json(
@@ -187,10 +227,14 @@ export async function DELETE(request: NextRequest) {
     // Also remove the album from albums.json
     const albumManifest = await readAlbums();
     if (albumManifest) {
-      const albumToRemove = albumManifest.albums.find((a) => a.galleryUrl === url);
+      const albumToRemove = albumManifest.albums.find((a) =>
+        albumId ? a.id === albumId : a.galleryUrl === url
+      );
       if (albumToRemove) {
         // Remove album from manifest
-        albumManifest.albums = albumManifest.albums.filter((a) => a.galleryUrl !== url);
+        albumManifest.albums = albumManifest.albums.filter((a) =>
+          albumId ? a.id !== albumId : a.galleryUrl !== url
+        );
         albumManifest.lastUpdated = new Date().toISOString();
         await fs.writeFile(ALBUMS_FILE, JSON.stringify(albumManifest, null, 2));
 
@@ -222,17 +266,19 @@ export async function DELETE(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { url, featured } = body;
+    const { url, albumId, featured } = body;
 
-    if (!url) {
+    if (!url && !albumId) {
       return NextResponse.json(
-        { error: "URL is required" },
+        { error: "URL or albumId is required" },
         { status: 400 }
       );
     }
 
     const galleries = await readGalleries();
-    const gallery = galleries.find((g) => g.url === url);
+    const gallery = galleries.find((g) =>
+      albumId ? g.albumId === albumId : g.url === url
+    );
 
     if (!gallery) {
       return NextResponse.json(
