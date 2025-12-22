@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Noto_Serif, Noto_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -14,14 +14,15 @@ const notoSans = Noto_Sans({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
   title: "Travelogue - Photo Portfolio",
   description: "Capturing the fleeting moments between departures and arrivals. A visual journey through the world.",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
   openGraph: {
     title: "Travelogue - Photo Portfolio",
     description: "Capturing the fleeting moments between departures and arrivals.",

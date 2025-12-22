@@ -83,43 +83,6 @@ export default function Home() {
               </div>
             </section>
 
-            {/* About / Newsletter Section */}
-            <div className="mt-20 mb-12 bg-surface-dark rounded-2xl overflow-hidden shadow-sm">
-              <div className="flex flex-col md:flex-row">
-                <div
-                  className="w-full md:w-1/2 aspect-video md:aspect-auto min-h-[300px] bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url("https://lh3.googleusercontent.com/aida-public/AB6AXuAQ_qTCfjrgJAxFo4HyWrBz7gLJfCi-8Dg1lfHXZrulqTrtpghrsbjFxPPb_S7KHP7AkYone8lAYCUwurrBvVUQrVYKUS2dRPcHpMJGIS86e4dErWXSc5bCTerqbWAb_M2LXUFxwWSexEdTd_enPg0AIVNiodmVAW3bCtRAJ_o6bmOYOwqAl_pBvc-sQW6cs8TCEw56jU_iDN8FyskEouy_hfFuj0Mw-PEb8NX9upGalvDpjq5CGL3R8SabAHS3QVoejgPC40QKnpk")`,
-                  }}
-                />
-                <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center items-start">
-                  <p className="text-primary font-bold uppercase tracking-widest text-xs mb-3">
-                    About the Photographer
-                  </p>
-                  <h2 className="text-3xl font-bold mb-4">
-                    Chasing Light & Shadow
-                  </h2>
-                  <p className="text-gray-300 font-sans mb-8 leading-relaxed">
-                    {siteConfig.photographerBio}
-                  </p>
-                  <div className="flex flex-col w-full gap-3">
-                    <div className="flex gap-2">
-                      <input
-                        className="flex-1 bg-background-dark border border-surface-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-white"
-                        placeholder="Enter your email address"
-                        type="email"
-                      />
-                      <button className="bg-primary hover:bg-opacity-90 text-background-dark font-bold px-6 py-3 rounded-lg text-sm transition-colors">
-                        Join List
-                      </button>
-                    </div>
-                    <p className="text-xs text-gray-400">
-                      Receive a weekly digest of new stories. No spam, ever.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
