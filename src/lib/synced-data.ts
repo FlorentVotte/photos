@@ -1,98 +1,257 @@
 // Runtime data loader for synced albums
-// Reads from JSON manifest at runtime (works with Docker volumes)
+// Reads from SQLite database at runtime
 
-import fs from "fs";
-import path from "path";
+import prisma from "./db";
 import type { Album, Photo, Chapter } from "./types";
 
-interface SyncManifest {
-  lastUpdated: string;
-  albums: Album[];
-  photos: Photo[];
-  chapters: Record<string, { id: string; title: string; narrative: string; photoIds: string[] }[]>;
-}
+// Get all albums
+export async function getAlbums(): Promise<Album[]> {
+  const albums = await prisma.album.findMany({
+    orderBy: { lastSynced: "desc" },
+  });
 
-// Path to the manifest file (use /app/data in Docker, public/photos locally)
-const MANIFEST_PATH = path.join(
-  process.cwd(),
-  process.env.NODE_ENV === "production" ? "data/photos/albums.json" : "public/photos/albums.json"
-);
-
-// Cache for manifest data
-let manifestCache: SyncManifest | null = null;
-let lastRead = 0;
-const CACHE_TTL = process.env.NODE_ENV === "production" ? 60000 : 5000; // 1 min prod, 5s dev
-
-function loadManifest(): SyncManifest {
-  const now = Date.now();
-
-  // Use cache to avoid constant file reads
-  if (manifestCache && (now - lastRead) < CACHE_TTL) {
-    return manifestCache;
-  }
-
-  try {
-    if (fs.existsSync(MANIFEST_PATH)) {
-      const data = fs.readFileSync(MANIFEST_PATH, "utf-8");
-      manifestCache = JSON.parse(data);
-      lastRead = now;
-      return manifestCache!;
-    }
-  } catch (error) {
-    console.error("Failed to load manifest:", error);
-  }
-
-  // Return empty manifest if file doesn't exist
-  return {
-    lastUpdated: "",
-    albums: [],
-    photos: [],
-    chapters: {},
-  };
-}
-
-// Export data accessors
-export function getAlbums(): Album[] {
-  return loadManifest().albums;
-}
-
-export function getAlbumBySlug(slug: string): Album | undefined {
-  return loadManifest().albums.find((a) => a.slug === slug);
-}
-
-export function getPhotosByAlbum(albumId: string): Photo[] {
-  return loadManifest().photos.filter((p) => p.albumId === albumId);
-}
-
-export function getPhotoById(id: string): Photo | undefined {
-  return loadManifest().photos.find((p) => p.id === id);
-}
-
-export function getChaptersByAlbum(albumSlug: string): Chapter[] {
-  const manifest = loadManifest();
-  const album = manifest.albums.find((a) => a.slug === albumSlug);
-  if (!album) return [];
-
-  const albumChapters = manifest.chapters[album.id];
-  if (!albumChapters) return [];
-
-  // Resolve photo IDs to actual photos
-  return albumChapters.map((c) => ({
-    id: c.id,
-    title: c.title,
-    narrative: c.narrative,
-    photos: c.photoIds
-      .map((pid) => manifest.photos.find((p) => p.id === pid))
-      .filter((p): p is Photo => p !== undefined),
+  return albums.map((a) => ({
+    id: a.id,
+    slug: a.slug,
+    title: a.title,
+    location: a.location || "Unknown",
+    date: a.date || "",
+    coverImage: a.coverImage || "",
+    photoCount: a.photoCount,
+    featured: a.featured,
+    galleryUrl: a.galleryUrl || "",
+    lastSynced: a.lastSynced?.toISOString() || "",
   }));
 }
 
-export function getFeaturedAlbum(): Album | undefined {
-  const albums = loadManifest().albums;
-  return albums.find((a) => a.featured) || albums[0];
+// Get album by slug
+export async function getAlbumBySlug(slug: string): Promise<Album | undefined> {
+  const album = await prisma.album.findUnique({
+    where: { slug },
+  });
+
+  if (!album) return undefined;
+
+  return {
+    id: album.id,
+    slug: album.slug,
+    title: album.title,
+    location: album.location || "Unknown",
+    date: album.date || "",
+    coverImage: album.coverImage || "",
+    photoCount: album.photoCount,
+    featured: album.featured,
+    galleryUrl: album.galleryUrl || "",
+    lastSynced: album.lastSynced?.toISOString() || "",
+  };
 }
 
-// Legacy exports for compatibility (populated on first load)
-export const albums: Album[] = loadManifest().albums;
-export const photos: Photo[] = loadManifest().photos;
-export const chapters: Record<string, Chapter[]> = {};
+// Get photos for an album
+export async function getPhotosByAlbum(albumId: string): Promise<Photo[]> {
+  const photos = await prisma.photo.findMany({
+    where: { albumId },
+    orderBy: { sortOrder: "asc" },
+  });
+
+  return photos.map((p) => ({
+    id: p.id,
+    title: p.title || "",
+    caption: p.caption || undefined,
+    src: {
+      thumb: p.thumbPath || "",
+      medium: p.mediumPath || "",
+      full: p.fullPath || "",
+      original: p.originalUrl || "",
+    },
+    metadata: {
+      date: p.date || "",
+      location: p.location || "Unknown",
+      width: p.width || 0,
+      height: p.height || 0,
+      camera: p.camera || undefined,
+      lens: p.lens || undefined,
+      aperture: p.aperture || undefined,
+      shutterSpeed: p.shutterSpeed || undefined,
+      iso: p.iso || undefined,
+      focalLength: p.focalLength || undefined,
+      latitude: p.latitude || undefined,
+      longitude: p.longitude || undefined,
+    },
+    albumId: p.albumId,
+    sortOrder: p.sortOrder,
+  }));
+}
+
+// Get photo by ID
+export async function getPhotoById(id: string): Promise<Photo | undefined> {
+  const p = await prisma.photo.findUnique({
+    where: { id },
+  });
+
+  if (!p) return undefined;
+
+  return {
+    id: p.id,
+    title: p.title || "",
+    caption: p.caption || undefined,
+    src: {
+      thumb: p.thumbPath || "",
+      medium: p.mediumPath || "",
+      full: p.fullPath || "",
+      original: p.originalUrl || "",
+    },
+    metadata: {
+      date: p.date || "",
+      location: p.location || "Unknown",
+      width: p.width || 0,
+      height: p.height || 0,
+      camera: p.camera || undefined,
+      lens: p.lens || undefined,
+      aperture: p.aperture || undefined,
+      shutterSpeed: p.shutterSpeed || undefined,
+      iso: p.iso || undefined,
+      focalLength: p.focalLength || undefined,
+      latitude: p.latitude || undefined,
+      longitude: p.longitude || undefined,
+    },
+    albumId: p.albumId,
+    sortOrder: p.sortOrder,
+  };
+}
+
+// Get chapters for an album
+export async function getChaptersByAlbum(albumSlug: string): Promise<Chapter[]> {
+  const album = await prisma.album.findUnique({
+    where: { slug: albumSlug },
+    include: {
+      chapters: {
+        orderBy: { sortOrder: "asc" },
+      },
+    },
+  });
+
+  if (!album || !album.chapters.length) return [];
+
+  // Get all photos for this album
+  const photos = await getPhotosByAlbum(album.id);
+  const photoMap = new Map(photos.map((p) => [p.id, p]));
+
+  return album.chapters.map((c) => {
+    const photoIds = JSON.parse(c.photoIds) as string[];
+    return {
+      id: c.id,
+      title: c.title,
+      narrative: c.content || "",
+      photos: photoIds
+        .map((pid) => photoMap.get(pid))
+        .filter((p): p is Photo => p !== undefined),
+    };
+  });
+}
+
+// Get featured album
+export async function getFeaturedAlbum(): Promise<Album | undefined> {
+  const album = await prisma.album.findFirst({
+    where: { featured: true },
+    orderBy: { lastSynced: "desc" },
+  });
+
+  if (album) {
+    return {
+      id: album.id,
+      slug: album.slug,
+      title: album.title,
+      location: album.location || "Unknown",
+      date: album.date || "",
+      coverImage: album.coverImage || "",
+      photoCount: album.photoCount,
+      featured: album.featured,
+      galleryUrl: album.galleryUrl || "",
+      lastSynced: album.lastSynced?.toISOString() || "",
+    };
+  }
+
+  // Fallback to first album
+  const albums = await getAlbums();
+  return albums[0];
+}
+
+// Get all photos (for search, map, etc.)
+export async function getAllPhotos(): Promise<Photo[]> {
+  const photos = await prisma.photo.findMany({
+    orderBy: [{ albumId: "asc" }, { sortOrder: "asc" }],
+  });
+
+  return photos.map((p) => ({
+    id: p.id,
+    title: p.title || "",
+    caption: p.caption || undefined,
+    src: {
+      thumb: p.thumbPath || "",
+      medium: p.mediumPath || "",
+      full: p.fullPath || "",
+      original: p.originalUrl || "",
+    },
+    metadata: {
+      date: p.date || "",
+      location: p.location || "Unknown",
+      width: p.width || 0,
+      height: p.height || 0,
+      camera: p.camera || undefined,
+      lens: p.lens || undefined,
+      aperture: p.aperture || undefined,
+      shutterSpeed: p.shutterSpeed || undefined,
+      iso: p.iso || undefined,
+      focalLength: p.focalLength || undefined,
+      latitude: p.latitude || undefined,
+      longitude: p.longitude || undefined,
+    },
+    albumId: p.albumId,
+    sortOrder: p.sortOrder,
+  }));
+}
+
+// Search photos
+export async function searchPhotos(query: string): Promise<Photo[]> {
+  const photos = await prisma.photo.findMany({
+    where: {
+      OR: [
+        { title: { contains: query } },
+        { caption: { contains: query } },
+        { location: { contains: query } },
+        { camera: { contains: query } },
+        { lens: { contains: query } },
+      ],
+    },
+    orderBy: { sortOrder: "asc" },
+    take: 50,
+  });
+
+  return photos.map((p) => ({
+    id: p.id,
+    title: p.title || "",
+    caption: p.caption || undefined,
+    src: {
+      thumb: p.thumbPath || "",
+      medium: p.mediumPath || "",
+      full: p.fullPath || "",
+      original: p.originalUrl || "",
+    },
+    metadata: {
+      date: p.date || "",
+      location: p.location || "Unknown",
+      width: p.width || 0,
+      height: p.height || 0,
+      camera: p.camera || undefined,
+      lens: p.lens || undefined,
+      aperture: p.aperture || undefined,
+      shutterSpeed: p.shutterSpeed || undefined,
+      iso: p.iso || undefined,
+      focalLength: p.focalLength || undefined,
+      latitude: p.latitude || undefined,
+      longitude: p.longitude || undefined,
+    },
+    albumId: p.albumId,
+    sortOrder: p.sortOrder,
+  }));
+}

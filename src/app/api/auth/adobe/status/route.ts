@@ -1,17 +1,10 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import prisma from "@/lib/db";
 
 // Force dynamic to prevent caching
 export const dynamic = "force-dynamic";
 
-// In production (Docker), use /app/data. In development, use project root
-const TOKENS_FILE = process.env.NODE_ENV === "production"
-  ? "/app/data/adobe-tokens.json"
-  : path.join(process.cwd(), "adobe-tokens.json");
-
 export async function GET() {
-  console.log("Checking Adobe status, tokens file:", TOKENS_FILE);
   const hasClientId = !!process.env.ADOBE_CLIENT_ID;
   const hasClientSecret = !!process.env.ADOBE_CLIENT_SECRET;
 
@@ -20,26 +13,21 @@ export async function GET() {
   let updatedAt: string | null = null;
 
   try {
-    const data = await fs.readFile(TOKENS_FILE, "utf-8");
-    console.log("Tokens file found, parsing...");
-    const tokens = JSON.parse(data);
+    const token = await prisma.adobeToken.findUnique({
+      where: { id: "default" },
+    });
 
-    if (tokens.access_token) {
-      connected = true;
-      expiresAt = tokens.expires_at ? new Date(tokens.expires_at).toISOString() : null;
-      updatedAt = tokens.updated_at || null;
+    if (token) {
+      expiresAt = token.expiresAt.toISOString();
+      updatedAt = token.updatedAt.toISOString();
 
       // Check if token is expired
-      if (tokens.expires_at && Date.now() > tokens.expires_at) {
-        console.log("Token expired");
-        connected = false;
-      } else {
-        console.log("Token valid, connected = true");
+      if (new Date() < token.expiresAt) {
+        connected = true;
       }
     }
   } catch (err) {
-    console.log("Could not read tokens file:", err);
-    // No tokens file or invalid
+    console.error("Error checking Adobe token:", err);
   }
 
   return NextResponse.json({

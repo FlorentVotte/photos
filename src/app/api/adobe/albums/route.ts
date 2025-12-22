@@ -1,28 +1,8 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import prisma from "@/lib/db";
 
-// In production (Docker), use /app/data. In development, use project root
-const TOKENS_FILE = process.env.NODE_ENV === "production"
-  ? "/app/data/adobe-tokens.json"
-  : path.join(process.cwd(), "adobe-tokens.json");
 const LIGHTROOM_API = "https://lr.adobe.io/v2";
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
-
-interface TokenData {
-  access_token: string;
-  refresh_token: string;
-  expires_at: number;
-}
-
-async function loadTokens(): Promise<TokenData | null> {
-  try {
-    const data = await fs.readFile(TOKENS_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch {
-    return null;
-  }
-}
 
 async function fetchWithAuth(url: string, accessToken: string) {
   const response = await fetch(url, {
@@ -44,16 +24,18 @@ async function fetchWithAuth(url: string, accessToken: string) {
 
 export async function GET() {
   try {
-    const tokens = await loadTokens();
+    const token = await prisma.adobeToken.findUnique({
+      where: { id: "default" },
+    });
 
-    if (!tokens || !ADOBE_CLIENT_ID) {
+    if (!token || !ADOBE_CLIENT_ID) {
       return NextResponse.json(
         { error: "Not authenticated with Adobe" },
         { status: 401 }
       );
     }
 
-    if (Date.now() > tokens.expires_at) {
+    if (new Date() > token.expiresAt) {
       return NextResponse.json(
         { error: "Adobe token expired, please reconnect" },
         { status: 401 }
@@ -63,7 +45,7 @@ export async function GET() {
     // Get catalog
     const catalog = await fetchWithAuth(
       `${LIGHTROOM_API}/catalog`,
-      tokens.access_token
+      token.accessToken
     );
 
     if (!catalog?.id) {
@@ -76,15 +58,10 @@ export async function GET() {
     // Get albums
     const albumsResponse = await fetchWithAuth(
       `${LIGHTROOM_API}/catalogs/${catalog.id}/albums`,
-      tokens.access_token
+      token.accessToken
     );
 
     const albums = (albumsResponse?.resources || []).map((album: any) => {
-      // Debug: log first album structure to see where count is
-      if (albumsResponse?.resources?.indexOf(album) === 0) {
-        console.log("First album structure:", JSON.stringify(album, null, 2));
-      }
-
       // Try multiple possible locations for asset count
       const assetCount =
         album.payload?.assetCount ||

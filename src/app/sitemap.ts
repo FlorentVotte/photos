@@ -1,8 +1,11 @@
 import { MetadataRoute } from "next";
-import { albums, photos } from "@/lib/synced-data";
+import { getAlbums, getAllPhotos } from "@/lib/data";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
+
+  const albums = await getAlbums();
+  const photos = await getAllPhotos();
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [

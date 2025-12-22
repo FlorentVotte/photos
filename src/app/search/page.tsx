@@ -1,15 +1,13 @@
-import { getAlbums } from "@/lib/synced-data";
-import { getPhotosByAlbum } from "@/lib/synced-data";
+import { getAlbums, getAllPhotos } from "@/lib/data";
 import SearchClient from "./SearchClient";
-import type { Album, Photo } from "@/lib/types";
 
 // Force dynamic rendering to pick up synced data
 export const dynamic = "force-dynamic";
 
-export default function SearchPage() {
+export default async function SearchPage() {
   // Fetch data on server
-  const albums = getAlbums();
-  const photos: Photo[] = albums.flatMap((album) => getPhotosByAlbum(album.id));
+  const albums = await getAlbums();
+  const photos = await getAllPhotos();
 
   return <SearchClient albums={albums} photos={photos} />;
 }

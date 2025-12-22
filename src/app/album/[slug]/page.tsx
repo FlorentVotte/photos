@@ -20,7 +20,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const album = getAlbumBySlug(params.slug);
+  const album = await getAlbumBySlug(params.slug);
   if (!album) return { title: "Album Not Found" };
 
   return {
@@ -29,23 +29,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: album.title,
       description: album.description,
-      images: [album.coverImage],
+      images: album.coverImage ? [album.coverImage] : [],
     },
   };
 }
 
 export async function generateStaticParams() {
-  const albums = getAlbums();
+  const albums = await getAlbums();
   return albums.map((album) => ({ slug: album.slug }));
 }
 
-export default function AlbumPage({ params }: Props) {
-  const album = getAlbumBySlug(params.slug);
+export default async function AlbumPage({ params }: Props) {
+  const album = await getAlbumBySlug(params.slug);
   if (!album) notFound();
 
-  const chapters = getChaptersByAlbum(params.slug);
-  const photos = getPhotosByAlbum(album.id);
-  const albums = getAlbums();
+  const chapters = await getChaptersByAlbum(params.slug);
+  const photos = await getPhotosByAlbum(album.id);
+  const albums = await getAlbums();
   const currentIndex = albums.findIndex((a) => a.id === album.id);
   const nextAlbum = albums[(currentIndex + 1) % albums.length];
 

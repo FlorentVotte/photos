@@ -1,0 +1,127 @@
+// Prisma schema for photobook
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Gallery configuration - what albums to sync
+model Gallery {
+  id        String   @id @default(cuid())
+  url       String?  // For public Lightroom galleries
+  albumId   String?  // For private albums (Adobe API)
+  albumName String?  // Name of the private album
+  type      String   @default("public") // "public" or "private"
+  tag       String?
+  featured  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation to synced album
+  album Album?
+
+  @@unique([url])
+  @@unique([albumId])
+}
+
+// Synced album data
+model Album {
+  id         String   @id
+  slug       String   @unique
+  title      String
+  location   String?
+  date       String?
+  coverImage String?
+  photoCount Int      @default(0)
+  featured   Boolean  @default(false)
+  galleryUrl String?
+  lastSynced DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relation to gallery config
+  galleryId String?  @unique
+  gallery   Gallery? @relation(fields: [galleryId], references: [id], onDelete: SetNull)
+
+  // Relation to photos
+  photos Photo[]
+
+  // Relation to chapters
+  chapters Chapter[]
+}
+
+// Photo data
+model Photo {
+  id        String  @id
+  title     String?
+  caption   String?
+  sortOrder Int     @default(0)
+
+  // Image paths
+  thumbPath    String?
+  mediumPath   String?
+  fullPath     String?
+  originalUrl  String?
+
+  // Metadata
+  date         String?
+  location     String?
+  width        Int?
+  height       Int?
+  camera       String?
+  lens         String?
+  aperture     String?
+  shutterSpeed String?
+  iso          String?
+  focalLength  String?
+  latitude     Float?
+  longitude    Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation to album
+  albumId String
+  album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@index([albumId])
+}
+
+// Album chapters for narrative sections
+model Chapter {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  sortOrder Int      @default(0)
+  photoIds  String   // JSON array of photo IDs
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation to album
+  albumId String
+  album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@index([albumId])
+}
+
+// Adobe OAuth tokens
+model AdobeToken {
+  id           String   @id @default("default")
+  accessToken  String
+  refreshToken String?
+  expiresAt    DateTime
+  updatedAt    DateTime @updatedAt
+}
+
+// Site settings (single row)
+model Settings {
+  id        String   @id @default("default")
+  siteTitle String   @default("Photo Portfolio")
+  siteDescription String?
+  aboutText String?
+  updatedAt DateTime @updatedAt
+}

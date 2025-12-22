@@ -1,15 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
-
-const GALLERIES_FILE = path.join(
-  process.cwd(),
-  process.env.NODE_ENV === "production" ? "data/galleries.json" : "sync/galleries.json"
-);
-const ALBUMS_FILE = path.join(
-  process.cwd(),
-  process.env.NODE_ENV === "production" ? "data/photos/albums.json" : "public/photos/albums.json"
-);
+import prisma from "@/lib/db";
 
 /**
  * Resolve short URLs (adobe.ly) to full Lightroom URLs
@@ -17,7 +9,6 @@ const ALBUMS_FILE = path.join(
 async function resolveShortUrl(url: string): Promise<string> {
   if (url.includes("adobe.ly/")) {
     try {
-      // Follow redirect to get the real URL
       const response = await fetch(url, { method: "HEAD", redirect: "manual" });
       const location = response.headers.get("location");
       if (location && location.includes("lightroom.adobe.com/shares/")) {
@@ -30,69 +21,34 @@ async function resolveShortUrl(url: string): Promise<string> {
   return url;
 }
 
-interface Gallery {
-  url?: string;           // For public galleries
-  albumId?: string;       // For private albums (from authenticated API)
-  albumName?: string;     // Name of the private album
-  featured: boolean;
-  type: "public" | "private";
-}
-
-interface AlbumManifest {
-  lastUpdated: string;
-  albums: Array<{
-    id: string;
-    slug: string;
-    title: string;
-    photoCount: number;
-    galleryUrl: string;
-    lastSynced: string;
-    featured?: boolean;
-  }>;
-}
-
-async function readGalleries(): Promise<Gallery[]> {
-  try {
-    const data = await fs.readFile(GALLERIES_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
-}
-
-async function writeGalleries(galleries: Gallery[]): Promise<void> {
-  await fs.writeFile(GALLERIES_FILE, JSON.stringify(galleries, null, 2));
-}
-
-async function readAlbums(): Promise<AlbumManifest | null> {
-  try {
-    const data = await fs.readFile(ALBUMS_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch {
-    return null;
-  }
-}
-
 // GET - List all galleries with their album info
 export async function GET() {
   try {
-    const galleries = await readGalleries();
-    const albumManifest = await readAlbums();
-
-    // Enrich galleries with album info
-    const enrichedGalleries = galleries.map((gallery) => {
-      // Match by URL for public galleries, or by albumId for private
-      const album = albumManifest?.albums.find((a) =>
-        (gallery.type === "public" && a.galleryUrl === gallery.url) ||
-        (gallery.type === "private" && a.id === gallery.albumId)
-      );
-      return {
-        ...gallery,
-        title: album?.title || gallery.albumName,
-        photoCount: album?.photoCount,
-        lastSynced: album?.lastSynced,
-      };
+    const galleries = await prisma.gallery.findMany({
+      include: {
+        album: {
+          select: {
+            id: true,
+            title: true,
+            photoCount: true,
+            lastSynced: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
     });
+
+    const enrichedGalleries = galleries.map((gallery) => ({
+      id: gallery.id,
+      url: gallery.url,
+      albumId: gallery.albumId,
+      albumName: gallery.albumName,
+      type: gallery.type,
+      featured: gallery.featured,
+      title: gallery.album?.title || gallery.albumName,
+      photoCount: gallery.album?.photoCount,
+      lastSynced: gallery.album?.lastSynced?.toISOString(),
+    }));
 
     return NextResponse.json({ galleries: enrichedGalleries });
   } catch (error) {
@@ -110,8 +66,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { url, albumId, albumName, featured = false, type = "public" } = body;
 
-    const galleries = await readGalleries();
-
     // Handle private album from authenticated API
     if (type === "private") {
       if (!albumId) {
@@ -122,21 +76,25 @@ export async function POST(request: NextRequest) {
       }
 
       // Check for duplicates
-      if (galleries.some((g) => g.albumId === albumId)) {
+      const existing = await prisma.gallery.findUnique({ where: { albumId } });
+      if (existing) {
         return NextResponse.json(
           { error: "Album already added" },
           { status: 409 }
         );
       }
 
-      // If setting as featured, unset other featured
+      // If setting as featured, unset others
       if (featured) {
-        galleries.forEach((g) => (g.featured = false));
+        await prisma.gallery.updateMany({
+          where: { featured: true },
+          data: { featured: false },
+        });
       }
 
-      const gallery: Gallery = { albumId, albumName, featured, type: "private" };
-      galleries.push(gallery);
-      await writeGalleries(galleries);
+      const gallery = await prisma.gallery.create({
+        data: { albumId, albumName, featured, type: "private" },
+      });
 
       return NextResponse.json({ success: true, gallery });
     }
@@ -151,7 +109,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate URL format (accept both full URLs and short links)
+    // Validate URL format
     if (!resolvedUrl.includes("lightroom.adobe.com/shares/") && !resolvedUrl.includes("adobe.ly/")) {
       return NextResponse.json(
         { error: "Invalid Lightroom share URL" },
@@ -159,10 +117,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Resolve short URLs to full URLs
+    // Resolve short URLs
     resolvedUrl = await resolveShortUrl(resolvedUrl);
 
-    // Verify the resolved URL is valid
     if (!resolvedUrl.includes("lightroom.adobe.com/shares/")) {
       return NextResponse.json(
         { error: "Could not resolve short URL to a valid Lightroom gallery" },
@@ -171,21 +128,25 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for duplicates
-    if (galleries.some((g) => g.url === resolvedUrl)) {
+    const existing = await prisma.gallery.findUnique({ where: { url: resolvedUrl } });
+    if (existing) {
       return NextResponse.json(
         { error: "Gallery already exists" },
         { status: 409 }
       );
     }
 
-    // If setting as featured, unset other featured
+    // If setting as featured, unset others
     if (featured) {
-      galleries.forEach((g) => (g.featured = false));
+      await prisma.gallery.updateMany({
+        where: { featured: true },
+        data: { featured: false },
+      });
     }
 
-    const gallery: Gallery = { url: resolvedUrl, featured, type: "public" };
-    galleries.push(gallery);
-    await writeGalleries(galleries);
+    const gallery = await prisma.gallery.create({
+      data: { url: resolvedUrl, featured, type: "public" },
+    });
 
     return NextResponse.json({ success: true, gallery });
   } catch (error) {
@@ -201,55 +162,58 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json();
-    const { url, albumId } = body;
+    const { id, url, albumId } = body;
 
-    if (!url && !albumId) {
+    if (!id && !url && !albumId) {
       return NextResponse.json(
-        { error: "URL or albumId is required" },
+        { error: "id, url, or albumId is required" },
         { status: 400 }
       );
     }
 
-    const galleries = await readGalleries();
-    const filtered = galleries.filter((g) =>
-      albumId ? g.albumId !== albumId : g.url !== url
-    );
+    // Find the gallery
+    let gallery;
+    if (id) {
+      gallery = await prisma.gallery.findUnique({ where: { id } });
+    } else if (albumId) {
+      gallery = await prisma.gallery.findUnique({ where: { albumId } });
+    } else if (url) {
+      gallery = await prisma.gallery.findUnique({ where: { url } });
+    }
 
-    if (filtered.length === galleries.length) {
+    if (!gallery) {
       return NextResponse.json(
         { error: "Gallery not found" },
         { status: 404 }
       );
     }
 
-    await writeGalleries(filtered);
+    // Find associated album
+    const album = await prisma.album.findFirst({
+      where: gallery.albumId
+        ? { id: gallery.albumId }
+        : { galleryUrl: gallery.url || undefined },
+    });
 
-    // Also remove the album from albums.json
-    const albumManifest = await readAlbums();
-    if (albumManifest) {
-      const albumToRemove = albumManifest.albums.find((a) =>
-        albumId ? a.id === albumId : a.galleryUrl === url
+    // Delete gallery
+    await prisma.gallery.delete({ where: { id: gallery.id } });
+
+    // Delete album and its photos if exists
+    if (album) {
+      // Delete photo files
+      const photosDir = path.join(
+        process.cwd(),
+        process.env.NODE_ENV === "production" ? "data/photos" : "public/photos",
+        album.slug
       );
-      if (albumToRemove) {
-        // Remove album from manifest
-        albumManifest.albums = albumManifest.albums.filter((a) =>
-          albumId ? a.id !== albumId : a.galleryUrl !== url
-        );
-        albumManifest.lastUpdated = new Date().toISOString();
-        await fs.writeFile(ALBUMS_FILE, JSON.stringify(albumManifest, null, 2));
-
-        // Optionally delete the album's photo folder
-        const photosDir = path.join(
-          process.cwd(),
-          process.env.NODE_ENV === "production" ? "data/photos" : "public/photos",
-          albumToRemove.slug
-        );
-        try {
-          await fs.rm(photosDir, { recursive: true, force: true });
-        } catch {
-          // Folder may not exist, ignore
-        }
+      try {
+        await fs.rm(photosDir, { recursive: true, force: true });
+      } catch {
+        // Folder may not exist
       }
+
+      // Delete album (cascades to photos and chapters)
+      await prisma.album.delete({ where: { id: album.id } });
     }
 
     return NextResponse.json({ success: true });
@@ -266,19 +230,24 @@ export async function DELETE(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { url, albumId, featured } = body;
+    const { id, url, albumId, featured } = body;
 
-    if (!url && !albumId) {
+    if (!id && !url && !albumId) {
       return NextResponse.json(
-        { error: "URL or albumId is required" },
+        { error: "id, url, or albumId is required" },
         { status: 400 }
       );
     }
 
-    const galleries = await readGalleries();
-    const gallery = galleries.find((g) =>
-      albumId ? g.albumId === albumId : g.url === url
-    );
+    // Find the gallery
+    let gallery;
+    if (id) {
+      gallery = await prisma.gallery.findUnique({ where: { id } });
+    } else if (albumId) {
+      gallery = await prisma.gallery.findUnique({ where: { albumId } });
+    } else if (url) {
+      gallery = await prisma.gallery.findUnique({ where: { url } });
+    }
 
     if (!gallery) {
       return NextResponse.json(
@@ -289,13 +258,32 @@ export async function PATCH(request: NextRequest) {
 
     // If setting as featured, unset others
     if (featured) {
-      galleries.forEach((g) => (g.featured = false));
+      await prisma.gallery.updateMany({
+        where: { featured: true },
+        data: { featured: false },
+      });
     }
 
-    gallery.featured = featured;
-    await writeGalleries(galleries);
+    const updated = await prisma.gallery.update({
+      where: { id: gallery.id },
+      data: { featured },
+    });
 
-    return NextResponse.json({ success: true, gallery });
+    // Also update the album's featured status
+    const album = await prisma.album.findFirst({
+      where: gallery.albumId
+        ? { id: gallery.albumId }
+        : { galleryUrl: gallery.url || undefined },
+    });
+
+    if (album) {
+      await prisma.album.update({
+        where: { id: album.id },
+        data: { featured },
+      });
+    }
+
+    return NextResponse.json({ success: true, gallery: updated });
   } catch (error) {
     console.error("Error updating gallery:", error);
     return NextResponse.json(

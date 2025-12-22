@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PhotoMap from "@/components/PhotoMap";
-import { photos } from "@/lib/synced-data";
+import { getAllPhotos } from "@/lib/data";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +9,9 @@ export const metadata: Metadata = {
   description: "Explore photos on an interactive map",
 };
 
-export default function MapPage() {
+export default async function MapPage() {
+  const photos = await getAllPhotos();
+
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />

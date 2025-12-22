@@ -2,6 +2,7 @@ export interface Photo {
   id: string;
   title: string;
   description?: string;
+  caption?: string;
   src: {
     thumb: string;
     medium: string;
@@ -16,9 +17,13 @@ export interface Photo {
     lens?: string;
     aperture?: string;
     shutter?: string;
+    shutterSpeed?: string;
     iso?: string;
+    focalLength?: string;
     width?: number;
     height?: number;
+    latitude?: number;
+    longitude?: number;
     gps?: {
       lat: number;
       lng: number;
@@ -39,6 +44,8 @@ export interface Album {
   coverImage: string;
   photoCount: number;
   featured?: boolean;
+  galleryUrl?: string;
+  lastSynced?: string;
   chapters?: Chapter[];
 }
 

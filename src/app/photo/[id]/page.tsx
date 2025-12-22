@@ -5,8 +5,8 @@ import ProtectedImage from "@/components/ProtectedImage";
 import {
   getPhotoById,
   getPhotosByAlbum,
-  albums,
-  photos,
+  getAlbums,
+  getAllPhotos,
 } from "@/lib/data";
 import type { Metadata } from "next";
 
@@ -18,37 +18,40 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const photo = getPhotoById(params.id);
+  const photo = await getPhotoById(params.id);
   if (!photo) return { title: "Photo Not Found" };
 
+  const description = photo.caption || `Photo from ${photo.metadata.location}`;
   return {
     title: `${photo.title} - Travelogue`,
-    description: photo.description,
+    description,
     openGraph: {
       title: photo.title,
-      description: photo.description,
+      description,
       images: [photo.src.full],
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
       title: photo.title,
-      description: photo.description,
+      description,
       images: [photo.src.full],
     },
   };
 }
 
 export async function generateStaticParams() {
+  const photos = await getAllPhotos();
   return photos.map((photo) => ({ id: photo.id }));
 }
 
-export default function PhotoPage({ params }: Props) {
-  const photo = getPhotoById(params.id);
+export default async function PhotoPage({ params }: Props) {
+  const photo = await getPhotoById(params.id);
   if (!photo) notFound();
 
+  const albums = await getAlbums();
   const album = albums.find((a) => a.id === photo.albumId);
-  const albumPhotos = getPhotosByAlbum(photo.albumId);
+  const albumPhotos = await getPhotosByAlbum(photo.albumId);
   const currentIndex = albumPhotos.findIndex((p) => p.id === photo.id);
   const prevPhoto = currentIndex > 0 ? albumPhotos[currentIndex - 1] : null;
   const nextPhoto =

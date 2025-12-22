@@ -8,9 +8,9 @@ import Image from "next/image";
 // Force dynamic rendering to pick up synced data
 export const dynamic = "force-dynamic";
 
-export default function Home() {
-  const featuredAlbum = getFeaturedAlbum();
-  const albums = getAlbums();
+export default async function Home() {
+  const featuredAlbum = await getFeaturedAlbum();
+  const albums = await getAlbums();
   const recentAlbums = albums.filter((a) => a.id !== featuredAlbum?.id);
 
   return (
