@@ -9,10 +9,10 @@ const REDIRECT_URI = process.env.NEXT_PUBLIC_SITE_URL
   ? `${process.env.NEXT_PUBLIC_SITE_URL}/api/auth/adobe/callback`
   : "http://localhost:3000/api/auth/adobe/callback";
 
-const TOKENS_FILE = path.join(
-  process.cwd(),
-  process.env.NODE_ENV === "production" ? "data/adobe-tokens.json" : "adobe-tokens.json"
-);
+// In production (Docker), use /app/data. In development, use project root
+const TOKENS_FILE = process.env.NODE_ENV === "production"
+  ? "/app/data/adobe-tokens.json"
+  : path.join(process.cwd(), "adobe-tokens.json");
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");

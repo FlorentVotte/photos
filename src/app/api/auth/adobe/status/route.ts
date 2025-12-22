@@ -5,10 +5,10 @@ import path from "path";
 // Force dynamic to prevent caching
 export const dynamic = "force-dynamic";
 
-const TOKENS_FILE = path.join(
-  process.cwd(),
-  process.env.NODE_ENV === "production" ? "data/adobe-tokens.json" : "adobe-tokens.json"
-);
+// In production (Docker), use /app/data. In development, use project root
+const TOKENS_FILE = process.env.NODE_ENV === "production"
+  ? "/app/data/adobe-tokens.json"
+  : path.join(process.cwd(), "adobe-tokens.json");
 
 export async function GET() {
   console.log("Checking Adobe status, tokens file:", TOKENS_FILE);

@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 
-const TOKENS_FILE = path.join(
-  process.cwd(),
-  process.env.NODE_ENV === "production" ? "data/adobe-tokens.json" : "adobe-tokens.json"
-);
+// In production (Docker), use /app/data. In development, use project root
+const TOKENS_FILE = process.env.NODE_ENV === "production"
+  ? "/app/data/adobe-tokens.json"
+  : path.join(process.cwd(), "adobe-tokens.json");
 const LIGHTROOM_API = "https://lr.adobe.io/v2";
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
 

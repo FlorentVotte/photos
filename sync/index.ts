@@ -34,10 +34,10 @@ let catalogId: string | null = null;
 let catalogAssets: Map<string, { title?: string; caption?: string }> = new Map();
 
 // Store gallery URLs in a separate file
-const GALLERIES_FILE = path.join(
-  process.cwd(),
-  process.env.NODE_ENV === "production" ? "data/galleries.json" : "sync/galleries.json"
-);
+// In production (Docker), use /app/data. In development, use project root
+const GALLERIES_FILE = process.env.NODE_ENV === "production"
+  ? "/app/data/galleries.json"
+  : path.join(process.cwd(), "sync/galleries.json");
 
 interface GalleryEntry {
   url?: string;            // For public galleries
@@ -337,10 +337,10 @@ async function getAssetRenditionUrl(catId: string, assetId: string): Promise<str
  * Load tokens for sync script
  */
 async function loadTokensForSync() {
-  const tokensFile = path.join(
-    process.cwd(),
-    process.env.NODE_ENV === "production" ? "data/adobe-tokens.json" : "adobe-tokens.json"
-  );
+  // In production (Docker), use /app/data. In development, use project root
+  const tokensFile = process.env.NODE_ENV === "production"
+    ? "/app/data/adobe-tokens.json"
+    : path.join(process.cwd(), "adobe-tokens.json");
   try {
     const data = await fs.readFile(tokensFile, "utf-8");
     return JSON.parse(data);
