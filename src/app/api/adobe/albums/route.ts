@@ -36,7 +36,10 @@ async function fetchWithAuth(url: string, accessToken: string) {
     throw new Error(`API request failed: ${response.status}`);
   }
 
-  return response.json();
+  // Adobe API returns "while (1) {}" prefix as anti-XSSI protection
+  const text = await response.text();
+  const jsonStr = text.replace(/^while\s*\(\s*1\s*\)\s*\{\s*\}\s*/, "");
+  return JSON.parse(jsonStr);
 }
 
 export async function GET() {

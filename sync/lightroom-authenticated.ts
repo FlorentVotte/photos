@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+import fetch, { Response } from "node-fetch";
 import fs from "fs/promises";
 import path from "path";
 
@@ -74,6 +74,16 @@ async function loadTokens(): Promise<TokenData | null> {
 }
 
 /**
+ * Parse Adobe API response (strips anti-XSSI prefix)
+ */
+async function parseAdobeResponse(response: Response): Promise<any> {
+  const text = await response.text();
+  // Adobe API returns "while (1) {}" prefix as anti-XSSI protection
+  const jsonStr = text.replace(/^while\s*\(\s*1\s*\)\s*\{\s*\}\s*/, "");
+  return JSON.parse(jsonStr);
+}
+
+/**
  * Check if authenticated API is available
  */
 export async function isAuthenticatedApiAvailable(): Promise<boolean> {
@@ -101,7 +111,7 @@ export async function fetchAuthenticatedCatalog() {
     throw new Error(`Failed to fetch catalog: ${response.status}`);
   }
 
-  return response.json();
+  return parseAdobeResponse(response);
 }
 
 /**
@@ -127,7 +137,7 @@ export async function fetchAuthenticatedAlbums(catalogId: string) {
     throw new Error(`Failed to fetch albums: ${response.status}`);
   }
 
-  return response.json();
+  return parseAdobeResponse(response);
 }
 
 /**
@@ -156,7 +166,7 @@ export async function fetchAuthenticatedAlbumAssets(
     throw new Error(`Failed to fetch album assets: ${response.status}`);
   }
 
-  const data = await response.json();
+  const data = await parseAdobeResponse(response);
   return data.resources || [];
 }
 
@@ -186,7 +196,7 @@ export async function fetchAuthenticatedAsset(
     return null;
   }
 
-  return response.json();
+  return parseAdobeResponse(response);
 }
 
 /**
