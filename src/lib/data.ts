@@ -16,34 +16,43 @@ export const albums = syncedAlbums;
 export const photos = syncedPhotos;
 export const chapters = syncedChapters;
 
-// Use synced data helpers, falling back to sample data if empty
+// In production, only use synced data (no sample fallback)
+const isProduction = process.env.NODE_ENV === "production";
+
 export function getAlbums(): Album[] {
   const synced = getSyncedAlbums();
-  return synced.length > 0 ? synced : sampleAlbums;
+  if (synced.length > 0 || isProduction) return synced;
+  return sampleAlbums;
 }
 
 export function getFeaturedAlbum(): Album | undefined {
   const synced = getSyncedFeaturedAlbum();
-  return synced || sampleAlbums.find((a) => a.featured) || sampleAlbums[0];
+  if (synced || isProduction) return synced;
+  return sampleAlbums.find((a) => a.featured) || sampleAlbums[0];
 }
 
 export function getAlbumBySlug(slug: string): Album | undefined {
-  return getSyncedAlbumBySlug(slug) || sampleAlbums.find((a) => a.slug === slug);
+  const synced = getSyncedAlbumBySlug(slug);
+  if (synced || isProduction) return synced;
+  return sampleAlbums.find((a) => a.slug === slug);
 }
 
 export function getPhotosByAlbum(albumId: string): Photo[] {
   const synced = getSyncedPhotosByAlbum(albumId);
-  return synced.length > 0 ? synced : samplePhotos.filter((p) => p.albumId === albumId);
+  if (synced.length > 0 || isProduction) return synced;
+  return samplePhotos.filter((p) => p.albumId === albumId);
 }
 
 export function getPhotoById(id: string): Photo | undefined {
-  return getSyncedPhotoById(id) || samplePhotos.find((p) => p.id === id);
+  const synced = getSyncedPhotoById(id);
+  if (synced || isProduction) return synced;
+  return samplePhotos.find((p) => p.id === id);
 }
 
 export function getChaptersByAlbum(albumSlug: string): Chapter[] {
   const synced = getSyncedChaptersByAlbum(albumSlug);
-  if (synced.length > 0) return synced;
-  // Fallback to sample chapters for Kyoto demo
+  if (synced.length > 0 || isProduction) return synced;
+  // Fallback to sample chapters for Kyoto demo (dev only)
   if (albumSlug === "kyoto-autumn-2023") return sampleChapters;
   return [];
 }
