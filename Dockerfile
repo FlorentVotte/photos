@@ -34,9 +34,11 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy standalone build
-COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+
+# Create public directory (photos will be mounted as volume)
+RUN mkdir -p /app/public/photos
 
 # Copy sync scripts for runtime sync capability
 COPY --from=builder /app/sync ./sync
