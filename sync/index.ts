@@ -123,7 +123,9 @@ async function syncPrivateAlbum(gallery: {
   }
 
   try {
+    console.log(`  Fetching assets for album: ${gallery.albumId}`);
     const assets = await fetchAuthenticatedAlbumAssets(catId, gallery.albumId);
+    console.log(`  API returned ${assets.length} assets`);
 
     if (assets.length === 0) {
       console.log("  No assets found in album");

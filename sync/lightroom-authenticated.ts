@@ -162,21 +162,26 @@ export async function fetchAuthenticatedAlbumAssets(
     throw new Error("Not authenticated with Adobe");
   }
 
-  const response = await fetch(
-    `${LIGHTROOM_API}/catalogs/${catalogId}/albums/${albumId}/assets`,
-    {
-      headers: {
-        Authorization: `Bearer ${tokens.access_token}`,
-        "X-API-Key": ADOBE_CLIENT_ID,
-      },
-    }
-  );
+  const url = `${LIGHTROOM_API}/catalogs/${catalogId}/albums/${albumId}/assets`;
+  console.log(`    API URL: ${url}`);
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${tokens.access_token}`,
+      "X-API-Key": ADOBE_CLIENT_ID,
+    },
+  });
+
+  console.log(`    Response status: ${response.status}`);
 
   if (!response.ok) {
+    const text = await response.text();
+    console.log(`    Response body: ${text.substring(0, 500)}`);
     throw new Error(`Failed to fetch album assets: ${response.status}`);
   }
 
   const data = await parseAdobeResponse(response);
+  console.log(`    Resources count: ${data.resources?.length || 0}`);
   return data.resources || [];
 }
 
