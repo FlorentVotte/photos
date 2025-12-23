@@ -5,7 +5,7 @@ set -e
 DB_PATH="/app/data/photobook.db"
 
 echo "Applying database migrations..."
-npx prisma db push --skip-generate --url "file:${DB_PATH}"
+npx prisma db push --url "file:${DB_PATH}"
 echo "Database ready"
 
 # Start the application
