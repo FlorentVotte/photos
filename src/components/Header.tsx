@@ -23,7 +23,7 @@ export default function Header({ transparent = false }: HeaderProps) {
           <span className="material-symbols-outlined text-3xl">public</span>
         </div>
         <h2 className="text-xl font-bold leading-tight tracking-[-0.015em] hidden sm:block">
-          TRAVELOGUE
+          REGARDS PERDUS
         </h2>
       </Link>
 
