@@ -80,7 +80,7 @@ const sampleAlbums: Album[] = [
 ];
 
 export const siteConfig: SiteConfig = {
-  siteName: "Travelogue",
+  siteName: "Regards Perdus",
   tagline: "Capturing the fleeting moments between departures and arrivals.",
   photographerName: "Florent",
   photographerBio:

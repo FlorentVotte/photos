@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Photo Map - Travelogue",
+  title: "Photo Map - Regards Perdus",
   description: "Explore photos on an interactive map",
 };
 

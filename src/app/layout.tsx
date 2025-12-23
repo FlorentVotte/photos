@@ -21,10 +21,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Travelogue - Photo Portfolio",
+  title: "Regards Perdus - Photo Portfolio",
   description: "Capturing the fleeting moments between departures and arrivals. A visual journey through the world.",
   openGraph: {
-    title: "Travelogue - Photo Portfolio",
+    title: "Regards Perdus - Photo Portfolio",
     description: "Capturing the fleeting moments between departures and arrivals.",
     type: "website",
   },

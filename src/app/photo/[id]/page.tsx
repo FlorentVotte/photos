@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const description = photo.caption || `Photo from ${photo.metadata.location}`;
   return {
-    title: `${photo.title} - Travelogue`,
+    title: `${photo.title} - Regards Perdus`,
     description,
     openGraph: {
       title: photo.title,

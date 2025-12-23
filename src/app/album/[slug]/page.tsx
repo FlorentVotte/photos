@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!album) return { title: "Album Not Found" };
 
   return {
-    title: `${album.title} - Travelogue`,
+    title: `${album.title} - Regards Perdus`,
     description: album.description,
     openGraph: {
       title: album.title,
