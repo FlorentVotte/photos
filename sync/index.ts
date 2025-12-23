@@ -279,13 +279,20 @@ async function syncPrivateAlbum(gallery: {
     // Get photo count
     const photoCount = await prisma.photo.count({ where: { albumId: gallery.albumId } });
 
-    // Upsert album to database
+    // Check if album exists and has manual overrides
+    const existingAlbum = await prisma.album.findUnique({
+      where: { id: gallery.albumId },
+      select: { title: true, location: true, date: true },
+    });
+
+    // Upsert album to database - preserve manual overrides
     await prisma.album.upsert({
       where: { id: gallery.albumId },
       update: {
-        title: gallery.albumName || "Untitled Album",
-        location: albumLocation,
-        date: albumDate,
+        // Only update title/location/date if not manually set (keep existing values if they exist)
+        title: existingAlbum?.title || gallery.albumName || "Untitled Album",
+        location: existingAlbum?.location || albumLocation,
+        date: existingAlbum?.date || albumDate,
         coverImage,
         photoCount,
         featured: gallery.featured,
@@ -429,13 +436,20 @@ async function syncPublicGallery(gallery: {
   // Get photo count
   const photoCount = await prisma.photo.count({ where: { albumId: galleryId } });
 
-  // Upsert album to database
+  // Check if album exists and has manual overrides
+  const existingAlbum = await prisma.album.findUnique({
+    where: { id: galleryId },
+    select: { title: true, location: true, date: true },
+  });
+
+  // Upsert album to database - preserve manual overrides
   await prisma.album.upsert({
     where: { id: galleryId },
     update: {
-      title: galleryData.title,
-      location: albumLocation,
-      date: albumDate,
+      // Only update title/location/date if not manually set (keep existing values if they exist)
+      title: existingAlbum?.title || galleryData.title,
+      location: existingAlbum?.location || albumLocation,
+      date: existingAlbum?.date || albumDate,
       coverImage,
       photoCount,
       featured: gallery.featured,
