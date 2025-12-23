@@ -224,10 +224,10 @@ export default async function PhotoPage({ params }: Props) {
                         <span className="text-white text-sm font-medium">{photo.metadata.aperture}</span>
                       </div>
                     )}
-                    {photo.metadata.shutter && (
+                    {photo.metadata.shutterSpeed && (
                       <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">Shutter</span>
-                        <span className="text-white text-sm font-medium">{photo.metadata.shutter}</span>
+                        <span className="text-white text-sm font-medium">{photo.metadata.shutterSpeed}</span>
                       </div>
                     )}
                     {photo.metadata.iso && (
