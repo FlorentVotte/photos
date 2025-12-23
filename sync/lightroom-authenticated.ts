@@ -57,6 +57,7 @@ interface LightroomAsset {
         FNumber?: number | number[];
         ExposureTime?: number | number[];
         ISOSpeedRatings?: number;
+        FocalLength?: number | number[];
       };
       [key: string]: any;
     };
