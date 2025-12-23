@@ -1,14 +1,19 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { siteConfig } from "@/lib/data";
+import { getGearStats } from "@/lib/synced-data";
 import type { Metadata } from "next";
+
+// Force dynamic rendering to pick up synced data
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: `About - ${siteConfig.siteName}`,
   description: `Learn more about ${siteConfig.photographerName} and their photography journey.`,
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const gear = await getGearStats();
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />
@@ -45,29 +50,50 @@ export default function AboutPage() {
             </div>
 
             {/* Equipment Section */}
-            <div className="bg-surface-dark rounded-xl p-6 md:p-8 my-12 border border-surface-border">
-              <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary">photo_camera</span>
-                My Gear
-              </h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="text-sm text-text-muted uppercase tracking-wider mb-3">Camera</h4>
-                  <ul className="space-y-2 text-white">
-                    <li>Fujifilm X-T5</li>
-                    <li>Fujifilm X100V</li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="text-sm text-text-muted uppercase tracking-wider mb-3">Lenses</h4>
-                  <ul className="space-y-2 text-white">
-                    <li>XF 16-55mm f/2.8</li>
-                    <li>XF 35mm f/1.4</li>
-                    <li>XF 56mm f/1.2</li>
-                  </ul>
+            {(gear.cameras.length > 0 || gear.lenses.length > 0) && (
+              <div className="bg-surface-dark rounded-xl p-6 md:p-8 my-12 border border-surface-border">
+                <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary">photo_camera</span>
+                  My Gear
+                </h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {gear.cameras.length > 0 && (
+                    <div>
+                      <h4 className="text-sm text-text-muted uppercase tracking-wider mb-3">
+                        Cameras
+                      </h4>
+                      <ul className="space-y-2">
+                        {gear.cameras.map((camera) => (
+                          <li key={camera.name} className="flex items-center justify-between">
+                            <span className="text-white">{camera.name}</span>
+                            <span className="text-text-muted text-sm">
+                              {camera.count} photos
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {gear.lenses.length > 0 && (
+                    <div>
+                      <h4 className="text-sm text-text-muted uppercase tracking-wider mb-3">
+                        Lenses
+                      </h4>
+                      <ul className="space-y-2">
+                        {gear.lenses.map((lens) => (
+                          <li key={lens.name} className="flex items-center justify-between">
+                            <span className="text-white">{lens.name}</span>
+                            <span className="text-text-muted text-sm">
+                              {lens.count} photos
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Link to main site */}
             <div className="text-center py-8">

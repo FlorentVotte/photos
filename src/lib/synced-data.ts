@@ -268,3 +268,43 @@ export async function searchPhotos(query: string): Promise<Photo[]> {
     sortOrder: p.sortOrder,
   }));
 }
+
+// Get unique gear (cameras and lenses) with photo counts
+export async function getGearStats(): Promise<{
+  cameras: { name: string; count: number }[];
+  lenses: { name: string; count: number }[];
+}> {
+  const photos = await prisma.photo.findMany({
+    select: {
+      camera: true,
+      lens: true,
+    },
+  });
+
+  // Count cameras
+  const cameraMap = new Map<string, number>();
+  for (const p of photos) {
+    if (p.camera) {
+      cameraMap.set(p.camera, (cameraMap.get(p.camera) || 0) + 1);
+    }
+  }
+
+  // Count lenses
+  const lensMap = new Map<string, number>();
+  for (const p of photos) {
+    if (p.lens) {
+      lensMap.set(p.lens, (lensMap.get(p.lens) || 0) + 1);
+    }
+  }
+
+  // Sort by count (most used first)
+  const cameras = Array.from(cameraMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
+  const lenses = Array.from(lensMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return { cameras, lenses };
+}
