@@ -3,6 +3,10 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PhotoGrid from "@/components/PhotoGrid";
+import ChapterStats from "@/components/ChapterStats";
+import ChapterLocationSummary from "@/components/ChapterLocationSummary";
+import ChapterRouteMap from "@/components/ChapterRouteMap";
+import ProtectedImage from "@/components/ProtectedImage";
 import {
   getAlbumBySlug,
   getChaptersByAlbum,
@@ -10,6 +14,7 @@ import {
   getAlbums,
   siteConfig,
 } from "@/lib/data";
+import { extractLocations, computeChapterStats } from "@/lib/geo-utils";
 import type { Metadata } from "next";
 
 // Force dynamic rendering to pick up synced data
@@ -104,34 +109,73 @@ export default async function AlbumPage({ params }: Props) {
           )}
 
           {/* Chapters with Photos */}
-          {chapters.map((chapter, chapterIndex) => (
-            <section key={chapter.id} className="w-full">
-              {/* Chapter Title */}
-              <div className="flex items-center justify-center gap-4 mb-12">
-                <div className="h-px w-12 bg-gray-700" />
-                <h2 className="text-3xl text-white font-bold tracking-tight">
-                  Chapter {chapterIndex + 1}: {chapter.title}
-                </h2>
-                <div className="h-px w-12 bg-gray-700" />
-              </div>
+          {chapters.map((chapter, chapterIndex) => {
+            const locations = extractLocations(chapter.photos);
+            const stats = computeChapterStats(chapter.photos);
+            const coverPhoto = chapter.coverPhoto || chapter.photos[0];
 
-              {/* Chapter Narrative */}
-              {chapter.narrative && (
-                <div className="max-w-prose mx-auto mb-12">
-                  <p className="text-lg text-gray-300 leading-loose first-letter:text-5xl first-letter:font-bold first-letter:text-primary first-letter:mr-2 first-letter:float-left">
-                    {chapter.narrative}
-                  </p>
+            return (
+              <section key={chapter.id} className="w-full">
+                {/* Cover Photo Hero */}
+                {coverPhoto && (
+                  <div className="relative w-full h-[40vh] rounded-xl overflow-hidden mb-8">
+                    <ProtectedImage
+                      src={coverPhoto.src.full}
+                      alt={coverPhoto.title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background-dark/90 via-background-dark/20 to-transparent" />
+                  </div>
+                )}
+
+                {/* Chapter Title */}
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <div className="h-px w-12 bg-gray-700" />
+                  <h2 className="text-3xl text-white font-bold tracking-tight">
+                    Chapter {chapterIndex + 1}: {chapter.title}
+                  </h2>
+                  <div className="h-px w-12 bg-gray-700" />
                 </div>
-              )}
 
-              {/* Photo Grid */}
-              <PhotoGrid
-                photos={chapter.photos}
-                variant="chapter"
-                enableInfiniteScroll={false}
-              />
-            </section>
-          ))}
+                {/* Location Summary */}
+                {locations.cities.length > 0 && (
+                  <div className="mb-4">
+                    <ChapterLocationSummary locations={locations} />
+                  </div>
+                )}
+
+                {/* Statistics */}
+                <ChapterStats stats={stats} />
+
+                {/* Route Map */}
+                {locations.coordinates.length > 1 && (
+                  <div className="my-8">
+                    <ChapterRouteMap
+                      photos={chapter.photos}
+                      height="350px"
+                      showMarkers={true}
+                    />
+                  </div>
+                )}
+
+                {/* Chapter Narrative */}
+                {chapter.narrative && (
+                  <div className="max-w-prose mx-auto my-12">
+                    <p className="text-lg text-gray-300 leading-loose first-letter:text-5xl first-letter:font-bold first-letter:text-primary first-letter:mr-2 first-letter:float-left">
+                      {chapter.narrative}
+                    </p>
+                  </div>
+                )}
+
+                {/* Photo Grid */}
+                <PhotoGrid
+                  photos={chapter.photos}
+                  variant="chapter"
+                  enableInfiniteScroll={false}
+                />
+              </section>
+            );
+          })}
 
           {/* If no chapters, show all photos in a grid */}
           {chapters.length === 0 && photos.length > 0 && (

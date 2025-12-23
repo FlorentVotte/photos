@@ -94,13 +94,14 @@ model Photo {
 
 // Album chapters for narrative sections
 model Chapter {
-  id        String   @id @default(cuid())
-  title     String
-  content   String?
-  sortOrder Int      @default(0)
-  photoIds  String   // JSON array of photo IDs
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  title        String
+  content      String?
+  sortOrder    Int      @default(0)
+  photoIds     String   // JSON array of photo IDs
+  coverPhotoId String?  // ID of the cover photo for this chapter
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relation to album
   albumId String

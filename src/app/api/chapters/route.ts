@@ -12,6 +12,7 @@ interface Chapter {
   title: string;
   narrative?: string;
   photoIds: string[];
+  coverPhotoId?: string;
 }
 
 interface AlbumManifest {

@@ -55,6 +55,32 @@ export interface Chapter {
   title: string;
   narrative?: string;
   photos: Photo[];
+  coverPhotoId?: string;
+  coverPhoto?: Photo;
+}
+
+export interface ChapterStats {
+  photoCount: number;
+  photosWithGps: number;
+  distanceKm: number;
+  dateRange?: {
+    start: string;
+    end: string;
+  };
+}
+
+export interface LocationSummary {
+  cities: string[];
+  countries: string[];
+  coordinates: GeoPoint[];
+}
+
+export interface GeoPoint {
+  lat: number;
+  lng: number;
+  photoId: string;
+  date?: string;
+  city?: string;
 }
 
 export interface SiteConfig {

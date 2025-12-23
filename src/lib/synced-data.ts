@@ -140,13 +140,22 @@ export async function getChaptersByAlbum(albumSlug: string): Promise<Chapter[]> 
 
   return album.chapters.map((c) => {
     const photoIds = JSON.parse(c.photoIds) as string[];
+    const chapterPhotos = photoIds
+      .map((pid) => photoMap.get(pid))
+      .filter((p): p is Photo => p !== undefined);
+
+    // Determine cover photo: use selected cover or first photo
+    const coverPhoto = c.coverPhotoId
+      ? photoMap.get(c.coverPhotoId)
+      : chapterPhotos[0];
+
     return {
       id: c.id,
       title: c.title,
       narrative: c.content || "",
-      photos: photoIds
-        .map((pid) => photoMap.get(pid))
-        .filter((p): p is Photo => p !== undefined),
+      photos: chapterPhotos,
+      coverPhotoId: c.coverPhotoId || undefined,
+      coverPhoto,
     };
   });
 }

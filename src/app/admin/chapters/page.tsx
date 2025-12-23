@@ -17,6 +17,7 @@ interface Chapter {
   title: string;
   narrative?: string;
   photoIds: string[];
+  coverPhotoId?: string;
 }
 
 interface Album {
@@ -72,6 +73,7 @@ function ChaptersEditorContent() {
       title: `Chapter ${chapters.length + 1}`,
       narrative: "",
       photoIds: [],
+      coverPhotoId: undefined,
     };
     setChapters([...chapters, newChapter]);
   };
@@ -214,6 +216,56 @@ function ChaptersEditorContent() {
                       })}
                     </div>
                   </div>
+
+                  {/* Cover Photo Selector */}
+                  {chapter.photoIds.length > 0 && (
+                    <div className="mt-6 pt-4 border-t border-surface-border">
+                      <h4 className="text-sm text-text-muted mb-3 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-base">photo_library</span>
+                        Cover Photo
+                      </h4>
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {chapter.photoIds.map((photoId) => {
+                          const photo = photos.find((p) => p.id === photoId);
+                          if (!photo) return null;
+                          const isCover = chapter.coverPhotoId === photoId;
+                          return (
+                            <button
+                              key={photoId}
+                              onClick={() =>
+                                updateChapter(index, {
+                                  coverPhotoId: isCover ? undefined : photoId,
+                                })
+                              }
+                              className={`relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
+                                isCover
+                                  ? "border-primary ring-2 ring-primary/30"
+                                  : "border-transparent opacity-60 hover:opacity-100"
+                              }`}
+                            >
+                              <img
+                                src={photo.src.thumb}
+                                alt={photo.title}
+                                className="w-full h-full object-cover"
+                              />
+                              {isCover && (
+                                <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                                  <span className="material-symbols-outlined text-white text-lg drop-shadow-md">
+                                    check_circle
+                                  </span>
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <p className="text-xs text-text-muted/70 mt-2">
+                        {chapter.coverPhotoId
+                          ? "Click again to remove cover photo"
+                          : "Click a photo to set it as the chapter cover"}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
