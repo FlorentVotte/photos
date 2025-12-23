@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import prisma from "@/lib/db";
 
-const ALBUMS_FILE = path.join(
-  process.cwd(),
-  process.env.NODE_ENV === "production" ? "data/photos/albums.json" : "public/photos/albums.json"
-);
-
-interface Chapter {
+interface ChapterInput {
   id: string;
   title: string;
   narrative?: string;
@@ -15,28 +9,7 @@ interface Chapter {
   coverPhotoId?: string;
 }
 
-interface AlbumManifest {
-  lastUpdated: string;
-  albums: any[];
-  photos: any[];
-  chapters: Record<string, Chapter[]>;
-}
-
-async function loadManifest(): Promise<AlbumManifest> {
-  try {
-    const data = await fs.readFile(ALBUMS_FILE, "utf-8");
-    return JSON.parse(data);
-  } catch {
-    return { lastUpdated: "", albums: [], photos: [], chapters: {} };
-  }
-}
-
-async function saveManifest(manifest: AlbumManifest): Promise<void> {
-  manifest.lastUpdated = new Date().toISOString();
-  await fs.writeFile(ALBUMS_FILE, JSON.stringify(manifest, null, 2));
-}
-
-// GET - Get chapters for an album
+// GET - Get chapters and photos for an album
 export async function GET(request: NextRequest) {
   const albumId = request.nextUrl.searchParams.get("albumId");
 
@@ -45,12 +18,39 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const manifest = await loadManifest();
-    const chapters = manifest.chapters?.[albumId] || [];
-    const photos = manifest.photos.filter((p: any) => p.albumId === albumId);
+    // Get chapters from database
+    const dbChapters = await prisma.chapter.findMany({
+      where: { albumId },
+      orderBy: { sortOrder: "asc" },
+    });
+
+    const chapters = dbChapters.map((c) => ({
+      id: c.id,
+      title: c.title,
+      narrative: c.content || "",
+      photoIds: JSON.parse(c.photoIds) as string[],
+      coverPhotoId: c.coverPhotoId || undefined,
+    }));
+
+    // Get photos from database
+    const dbPhotos = await prisma.photo.findMany({
+      where: { albumId },
+      orderBy: { sortOrder: "asc" },
+    });
+
+    const photos = dbPhotos.map((p) => ({
+      id: p.id,
+      title: p.title || "",
+      src: {
+        thumb: p.thumbPath || "",
+        medium: p.mediumPath || "",
+      },
+      albumId: p.albumId,
+    }));
 
     return NextResponse.json({ chapters, photos });
   } catch (error) {
+    console.error("Error loading chapters:", error);
     return NextResponse.json({ error: "Failed to load chapters" }, { status: 500 });
   }
 }
@@ -58,20 +58,33 @@ export async function GET(request: NextRequest) {
 // POST - Create or update chapters for an album
 export async function POST(request: NextRequest) {
   try {
-    const { albumId, chapters } = await request.json();
+    const { albumId, chapters } = (await request.json()) as {
+      albumId: string;
+      chapters: ChapterInput[];
+    };
 
     if (!albumId || !chapters) {
       return NextResponse.json({ error: "albumId and chapters required" }, { status: 400 });
     }
 
-    const manifest = await loadManifest();
+    // Delete existing chapters for this album
+    await prisma.chapter.deleteMany({ where: { albumId } });
 
-    if (!manifest.chapters) {
-      manifest.chapters = {};
+    // Create new chapters
+    for (let i = 0; i < chapters.length; i++) {
+      const chapter = chapters[i];
+      await prisma.chapter.create({
+        data: {
+          id: chapter.id.startsWith("chapter-") ? undefined : chapter.id, // Let Prisma generate ID for new chapters
+          albumId,
+          title: chapter.title,
+          content: chapter.narrative || null,
+          photoIds: JSON.stringify(chapter.photoIds),
+          coverPhotoId: chapter.coverPhotoId || null,
+          sortOrder: i,
+        },
+      });
     }
-
-    manifest.chapters[albumId] = chapters;
-    await saveManifest(manifest);
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -89,15 +102,11 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "albumId required" }, { status: 400 });
     }
 
-    const manifest = await loadManifest();
-
-    if (manifest.chapters?.[albumId]) {
-      delete manifest.chapters[albumId];
-      await saveManifest(manifest);
-    }
+    await prisma.chapter.deleteMany({ where: { albumId } });
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error("Error deleting chapters:", error);
     return NextResponse.json({ error: "Failed to delete chapters" }, { status: 500 });
   }
 }

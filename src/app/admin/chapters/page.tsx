@@ -37,18 +37,21 @@ function ChaptersEditorContent() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // Load albums list
+  // Load albums list from database
   useEffect(() => {
-    fetch("/api/galleries")
+    fetch("/api/albums")
       .then((res) => res.json())
       .then((data) => {
-        const albumList = data.galleries.map((g: any) => ({
-          id: g.url.split("/").pop(),
-          slug: g.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "",
-          title: g.title || "Untitled",
+        const albumList = (data.albums || []).map((a: any) => ({
+          id: a.id,
+          slug: a.slug,
+          title: a.title || "Untitled",
         }));
         setAlbums(albumList);
         if (albumId) setSelectedAlbum(albumId);
+        setLoading(false);
+      })
+      .catch(() => {
         setLoading(false);
       });
   }, [albumId]);
