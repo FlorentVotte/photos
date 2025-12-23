@@ -30,18 +30,20 @@ model Gallery {
 
 // Synced album data
 model Album {
-  id         String   @id
-  slug       String   @unique
-  title      String
-  location   String?
-  date       String?
-  coverImage String?
-  photoCount Int      @default(0)
-  featured   Boolean  @default(false)
-  galleryUrl String?
-  lastSynced DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id
+  slug        String   @unique
+  title       String
+  subtitle    String?
+  description String?
+  location    String?
+  date        String?
+  coverImage  String?
+  photoCount  Int      @default(0)
+  featured    Boolean  @default(false)
+  galleryUrl  String?
+  lastSynced  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   // Relation to gallery config
   galleryId String?  @unique

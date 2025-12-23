@@ -400,6 +400,25 @@ export default function AdminPage() {
             )}
           </section>
 
+          {/* Album Metadata Editor Link */}
+          <section className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-white mb-1">Album Metadata</h2>
+                <p className="text-sm text-text-muted">
+                  Override album titles, locations, dates, and descriptions
+                </p>
+              </div>
+              <a
+                href="/admin/albums"
+                className="px-6 py-3 bg-surface-border text-white font-semibold rounded-lg hover:bg-surface-border/80 transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined">edit_note</span>
+                Edit Metadata
+              </a>
+            </div>
+          </section>
+
           {/* Chapter Editor Link */}
           <section className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
             <div className="flex items-center justify-between">
