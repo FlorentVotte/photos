@@ -152,7 +152,9 @@ export async function getChaptersByAlbum(albumSlug: string): Promise<Chapter[]> 
     return {
       id: c.id,
       title: c.title,
+      titleFr: c.titleFr || undefined,
       narrative: c.content || "",
+      narrativeFr: c.contentFr || undefined,
       photos: chapterPhotos,
       coverPhotoId: c.coverPhotoId || undefined,
       coverPhoto,

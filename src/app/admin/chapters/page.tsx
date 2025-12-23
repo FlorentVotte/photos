@@ -15,7 +15,9 @@ interface Photo {
 interface Chapter {
   id: string;
   title: string;
+  titleFr?: string;
   narrative?: string;
+  narrativeFr?: string;
   photoIds: string[];
   coverPhotoId?: string;
 }
@@ -74,7 +76,9 @@ function ChaptersEditorContent() {
     const newChapter: Chapter = {
       id: `chapter-${Date.now()}`,
       title: `Chapter ${chapters.length + 1}`,
+      titleFr: `Chapitre ${chapters.length + 1}`,
       narrative: "",
+      narrativeFr: "",
       photoIds: [],
       coverPhotoId: undefined,
     };
@@ -168,20 +172,45 @@ function ChaptersEditorContent() {
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1 mr-4">
-                      <input
-                        type="text"
-                        value={chapter.title}
-                        onChange={(e) => updateChapter(index, { title: e.target.value })}
-                        placeholder="Chapter title"
-                        className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-white text-xl font-bold mb-3"
-                      />
-                      <textarea
-                        value={chapter.narrative || ""}
-                        onChange={(e) => updateChapter(index, { narrative: e.target.value })}
-                        placeholder="Write a narrative for this chapter..."
-                        rows={3}
-                        className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-text-muted resize-none"
-                      />
+                      {/* Language inputs grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* English */}
+                        <div>
+                          <label className="block text-xs text-text-muted mb-1 uppercase tracking-wider">English</label>
+                          <input
+                            type="text"
+                            value={chapter.title}
+                            onChange={(e) => updateChapter(index, { title: e.target.value })}
+                            placeholder="Chapter title"
+                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-white text-lg font-bold mb-2"
+                          />
+                          <textarea
+                            value={chapter.narrative || ""}
+                            onChange={(e) => updateChapter(index, { narrative: e.target.value })}
+                            placeholder="Write a narrative for this chapter..."
+                            rows={3}
+                            className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-text-muted resize-none"
+                          />
+                        </div>
+                        {/* French */}
+                        <div>
+                          <label className="block text-xs text-text-muted mb-1 uppercase tracking-wider">Français</label>
+                          <input
+                            type="text"
+                            value={chapter.titleFr || ""}
+                            onChange={(e) => updateChapter(index, { titleFr: e.target.value })}
+                            placeholder="Titre du chapitre"
+                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-white text-lg font-bold mb-2"
+                          />
+                          <textarea
+                            value={chapter.narrativeFr || ""}
+                            onChange={(e) => updateChapter(index, { narrativeFr: e.target.value })}
+                            placeholder="Écrivez un récit pour ce chapitre..."
+                            rows={3}
+                            className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-text-muted resize-none"
+                          />
+                        </div>
+                      </div>
                     </div>
                     <button
                       onClick={() => removeChapter(index)}

@@ -4,7 +4,9 @@ import prisma from "@/lib/db";
 interface ChapterInput {
   id: string;
   title: string;
+  titleFr?: string;
   narrative?: string;
+  narrativeFr?: string;
   photoIds: string[];
   coverPhotoId?: string;
 }
@@ -27,7 +29,9 @@ export async function GET(request: NextRequest) {
     const chapters = dbChapters.map((c) => ({
       id: c.id,
       title: c.title,
+      titleFr: c.titleFr || "",
       narrative: c.content || "",
+      narrativeFr: c.contentFr || "",
       photoIds: JSON.parse(c.photoIds) as string[],
       coverPhotoId: c.coverPhotoId || undefined,
     }));
@@ -78,7 +82,9 @@ export async function POST(request: NextRequest) {
           id: chapter.id.startsWith("chapter-") ? undefined : chapter.id, // Let Prisma generate ID for new chapters
           albumId,
           title: chapter.title,
+          titleFr: chapter.titleFr || null,
           content: chapter.narrative || null,
+          contentFr: chapter.narrativeFr || null,
           photoIds: JSON.stringify(chapter.photoIds),
           coverPhotoId: chapter.coverPhotoId || null,
           sortOrder: i,

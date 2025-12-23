@@ -53,7 +53,9 @@ export interface Album {
 export interface Chapter {
   id: string;
   title: string;
+  titleFr?: string;
   narrative?: string;
+  narrativeFr?: string;
   photos: Photo[];
   coverPhotoId?: string;
   coverPhoto?: Photo;

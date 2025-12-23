@@ -27,7 +27,18 @@ export default function AlbumContent({
   photos,
   nextAlbum,
 }: AlbumContentProps) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
+
+  // Helper to get localized chapter content
+  const getChapterTitle = (chapter: Chapter) => {
+    if (locale === "fr" && chapter.titleFr) return chapter.titleFr;
+    return chapter.title;
+  };
+
+  const getChapterNarrative = (chapter: Chapter) => {
+    if (locale === "fr" && chapter.narrativeFr) return chapter.narrativeFr;
+    return chapter.narrative;
+  };
 
   return (
     <main className="flex-1 flex flex-col items-center w-full">
@@ -99,7 +110,7 @@ export default function AlbumContent({
               <div className="flex items-center justify-center gap-4 mb-6">
                 <div className="h-px w-12 bg-gray-700" />
                 <h2 className="text-3xl text-white font-bold tracking-tight">
-                  {t("album", "chapter")} {chapterIndex + 1}: {chapter.title}
+                  {t("album", "chapter")} {chapterIndex + 1}: {getChapterTitle(chapter)}
                 </h2>
                 <div className="h-px w-12 bg-gray-700" />
               </div>
@@ -126,10 +137,10 @@ export default function AlbumContent({
               )}
 
               {/* Chapter Narrative */}
-              {chapter.narrative && (
+              {getChapterNarrative(chapter) && (
                 <div className="max-w-prose mx-auto my-12">
                   <p className="text-lg text-gray-300 leading-loose first-letter:text-5xl first-letter:font-bold first-letter:text-primary first-letter:mr-2 first-letter:float-left">
-                    {chapter.narrative}
+                    {getChapterNarrative(chapter)}
                   </p>
                 </div>
               )}
