@@ -11,7 +11,8 @@ interface Photo {
   metadata: {
     date?: string;
     location?: string;
-    gps?: { lat: number; lng: number };
+    latitude?: number;
+    longitude?: number;
   };
   albumId: string;
 }
@@ -44,7 +45,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
 
   // Filter photos with GPS data
   const geoPhotos = photos.filter(
-    (p) => p.metadata?.gps?.lat && p.metadata?.gps?.lng
+    (p) => p.metadata?.latitude && p.metadata?.longitude
   );
 
   // Debug: log in browser console
@@ -96,8 +97,8 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
   }
 
   // Calculate center and bounds
-  const lats = geoPhotos.map((p) => p.metadata.gps!.lat);
-  const lngs = geoPhotos.map((p) => p.metadata.gps!.lng);
+  const lats = geoPhotos.map((p) => p.metadata.latitude!);
+  const lngs = geoPhotos.map((p) => p.metadata.longitude!);
   const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
   const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
 
@@ -153,7 +154,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
         {geoPhotos.map((photo) => (
           <Marker
             key={photo.id}
-            position={[photo.metadata.gps!.lat, photo.metadata.gps!.lng]}
+            position={[photo.metadata.latitude!, photo.metadata.longitude!]}
             icon={customIcon}
           >
             <Popup>

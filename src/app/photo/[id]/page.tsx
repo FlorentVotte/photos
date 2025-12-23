@@ -276,6 +276,27 @@ export default async function PhotoPage({ params }: Props) {
                       </div>
                     </div>
                   )}
+
+                  {photo.metadata.latitude && photo.metadata.longitude && (
+                    <div className="flex flex-col gap-1 col-span-2">
+                      <span className="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">
+                        GPS
+                      </span>
+                      <div className="flex items-center gap-2 text-white">
+                        <span className="material-symbols-outlined text-[16px] text-text-muted">
+                          my_location
+                        </span>
+                        <a
+                          href={`https://www.google.com/maps?q=${photo.metadata.latitude},${photo.metadata.longitude}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          {photo.metadata.latitude.toFixed(5)}, {photo.metadata.longitude.toFixed(5)}
+                        </a>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Back to Album */}
