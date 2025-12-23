@@ -238,7 +238,7 @@ async function syncPrivateAlbum(gallery: {
           location: location.country || albumLocation,
           width: payload.develop?.croppedWidth || payload.importSource?.originalWidth,
           height: payload.develop?.croppedHeight || payload.importSource?.originalHeight,
-          camera: xmp.tiff?.Model || payload.importSource?.cameraModel,
+          camera: formatCamera(xmp.tiff?.Make, xmp.tiff?.Model) || payload.importSource?.cameraModel,
           lens: xmp.aux?.Lens || xmp.exifEX?.LensModel,
           aperture: formatAperture(xmp.exif?.FNumber),
           shutterSpeed: formatShutterSpeed(xmp.exif?.ExposureTime),
@@ -262,7 +262,7 @@ async function syncPrivateAlbum(gallery: {
           location: location.country || albumLocation,
           width: payload.develop?.croppedWidth || payload.importSource?.originalWidth,
           height: payload.develop?.croppedHeight || payload.importSource?.originalHeight,
-          camera: xmp.tiff?.Model || payload.importSource?.cameraModel,
+          camera: formatCamera(xmp.tiff?.Make, xmp.tiff?.Model) || payload.importSource?.cameraModel,
           lens: xmp.aux?.Lens || xmp.exifEX?.LensModel,
           aperture: formatAperture(xmp.exif?.FNumber),
           shutterSpeed: formatShutterSpeed(xmp.exif?.ExposureTime),
@@ -663,6 +663,17 @@ function formatFocalLength(focalLength: unknown): string | undefined {
 
   if (isNaN(mm)) return undefined;
   return `${Math.round(mm)}mm`;
+}
+
+function formatCamera(make?: string, model?: string): string | undefined {
+  if (!make && !model) return undefined;
+  if (!make) return model;
+  if (!model) return make;
+  // Avoid duplicating brand if model already contains it (e.g., "Canon" + "Canon EOS R5")
+  if (model.toLowerCase().startsWith(make.toLowerCase())) {
+    return model;
+  }
+  return `${make} ${model}`;
 }
 
 function extractLocationAndDate(data: LightroomGalleryData): {

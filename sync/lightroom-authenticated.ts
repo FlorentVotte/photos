@@ -45,6 +45,7 @@ interface LightroomAsset {
         description?: string | string[];
       };
       tiff?: {
+        Make?: string;
         Model?: string;
       };
       aux?: {
