@@ -66,6 +66,7 @@ export async function getPhotosByAlbum(albumId: string): Promise<Photo[]> {
     metadata: {
       date: p.date || "",
       location: p.location || "Unknown",
+      city: p.city || undefined,
       width: p.width || 0,
       height: p.height || 0,
       camera: p.camera || undefined,
@@ -103,6 +104,7 @@ export async function getPhotoById(id: string): Promise<Photo | undefined> {
     metadata: {
       date: p.date || "",
       location: p.location || "Unknown",
+      city: p.city || undefined,
       width: p.width || 0,
       height: p.height || 0,
       camera: p.camera || undefined,
@@ -195,6 +197,7 @@ export async function getAllPhotos(): Promise<Photo[]> {
     metadata: {
       date: p.date || "",
       location: p.location || "Unknown",
+      city: p.city || undefined,
       width: p.width || 0,
       height: p.height || 0,
       camera: p.camera || undefined,
@@ -240,6 +243,7 @@ export async function searchPhotos(query: string): Promise<Photo[]> {
     metadata: {
       date: p.date || "",
       location: p.location || "Unknown",
+      city: p.city || undefined,
       width: p.width || 0,
       height: p.height || 0,
       camera: p.camera || undefined,

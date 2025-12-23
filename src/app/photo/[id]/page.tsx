@@ -183,7 +183,9 @@ export default async function PhotoPage({ params }: Props) {
                     </div>
                     <div>
                       <h3 className="text-white text-sm font-semibold">
-                        {photo.metadata.location}
+                        {photo.metadata.city
+                          ? `${photo.metadata.city}, ${photo.metadata.location}`
+                          : photo.metadata.location}
                       </h3>
                       <p className="text-text-muted text-xs">{photo.metadata.date}</p>
                     </div>
@@ -217,7 +219,7 @@ export default async function PhotoPage({ params }: Props) {
                   </div>
 
                   {/* EXIF Grid */}
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {photo.metadata.aperture && (
                       <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">Aperture</span>
@@ -234,6 +236,12 @@ export default async function PhotoPage({ params }: Props) {
                       <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">ISO</span>
                         <span className="text-white text-sm font-medium">{photo.metadata.iso}</span>
+                      </div>
+                    )}
+                    {photo.metadata.focalLength && (
+                      <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
+                        <span className="text-text-muted text-xs block mb-1">Focal</span>
+                        <span className="text-white text-sm font-medium">{photo.metadata.focalLength}</span>
                       </div>
                     )}
                   </div>

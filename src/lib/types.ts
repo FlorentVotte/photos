@@ -13,6 +13,7 @@ export interface Photo {
     date: string;
     location?: string;
     locationDetail?: string;
+    city?: string;
     camera?: string;
     lens?: string;
     aperture?: string;

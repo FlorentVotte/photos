@@ -243,6 +243,8 @@ async function syncPrivateAlbum(gallery: {
           aperture: formatAperture(xmp.exif?.FNumber),
           shutterSpeed: formatShutterSpeed(xmp.exif?.ExposureTime),
           iso: xmp.exif?.ISOSpeedRatings?.toString(),
+          focalLength: formatFocalLength(xmp.exif?.FocalLength),
+          city: location.city,
           latitude: location.latitude,
           longitude: location.longitude,
         },
@@ -265,6 +267,8 @@ async function syncPrivateAlbum(gallery: {
           aperture: formatAperture(xmp.exif?.FNumber),
           shutterSpeed: formatShutterSpeed(xmp.exif?.ExposureTime),
           iso: xmp.exif?.ISOSpeedRatings?.toString(),
+          focalLength: formatFocalLength(xmp.exif?.FocalLength),
+          city: location.city,
           latitude: location.latitude,
           longitude: location.longitude,
         },
@@ -638,6 +642,27 @@ function formatShutterSpeed(exposureTime: unknown): string | undefined {
 
   if (isNaN(time)) return undefined;
   return time >= 1 ? `${time}s` : `1/${Math.round(1 / time)}s`;
+}
+
+function formatFocalLength(focalLength: unknown): string | undefined {
+  if (!focalLength) return undefined;
+
+  let mm: number;
+  if (Array.isArray(focalLength) && focalLength.length === 2) {
+    // Adobe API returns fractions as [numerator, denominator]
+    const [numerator, denominator] = focalLength;
+    if (denominator === 0) return undefined;
+    mm = numerator / denominator;
+  } else if (Array.isArray(focalLength)) {
+    mm = focalLength[0];
+  } else if (typeof focalLength === "number") {
+    mm = focalLength;
+  } else {
+    mm = parseFloat(String(focalLength));
+  }
+
+  if (isNaN(mm)) return undefined;
+  return `${Math.round(mm)}mm`;
 }
 
 function extractLocationAndDate(data: LightroomGalleryData): {

@@ -70,6 +70,7 @@ model Photo {
   // Metadata
   date         String?
   location     String?
+  city         String?
   width        Int?
   height       Int?
   camera       String?
