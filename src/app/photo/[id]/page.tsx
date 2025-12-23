@@ -3,6 +3,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import ProtectedImage from "@/components/ProtectedImage";
 import PhotoLocationMap from "@/components/PhotoLocationMap";
+import PhotoKeyboardNav from "@/components/PhotoKeyboardNav";
 import {
   getPhotoById,
   getPhotosByAlbum,
@@ -66,6 +67,10 @@ export default async function PhotoPage({ params }: Props) {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-[#122118]">
       <Header />
+      <PhotoKeyboardNav
+        prevPhotoId={prevPhoto?.id}
+        nextPhotoId={nextPhoto?.id}
+      />
 
       <div className="layout-container flex h-full grow flex-col">
         <div className="flex flex-1 justify-center py-5 px-4 md:px-10 lg:px-40">
