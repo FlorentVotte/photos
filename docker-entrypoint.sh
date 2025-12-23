@@ -1,14 +1,12 @@
 #!/bin/sh
 set -e
 
-# Initialize database if it doesn't exist
+# Apply database migrations (creates DB if it doesn't exist, updates schema if it does)
 DB_PATH="/app/data/photobook.db"
 
-if [ ! -f "$DB_PATH" ]; then
-  echo "Initializing database..."
-  npx prisma db push --url "file:${DB_PATH}"
-  echo "Database initialized successfully"
-fi
+echo "Applying database migrations..."
+npx prisma db push --skip-generate --url "file:${DB_PATH}"
+echo "Database ready"
 
 # Start the application
 exec node server.js
