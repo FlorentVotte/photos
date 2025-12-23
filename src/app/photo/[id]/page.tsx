@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import ProtectedImage from "@/components/ProtectedImage";
 import PhotoLocationMap from "@/components/PhotoLocationMap";
 import PhotoKeyboardNav from "@/components/PhotoKeyboardNav";
+import SlideshowButton from "@/components/SlideshowButton";
 import {
   getPhotoById,
   getPhotosByAlbum,
@@ -166,16 +167,22 @@ export default async function PhotoPage({ params }: Props) {
 
             {/* Details Section */}
             <div className="mt-8 pb-20">
-              {/* Title and Description */}
-              <div className="mb-8">
-                <h1 className="text-white text-2xl md:text-3xl font-bold leading-tight tracking-[-0.015em] font-display">
-                  {photo.title}
-                </h1>
-                {photo.caption && (
-                  <p className="text-text-muted text-base mt-3 leading-relaxed max-w-2xl">
-                    {photo.caption}
-                  </p>
-                )}
+              {/* Title and Actions */}
+              <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                  <h1 className="text-white text-2xl md:text-3xl font-bold leading-tight tracking-[-0.015em] font-display">
+                    {photo.title}
+                  </h1>
+                  {photo.caption && (
+                    <p className="text-text-muted text-base mt-3 leading-relaxed max-w-2xl">
+                      {photo.caption}
+                    </p>
+                  )}
+                </div>
+                <SlideshowButton
+                  photos={albumPhotos}
+                  currentIndex={currentIndex}
+                />
               </div>
 
               {/* Info Grid - Map and Metadata side by side on desktop */}

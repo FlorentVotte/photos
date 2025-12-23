@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Lightbox from "./Lightbox";
 
 // Check if title looks like a filename (e.g., DSCF0678.raf, IMG_1234.jpg)
 function isFilename(title: string): boolean {
@@ -25,7 +24,6 @@ interface Photo {
 interface PhotoGridProps {
   photos: Photo[];
   variant?: "default" | "chapter";
-  enableLightbox?: boolean;
   enableInfiniteScroll?: boolean;
   initialCount?: number;
   incrementCount?: number;
@@ -34,13 +32,10 @@ interface PhotoGridProps {
 export default function PhotoGrid({
   photos,
   variant = "default",
-  enableLightbox = true,
   enableInfiniteScroll = true,
   initialCount = 12,
   incrementCount = 12,
 }: PhotoGridProps) {
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [displayCount, setDisplayCount] = useState(
     enableInfiniteScroll ? Math.min(initialCount, photos.length) : photos.length
   );
@@ -66,11 +61,6 @@ export default function PhotoGrid({
     return () => observer.disconnect();
   }, [enableInfiniteScroll, displayCount, photos.length, incrementCount]);
 
-  const openLightbox = useCallback((index: number) => {
-    setCurrentPhotoIndex(index);
-    setLightboxOpen(true);
-  }, []);
-
   const displayedPhotos = photos.slice(0, displayCount);
 
   return (
@@ -83,14 +73,14 @@ export default function PhotoGrid({
         }`}
       >
         {displayedPhotos.map((photo, index) => (
-          <div
+          <Link
             key={photo.id}
+            href={`/photo/${photo.id}`}
             className={`group relative overflow-hidden rounded-lg bg-surface-dark cursor-pointer ${
               variant === "chapter" && index === 0 && photos.length > 2
                 ? "md:col-span-2 md:row-span-2"
                 : ""
             }`}
-            onClick={() => enableLightbox && openLightbox(index)}
             onContextMenu={(e) => e.preventDefault()}
           >
             <Image
@@ -116,21 +106,7 @@ export default function PhotoGrid({
                 <p className="text-sm text-white/70">{photo.metadata.date}</p>
               )}
             </div>
-
-            {/* Expand icon */}
-            {enableLightbox && (
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="material-symbols-outlined text-white/70 text-2xl">
-                  fullscreen
-                </span>
-              </div>
-            )}
-
-            {/* Link to photo page (fallback if no lightbox) */}
-            {!enableLightbox && (
-              <Link href={`/photo/${photo.id}`} className="absolute inset-0 z-10" />
-            )}
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -148,17 +124,6 @@ export default function PhotoGrid({
         <p className="text-center text-text-muted text-sm mt-4">
           Showing {displayCount} of {photos.length} photos
         </p>
-      )}
-
-      {/* Lightbox */}
-      {enableLightbox && (
-        <Lightbox
-          photos={photos}
-          currentIndex={currentPhotoIndex}
-          isOpen={lightboxOpen}
-          onClose={() => setLightboxOpen(false)}
-          onNavigate={setCurrentPhotoIndex}
-        />
       )}
     </>
   );
