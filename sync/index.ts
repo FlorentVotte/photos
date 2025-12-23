@@ -195,7 +195,8 @@ async function syncPrivateAlbum(gallery: {
         continue;
       }
 
-      if (i === 0) {
+      // Use first successfully processed photo as cover
+      if (!coverImage) {
         coverImage = thumbnails.medium;
       }
 
@@ -368,7 +369,8 @@ async function syncPublicGallery(gallery: {
       continue;
     }
 
-    if (i === 0) {
+    // Use first successfully processed photo as cover
+    if (!coverImage) {
       coverImage = thumbnails.medium;
     }
 

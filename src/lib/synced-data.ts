@@ -168,13 +168,24 @@ export async function getFeaturedAlbum(): Promise<Album | undefined> {
   });
 
   if (album) {
+    // If no cover image, get first photo's medium thumbnail as fallback
+    let coverImage = album.coverImage || "";
+    if (!coverImage) {
+      const firstPhoto = await prisma.photo.findFirst({
+        where: { albumId: album.id },
+        orderBy: { sortOrder: "asc" },
+        select: { mediumPath: true },
+      });
+      coverImage = firstPhoto?.mediumPath || "";
+    }
+
     return {
       id: album.id,
       slug: album.slug,
       title: album.title,
       location: album.location || "Unknown",
       date: album.date || "",
-      coverImage: album.coverImage || "",
+      coverImage,
       photoCount: album.photoCount,
       featured: album.featured,
       galleryUrl: album.galleryUrl || "",
