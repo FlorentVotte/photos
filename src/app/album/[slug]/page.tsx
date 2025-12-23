@@ -8,7 +8,6 @@ import {
   getPhotosByAlbum,
   getAlbums,
 } from "@/lib/data";
-import { extractLocations, computeChapterStats } from "@/lib/geo-utils";
 import type { Metadata } from "next";
 
 // Force dynamic rendering to pick up synced data
@@ -62,8 +61,6 @@ export default async function AlbumPage({ params }: Props) {
         chapters={chapters}
         photos={photos}
         nextAlbum={nextAlbum}
-        extractLocations={extractLocations}
-        computeChapterStats={computeChapterStats}
       />
 
       <Footer />

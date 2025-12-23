@@ -7,12 +7,11 @@ import ChapterLocationSummary from "./ChapterLocationSummary";
 import ChapterRouteMap from "./ChapterRouteMap";
 import ProtectedImage from "./ProtectedImage";
 import { useLocale } from "@/lib/LocaleContext";
+import { extractLocations, computeChapterStats } from "@/lib/geo-utils";
 import type {
   Photo,
   Album,
   Chapter,
-  ChapterStats as ChapterStatsType,
-  LocationSummary,
 } from "@/lib/types";
 
 interface AlbumContentProps {
@@ -20,8 +19,6 @@ interface AlbumContentProps {
   chapters: Chapter[];
   photos: Photo[];
   nextAlbum?: Album;
-  extractLocations: (photos: Photo[]) => LocationSummary;
-  computeChapterStats: (photos: Photo[]) => ChapterStatsType;
 }
 
 export default function AlbumContent({
@@ -29,8 +26,6 @@ export default function AlbumContent({
   chapters,
   photos,
   nextAlbum,
-  extractLocations,
-  computeChapterStats,
 }: AlbumContentProps) {
   const { t } = useLocale();
 
