@@ -39,6 +39,12 @@ const Popup = dynamic(
   { ssr: false }
 );
 
+// Dynamically import the FitBounds component
+const FitBoundsComponent = dynamic(
+  () => import("./MapFitBounds"),
+  { ssr: false }
+);
+
 export default function PhotoMap({ photos }: PhotoMapProps) {
   const [isClient, setIsClient] = useState(false);
   const [L, setL] = useState<any>(null);
@@ -96,11 +102,15 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
     );
   }
 
-  // Calculate center and bounds
+  // Calculate bounds to fit all markers
   const lats = geoPhotos.map((p) => p.metadata.latitude!);
   const lngs = geoPhotos.map((p) => p.metadata.longitude!);
-  const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
-  const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+  const bounds: [[number, number], [number, number]] = [
+    [Math.min(...lats), Math.min(...lngs)], // Southwest
+    [Math.max(...lats), Math.max(...lngs)], // Northeast
+  ];
+  const centerLat = (bounds[0][0] + bounds[1][0]) / 2;
+  const centerLng = (bounds[0][1] + bounds[1][1]) / 2;
 
   // Custom marker icon
   const customIcon = L.divIcon({
@@ -143,10 +153,11 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
       `}</style>
       <MapContainer
         center={[centerLat, centerLng]}
-        zoom={10}
+        zoom={4}
         className="w-full h-[600px] rounded-xl overflow-hidden z-0"
         scrollWheelZoom={true}
       >
+        <FitBoundsComponent bounds={bounds} />
         <TileLayer
           attribution='&copy; <a href="https://carto.com/">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
