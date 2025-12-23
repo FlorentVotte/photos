@@ -160,152 +160,99 @@ export default async function PhotoPage({ params }: Props) {
             </div>
 
             {/* Details Section */}
-            <div className="mt-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 pb-20">
-              {/* Narrative Column */}
-              <div className="lg:col-span-7 flex flex-col gap-6">
-                <div>
-                  <h1 className="text-white text-3xl md:text-4xl font-bold leading-tight tracking-[-0.015em] font-display">
-                    {photo.title}
-                  </h1>
-                  {photo.description && (
-                    <p className="text-text-muted text-lg mt-4 leading-relaxed font-light italic opacity-90">
-                      {photo.description}
-                    </p>
-                  )}
-                </div>
-
+            <div className="mt-8 pb-20">
+              {/* Title and Description */}
+              <div className="mb-8">
+                <h1 className="text-white text-2xl md:text-3xl font-bold leading-tight tracking-[-0.015em] font-display">
+                  {photo.title}
+                </h1>
+                {photo.caption && (
+                  <p className="text-text-muted text-base mt-3 leading-relaxed max-w-2xl">
+                    {photo.caption}
+                  </p>
+                )}
               </div>
 
-              {/* Technical & Location Sidebar */}
-              <div className="lg:col-span-5 bg-surface-dark rounded-xl p-6 border border-surface-border h-fit">
-                {/* Location */}
-                <div className="flex items-center gap-3 mb-6 pb-6 border-b border-[#366349]">
-                  <div className="size-10 rounded-full bg-surface-border flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined">location_on</span>
+              {/* Info Grid - Map and Metadata side by side on desktop */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left: Location Map or Location Info */}
+                <div className="bg-surface-dark rounded-xl p-5 border border-surface-border">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="size-9 rounded-full bg-surface-border flex items-center justify-center text-primary">
+                      <span className="material-symbols-outlined text-xl">location_on</span>
+                    </div>
+                    <div>
+                      <h3 className="text-white text-sm font-semibold">
+                        {photo.metadata.location}
+                      </h3>
+                      <p className="text-text-muted text-xs">{photo.metadata.date}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-white text-base font-bold">
-                      {photo.metadata.location}
-                    </h3>
-                    {photo.metadata.locationDetail && (
-                      <p className="text-text-muted text-sm">
-                        {photo.metadata.locationDetail}
-                      </p>
+
+                  {photo.metadata.latitude && photo.metadata.longitude ? (
+                    <PhotoLocationMap
+                      latitude={photo.metadata.latitude}
+                      longitude={photo.metadata.longitude}
+                      title={photo.title}
+                    />
+                  ) : (
+                    <div className="h-[200px] bg-[#0e1a13] rounded-lg flex items-center justify-center">
+                      <span className="text-text-muted text-sm">No GPS data</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Right: EXIF Data */}
+                <div className="bg-surface-dark rounded-xl p-5 border border-surface-border">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="size-9 rounded-full bg-surface-border flex items-center justify-center text-primary">
+                      <span className="material-symbols-outlined text-xl">camera</span>
+                    </div>
+                    <div>
+                      <h3 className="text-white text-sm font-semibold">
+                        {photo.metadata.camera || "Camera"}
+                      </h3>
+                      <p className="text-text-muted text-xs">{photo.metadata.lens || "Unknown lens"}</p>
+                    </div>
+                  </div>
+
+                  {/* EXIF Grid */}
+                  <div className="grid grid-cols-3 gap-4">
+                    {photo.metadata.aperture && (
+                      <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
+                        <span className="text-text-muted text-xs block mb-1">Aperture</span>
+                        <span className="text-white text-sm font-medium">{photo.metadata.aperture}</span>
+                      </div>
+                    )}
+                    {photo.metadata.shutter && (
+                      <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
+                        <span className="text-text-muted text-xs block mb-1">Shutter</span>
+                        <span className="text-white text-sm font-medium">{photo.metadata.shutter}</span>
+                      </div>
+                    )}
+                    {photo.metadata.iso && (
+                      <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
+                        <span className="text-text-muted text-xs block mb-1">ISO</span>
+                        <span className="text-white text-sm font-medium">{photo.metadata.iso}</span>
+                      </div>
                     )}
                   </div>
-                </div>
 
-                {/* Metadata Grid */}
-                <div className="grid grid-cols-2 gap-y-6 gap-x-4">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">
-                      Date
-                    </span>
-                    <div className="flex items-center gap-2 text-white">
-                      <span className="material-symbols-outlined text-[16px] text-text-muted">
-                        calendar_today
-                      </span>
-                      <span className="text-sm">{photo.metadata.date}</span>
-                    </div>
-                  </div>
-
-                  {photo.metadata.camera && (
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">
-                        Camera
-                      </span>
-                      <div className="flex items-center gap-2 text-white">
-                        <span className="material-symbols-outlined text-[16px] text-text-muted">
-                          photo_camera
+                  {/* Back to Album */}
+                  {album && (
+                    <div className="mt-5 pt-4 border-t border-[#254633]">
+                      <Link
+                        href={`/album/${album.slug}`}
+                        className="flex items-center gap-2 text-text-muted hover:text-primary transition-colors text-sm"
+                      >
+                        <span className="material-symbols-outlined text-base">
+                          arrow_back
                         </span>
-                        <span className="text-sm">{photo.metadata.camera}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {photo.metadata.lens && (
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">
-                        Lens
-                      </span>
-                      <div className="flex items-center gap-2 text-white">
-                        <span className="material-symbols-outlined text-[16px] text-text-muted">
-                          lens
-                        </span>
-                        <span className="text-sm">{photo.metadata.lens}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {(photo.metadata.aperture || photo.metadata.shutter) && (
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">
-                        Settings
-                      </span>
-                      <div className="flex items-center gap-2 text-white">
-                        <span className="material-symbols-outlined text-[16px] text-text-muted">
-                          tune
-                        </span>
-                        <span className="text-sm">
-                          {photo.metadata.aperture} • {photo.metadata.shutter}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {photo.metadata.iso && (
-                    <div className="flex flex-col gap-1 col-span-2">
-                      <span className="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">
-                        ISO
-                      </span>
-                      <div className="flex items-center gap-2 text-white">
-                        <span className="material-symbols-outlined text-[16px] text-text-muted">
-                          iso
-                        </span>
-                        <span className="text-sm">{photo.metadata.iso}</span>
-                        <div className="h-1 w-24 bg-surface-border rounded-full ml-2 overflow-hidden">
-                          <div
-                            className="h-full bg-primary rounded-full"
-                            style={{
-                              width: `${Math.min(
-                                (parseInt(photo.metadata.iso) / 6400) * 100,
-                                100
-                              )}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {photo.metadata.latitude && photo.metadata.longitude && (
-                    <div className="col-span-2 mt-4 pt-4 border-t border-[#366349]">
-                      <span className="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider mb-3 block">
-                        Location
-                      </span>
-                      <PhotoLocationMap
-                        latitude={photo.metadata.latitude}
-                        longitude={photo.metadata.longitude}
-                        title={photo.title}
-                      />
+                        Back to {album.title}
+                      </Link>
                     </div>
                   )}
                 </div>
-
-                {/* Back to Album */}
-                {album && (
-                  <div className="mt-8 pt-6 border-t border-[#366349]">
-                    <Link
-                      href={`/album/${album.slug}`}
-                      className="flex items-center gap-2 text-text-muted hover:text-primary transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-sm">
-                        arrow_back
-                      </span>
-                      <span className="text-sm">Back to {album.title}</span>
-                    </Link>
-                  </div>
-                )}
               </div>
             </div>
           </div>
