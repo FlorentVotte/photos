@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Header from "@/components/Header";
 import ProtectedImage from "@/components/ProtectedImage";
+import PhotoLocationMap from "@/components/PhotoLocationMap";
 import {
   getPhotoById,
   getPhotosByAlbum,
@@ -278,23 +279,15 @@ export default async function PhotoPage({ params }: Props) {
                   )}
 
                   {photo.metadata.latitude && photo.metadata.longitude && (
-                    <div className="flex flex-col gap-1 col-span-2">
-                      <span className="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider">
-                        GPS
+                    <div className="col-span-2 mt-4 pt-4 border-t border-[#366349]">
+                      <span className="text-[#5c8a6f] text-xs font-bold uppercase tracking-wider mb-3 block">
+                        Location
                       </span>
-                      <div className="flex items-center gap-2 text-white">
-                        <span className="material-symbols-outlined text-[16px] text-text-muted">
-                          my_location
-                        </span>
-                        <a
-                          href={`https://www.google.com/maps?q=${photo.metadata.latitude},${photo.metadata.longitude}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline"
-                        >
-                          {photo.metadata.latitude.toFixed(5)}, {photo.metadata.longitude.toFixed(5)}
-                        </a>
-                      </div>
+                      <PhotoLocationMap
+                        latitude={photo.metadata.latitude}
+                        longitude={photo.metadata.longitude}
+                        title={photo.title}
+                      />
                     </div>
                   )}
                 </div>
