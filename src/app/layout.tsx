@@ -21,6 +21,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu"),
   title: "Regards Perdus - Photo Portfolio",
   description: "Capturing the fleeting moments between departures and arrivals. A visual journey through the world.",
   openGraph: {
