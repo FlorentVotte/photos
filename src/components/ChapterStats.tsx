@@ -1,5 +1,8 @@
+"use client";
+
 import type { ChapterStats as ChapterStatsType } from "@/lib/types";
 import { formatDistance } from "@/lib/geo-utils";
+import { useLocale } from "@/lib/LocaleContext";
 
 interface ChapterStatsProps {
   stats: ChapterStatsType;
@@ -10,6 +13,7 @@ export default function ChapterStats({
   stats,
   variant = "full",
 }: ChapterStatsProps) {
+  const { t } = useLocale();
   const { photoCount, photosWithGps, distanceKm, dateRange } = stats;
 
   if (variant === "compact") {
@@ -39,7 +43,7 @@ export default function ChapterStats({
           photo_camera
         </span>
         <span className="text-white font-medium">{photoCount}</span>
-        <span className="text-sm">Photos</span>
+        <span className="text-sm">{t("stats", "photos")}</span>
       </div>
 
       {/* Distance traveled */}
@@ -53,7 +57,7 @@ export default function ChapterStats({
             <span className="text-white font-medium">
               {formatDistance(distanceKm)}
             </span>
-            <span className="text-sm">traveled</span>
+            <span className="text-sm">{t("stats", "traveled")}</span>
           </div>
         </>
       )}

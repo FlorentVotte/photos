@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { useLocale } from "@/lib/LocaleContext";
 import type { Album, Photo } from "@/lib/types";
 
 type FilterType = "all" | "albums" | "photos";
@@ -14,6 +15,7 @@ interface SearchClientProps {
 }
 
 export default function SearchClient({ albums, photos }: SearchClientProps) {
+  const { t } = useLocale();
   const [query, setQuery] = useState("");
   const [filterType, setFilterType] = useState<FilterType>("all");
   const [selectedLocation, setSelectedLocation] = useState<string>("");
@@ -69,7 +71,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
 
       <main className="flex-1 py-12 px-4 md:px-8 lg:px-16">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold text-white mb-8">Search</h1>
+          <h1 className="text-3xl font-bold text-white mb-8">{t("search", "title")}</h1>
 
           {/* Search Input */}
           <div className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
@@ -83,7 +85,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search albums, photos, locations..."
+                  placeholder={t("search", "placeholder")}
                   className="w-full pl-12 pr-4 py-3 bg-background-dark border border-surface-border rounded-lg text-white placeholder-text-muted focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
@@ -94,7 +96,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                 onChange={(e) => setSelectedLocation(e.target.value)}
                 className="px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-white min-w-[180px]"
               >
-                <option value="">All Locations</option>
+                <option value="">{t("search", "allLocations")}</option>
                 {locations.map((loc) => (
                   <option key={loc} value={loc}>
                     {loc}
@@ -114,7 +116,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                         : "bg-background-dark text-white hover:bg-surface-border"
                     }`}
                   >
-                    {type}
+                    {t("search", type)}
                   </button>
                 ))}
               </div>
@@ -123,9 +125,9 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
 
           {/* Results Count */}
           <p className="text-text-muted mb-6">
-            {totalResults} result{totalResults !== 1 ? "s" : ""} found
-            {query && ` for "${query}"`}
-            {selectedLocation && ` in ${selectedLocation}`}
+            {totalResults} {totalResults !== 1 ? t("search", "results") : t("search", "result")}
+            {query && ` ${t("search", "for")} "${query}"`}
+            {selectedLocation && ` ${t("search", "in")} ${selectedLocation}`}
           </p>
 
           {/* Albums Results */}
@@ -194,7 +196,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
               </div>
               {filteredPhotos.length > 50 && (
                 <p className="text-center text-text-muted mt-6">
-                  Showing first 50 of {filteredPhotos.length} photos
+                  {t("search", "showingFirst")} {filteredPhotos.length} {t("search", "photos")}
                 </p>
               )}
             </section>
@@ -206,9 +208,9 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
               <span className="material-symbols-outlined text-6xl text-text-muted/30 mb-4 block">
                 search_off
               </span>
-              <p className="text-text-muted">No results found</p>
+              <p className="text-text-muted">{t("search", "noResults")}</p>
               <p className="text-sm text-text-muted/70 mt-2">
-                Try a different search term or filter
+                {t("search", "tryDifferent")}
               </p>
             </div>
           )}

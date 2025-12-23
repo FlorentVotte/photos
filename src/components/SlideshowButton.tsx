@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Lightbox from "./Lightbox";
+import { useLocale } from "@/lib/LocaleContext";
 
 interface Photo {
   id: string;
@@ -24,6 +25,7 @@ export default function SlideshowButton({
 }: SlideshowButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(currentIndex);
+  const { t } = useLocale();
 
   const handleOpen = () => {
     setPhotoIndex(currentIndex);
@@ -37,7 +39,7 @@ export default function SlideshowButton({
         className="flex items-center gap-2 px-4 py-2 bg-surface-dark border border-surface-border rounded-lg text-white hover:border-primary hover:text-primary transition-colors"
       >
         <span className="material-symbols-outlined text-xl">slideshow</span>
-        <span className="text-sm font-medium">Slideshow</span>
+        <span className="text-sm font-medium">{t("photo", "slideshow")}</span>
       </button>
 
       <Lightbox

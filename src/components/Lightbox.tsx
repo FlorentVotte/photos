@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useState } from "react";
 import Link from "next/link";
+import { useLocale } from "@/lib/LocaleContext";
 
 interface Photo {
   id: string;
@@ -32,6 +33,7 @@ export default function Lightbox({
   slideshowEnabled = false,
   slideshowInterval = 4000,
 }: LightboxProps) {
+  const { t } = useLocale();
   const [isPlaying, setIsPlaying] = useState(slideshowEnabled);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -127,8 +129,8 @@ export default function Lightbox({
         <Link
           href={`/photo/${currentPhoto.id}`}
           className="p-2 text-white/70 hover:text-white transition-colors"
-          aria-label="View photo details"
-          title="View details"
+          aria-label={t("lightbox", "viewDetails")}
+          title={t("lightbox", "viewDetails")}
           onClick={(e) => e.stopPropagation()}
         >
           <span className="material-symbols-outlined text-2xl">info</span>
@@ -137,7 +139,7 @@ export default function Lightbox({
         <button
           onClick={onClose}
           className="p-2 text-white/70 hover:text-white transition-colors"
-          aria-label="Close"
+          aria-label={t("lightbox", "close")}
         >
           <span className="material-symbols-outlined text-3xl">close</span>
         </button>
@@ -151,14 +153,14 @@ export default function Lightbox({
             setIsPlaying((p) => !p);
           }}
           className="p-2 text-white/70 hover:text-white transition-colors"
-          aria-label={isPlaying ? "Pause slideshow" : "Play slideshow"}
+          aria-label={isPlaying ? t("lightbox", "pause") : t("lightbox", "play")}
         >
           <span className="material-symbols-outlined text-2xl">
             {isPlaying ? "pause" : "play_arrow"}
           </span>
         </button>
         {isPlaying && (
-          <span className="text-white/50 text-sm">Slideshow</span>
+          <span className="text-white/50 text-sm">{t("photo", "slideshow")}</span>
         )}
       </div>
 
@@ -174,7 +176,7 @@ export default function Lightbox({
           goPrev();
         }}
         className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-3 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all"
-        aria-label="Previous photo"
+        aria-label={t("lightbox", "previous")}
       >
         <span className="material-symbols-outlined text-4xl">chevron_left</span>
       </button>
@@ -186,7 +188,7 @@ export default function Lightbox({
           goNext();
         }}
         className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all"
-        aria-label="Next photo"
+        aria-label={t("lightbox", "next")}
       >
         <span className="material-symbols-outlined text-4xl">chevron_right</span>
       </button>
@@ -232,10 +234,10 @@ export default function Lightbox({
 
       {/* Keyboard hints */}
       <div className="absolute bottom-4 right-4 z-10 text-white/30 text-xs hidden md:block">
-        <span className="mr-4">Arrows: navigate</span>
-        <span className="mr-4">Space: slideshow</span>
-        <span className="mr-4">I: details</span>
-        <span>Esc: close</span>
+        <span className="mr-4">{t("lightbox", "arrows")}</span>
+        <span className="mr-4">{t("lightbox", "space")}</span>
+        <span className="mr-4">{t("lightbox", "info")}</span>
+        <span>{t("lightbox", "esc")}</span>
       </div>
     </div>
   );

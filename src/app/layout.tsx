@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Serif, Noto_Sans } from "next/font/google";
+import { LocaleProvider } from "@/lib/LocaleContext";
 import "./globals.css";
 
 const notoSerif = Noto_Serif({
@@ -47,7 +48,7 @@ export default function RootLayout({
       <body
         className={`${notoSerif.variable} ${notoSans.variable} bg-background-dark text-white font-display antialiased overflow-x-hidden`}
       >
-        {children}
+        <LocaleProvider>{children}</LocaleProvider>
       </body>
     </html>
   );

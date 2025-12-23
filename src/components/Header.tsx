@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useLocale } from "@/lib/LocaleContext";
 
 interface HeaderProps {
   transparent?: boolean;
@@ -9,6 +10,11 @@ interface HeaderProps {
 
 export default function Header({ transparent = false }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t, locale, setLocale } = useLocale();
+
+  const toggleLocale = () => {
+    setLocale(locale === "en" ? "fr" : "en");
+  };
 
   return (
     <header
@@ -33,32 +39,39 @@ export default function Header({ transparent = false }: HeaderProps) {
             href="/"
             className="text-sm font-medium leading-normal hover:text-primary transition-colors"
           >
-            Home
+            {t("nav", "home")}
           </Link>
           <Link
             href="/#albums"
             className="text-sm font-medium leading-normal hover:text-primary transition-colors"
           >
-            Albums
+            {t("nav", "albums")}
           </Link>
           <Link
             href="/search"
             className="text-sm font-medium leading-normal hover:text-primary transition-colors"
           >
-            Search
+            {t("nav", "search")}
           </Link>
           <Link
             href="/map"
             className="text-sm font-medium leading-normal hover:text-primary transition-colors"
           >
-            Map
+            {t("nav", "map")}
           </Link>
           <Link
             href="/about"
             className="text-sm font-medium leading-normal hover:text-primary transition-colors"
           >
-            About
+            {t("nav", "about")}
           </Link>
+          <button
+            onClick={toggleLocale}
+            className="text-sm font-medium leading-normal hover:text-primary transition-colors uppercase"
+            title={locale === "en" ? "Switch to French" : "Passer en anglais"}
+          >
+            {locale === "en" ? "FR" : "EN"}
+          </button>
         </nav>
 
         {/* Mobile menu button */}
@@ -81,36 +94,45 @@ export default function Header({ transparent = false }: HeaderProps) {
               onClick={() => setMobileMenuOpen(false)}
               className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2"
             >
-              Home
+              {t("nav", "home")}
             </Link>
             <Link
               href="/#albums"
               onClick={() => setMobileMenuOpen(false)}
               className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2"
             >
-              Albums
+              {t("nav", "albums")}
             </Link>
             <Link
               href="/search"
               onClick={() => setMobileMenuOpen(false)}
               className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2"
             >
-              Search
+              {t("nav", "search")}
             </Link>
             <Link
               href="/map"
               onClick={() => setMobileMenuOpen(false)}
               className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2"
             >
-              Map
+              {t("nav", "map")}
             </Link>
             <Link
               href="/about"
               onClick={() => setMobileMenuOpen(false)}
               className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2"
             >
-              About
+              {t("nav", "about")}
             </Link>
+            <button
+              onClick={() => {
+                toggleLocale();
+                setMobileMenuOpen(false);
+              }}
+              className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2 text-left uppercase"
+            >
+              {locale === "en" ? "FR - Français" : "EN - English"}
+            </button>
           </nav>
         </div>
       )}
