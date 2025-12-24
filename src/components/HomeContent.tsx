@@ -64,15 +64,15 @@ export default function HomeContent({
           <h2 className="text-3xl font-bold leading-tight tracking-tight">
             {t("home", "recentAlbums")}
           </h2>
-          <a
-            href="#"
+          <Link
+            href="/albums"
             className="hidden md:flex items-center gap-1 text-sm font-medium text-primary hover:text-white transition-colors"
           >
             {t("home", "viewArchive")}{" "}
             <span className="material-symbols-outlined text-sm">
-              arrow_outward
+              arrow_forward
             </span>
-          </a>
+          </Link>
         </div>
 
         {/* Magazine Grid */}

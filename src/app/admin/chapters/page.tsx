@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import Link from "next/link";
@@ -38,6 +38,8 @@ function ChaptersEditorContent() {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [draggedPhoto, setDraggedPhoto] = useState<{ photoId: string; chapterIndex: number } | null>(null);
+  const [reorderMode, setReorderMode] = useState<number | null>(null); // chapter index being reordered
 
   // Load albums list from database
   useEffect(() => {
@@ -121,6 +123,45 @@ function ChaptersEditorContent() {
   const getUnassignedPhotos = () => {
     const assignedIds = new Set(chapters.flatMap((c) => c.photoIds));
     return photos.filter((p) => !assignedIds.has(p.id));
+  };
+
+  // Drag and drop handlers for photo reordering
+  const handleDragStart = (chapterIndex: number, photoId: string) => {
+    setDraggedPhoto({ photoId, chapterIndex });
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (chapterIndex: number, targetPhotoId: string) => {
+    if (!draggedPhoto || draggedPhoto.chapterIndex !== chapterIndex) {
+      setDraggedPhoto(null);
+      return;
+    }
+
+    const chapter = chapters[chapterIndex];
+    const photoIds = [...chapter.photoIds];
+    const fromIndex = photoIds.indexOf(draggedPhoto.photoId);
+    const toIndex = photoIds.indexOf(targetPhotoId);
+
+    if (fromIndex !== -1 && toIndex !== -1 && fromIndex !== toIndex) {
+      photoIds.splice(fromIndex, 1);
+      photoIds.splice(toIndex, 0, draggedPhoto.photoId);
+      updateChapter(chapterIndex, { photoIds });
+    }
+    setDraggedPhoto(null);
+  };
+
+  const movePhotoInChapter = (chapterIndex: number, photoIndex: number, direction: "up" | "down") => {
+    const chapter = chapters[chapterIndex];
+    const photoIds = [...chapter.photoIds];
+    const newIndex = direction === "up" ? photoIndex - 1 : photoIndex + 1;
+
+    if (newIndex < 0 || newIndex >= photoIds.length) return;
+
+    [photoIds[photoIndex], photoIds[newIndex]] = [photoIds[newIndex], photoIds[photoIndex]];
+    updateChapter(chapterIndex, { photoIds });
   };
 
   return (
@@ -222,31 +263,110 @@ function ChaptersEditorContent() {
 
                   {/* Chapter Photos */}
                   <div className="mt-4">
-                    <h4 className="text-sm text-text-muted mb-3">
-                      Photos in this chapter ({chapter.photoIds.length})
-                    </h4>
-                    <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
-                      {photos.map((photo) => {
-                        const isSelected = chapter.photoIds.includes(photo.id);
-                        return (
-                          <button
-                            key={photo.id}
-                            onClick={() => togglePhotoInChapter(index, photo.id)}
-                            className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                              isSelected
-                                ? "border-primary ring-2 ring-primary/30"
-                                : "border-transparent opacity-40 hover:opacity-70"
-                            }`}
-                          >
-                            <img
-                              src={photo.src.thumb}
-                              alt={photo.title}
-                              className="w-full h-full object-cover"
-                            />
-                          </button>
-                        );
-                      })}
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm text-text-muted">
+                        Photos in this chapter ({chapter.photoIds.length})
+                      </h4>
+                      {chapter.photoIds.length > 1 && (
+                        <button
+                          onClick={() => setReorderMode(reorderMode === index ? null : index)}
+                          className={`text-xs px-3 py-1 rounded-lg transition-colors flex items-center gap-1 ${
+                            reorderMode === index
+                              ? "bg-primary text-black"
+                              : "bg-surface-border text-text-muted hover:text-white"
+                          }`}
+                        >
+                          <span className="material-symbols-outlined text-sm">swap_vert</span>
+                          {reorderMode === index ? "Done" : "Reorder"}
+                        </button>
+                      )}
                     </div>
+
+                    {reorderMode === index ? (
+                      // Reorder mode: show only selected photos with drag handles
+                      <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                        {chapter.photoIds.map((photoId, photoIndex) => {
+                          const photo = photos.find((p) => p.id === photoId);
+                          if (!photo) return null;
+                          const isDragging = draggedPhoto?.photoId === photoId;
+                          return (
+                            <div
+                              key={photoId}
+                              draggable
+                              onDragStart={() => handleDragStart(index, photoId)}
+                              onDragOver={handleDragOver}
+                              onDrop={() => handleDrop(index, photoId)}
+                              className={`relative aspect-square rounded-lg overflow-hidden border-2 cursor-grab active:cursor-grabbing transition-all ${
+                                isDragging
+                                  ? "border-primary opacity-50 scale-95"
+                                  : "border-primary ring-2 ring-primary/30"
+                              }`}
+                            >
+                              <img
+                                src={photo.src.thumb}
+                                alt={photo.title}
+                                className="w-full h-full object-cover pointer-events-none"
+                              />
+                              <div className="absolute top-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                                {photoIndex + 1}
+                              </div>
+                              <div className="absolute bottom-1 right-1 flex gap-1">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    movePhotoInChapter(index, photoIndex, "up");
+                                  }}
+                                  disabled={photoIndex === 0}
+                                  className="bg-black/60 text-white p-0.5 rounded disabled:opacity-30"
+                                >
+                                  <span className="material-symbols-outlined text-sm">arrow_back</span>
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    movePhotoInChapter(index, photoIndex, "down");
+                                  }}
+                                  disabled={photoIndex === chapter.photoIds.length - 1}
+                                  className="bg-black/60 text-white p-0.5 rounded disabled:opacity-30"
+                                >
+                                  <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      // Normal mode: show all photos for selection
+                      <div className="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+                        {photos.map((photo) => {
+                          const isSelected = chapter.photoIds.includes(photo.id);
+                          const photoIndex = chapter.photoIds.indexOf(photo.id);
+                          return (
+                            <button
+                              key={photo.id}
+                              onClick={() => togglePhotoInChapter(index, photo.id)}
+                              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                                isSelected
+                                  ? "border-primary ring-2 ring-primary/30"
+                                  : "border-transparent opacity-40 hover:opacity-70"
+                              }`}
+                            >
+                              <img
+                                src={photo.src.thumb}
+                                alt={photo.title}
+                                className="w-full h-full object-cover"
+                              />
+                              {isSelected && (
+                                <div className="absolute top-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                                  {photoIndex + 1}
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
 
                   {/* Cover Photo Selector */}

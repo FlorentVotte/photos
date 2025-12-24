@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AlbumContent from "@/components/AlbumContent";
+import { ImageGalleryStructuredData, BreadcrumbStructuredData } from "@/components/StructuredData";
 import {
   getAlbumBySlug,
   getChaptersByAlbum,
@@ -13,6 +14,8 @@ import type { Metadata } from "next";
 // Force dynamic rendering to pick up synced data
 export const dynamic = "force-dynamic";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
+
 interface Props {
   params: { slug: string };
 }
@@ -21,12 +24,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const album = await getAlbumBySlug(params.slug);
   if (!album) return { title: "Album Not Found" };
 
+  const description = album.description ||
+    `${album.title} - ${album.photoCount} photos from ${album.location}. ${album.date}.`;
+
   return {
-    title: `${album.title} - Regards Perdus`,
-    description: album.description,
+    title: `${album.title} | ${album.location} - Regards Perdus`,
+    description,
+    keywords: [album.title, album.location, "photography", "travel", "photo album"].filter(Boolean),
     openGraph: {
+      title: `${album.title} | ${album.location}`,
+      description,
+      type: "article",
+      images: album.coverImage ? [{
+        url: album.coverImage,
+        width: 1200,
+        height: 630,
+        alt: album.title,
+      }] : [],
+      publishedTime: album.date,
+      siteName: "Regards Perdus",
+    },
+    twitter: {
+      card: "summary_large_image",
       title: album.title,
-      description: album.description,
+      description,
       images: album.coverImage ? [album.coverImage] : [],
     },
   };
@@ -54,6 +75,26 @@ export default async function AlbumPage({ params }: Props) {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+      <ImageGalleryStructuredData
+        name={album.title}
+        description={album.description || `Photo album from ${album.location}`}
+        url={`${SITE_URL}/album/${album.slug}`}
+        images={photos.slice(0, 10).map((p) => ({
+          url: `${SITE_URL}${p.src.full}`,
+          name: p.title,
+          description: p.caption,
+        }))}
+        datePublished={album.date}
+        author="Florent Votte"
+      />
+      <BreadcrumbStructuredData
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Albums", url: `${SITE_URL}/albums` },
+          { name: album.title, url: `${SITE_URL}/album/${album.slug}` },
+        ]}
+      />
+
       <Header />
 
       <AlbumContent

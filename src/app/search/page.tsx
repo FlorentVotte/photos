@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import { getAlbums, getAllPhotos } from "@/lib/data";
+import { BreadcrumbStructuredData } from "@/components/StructuredData";
 import SearchClient from "./SearchClient";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
+
+export const metadata: Metadata = {
+  title: "Search | Regards Perdus",
+  description: "Search through photos and albums from around the world.",
+};
 
 // Force dynamic rendering to pick up synced data
 export const dynamic = "force-dynamic";
@@ -9,5 +18,15 @@ export default async function SearchPage() {
   const albums = await getAlbums();
   const photos = await getAllPhotos();
 
-  return <SearchClient albums={albums} photos={photos} />;
+  return (
+    <>
+      <BreadcrumbStructuredData
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Search", url: `${SITE_URL}/search` },
+        ]}
+      />
+      <SearchClient albums={albums} photos={photos} />
+    </>
+  );
 }

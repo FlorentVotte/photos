@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 
 interface Gallery {
+  id: string;
   url?: string;
   albumId?: string;
   albumName?: string;
@@ -45,6 +46,7 @@ export default function AdminPage() {
   const [lightroomAlbums, setLightroomAlbums] = useState<LightroomAlbum[]>([]);
   const [loadingAlbums, setLoadingAlbums] = useState(false);
   const [showAlbumPicker, setShowAlbumPicker] = useState(false);
+  const [syncingGalleryId, setSyncingGalleryId] = useState<string | null>(null);
 
   // Fetch current galleries and Adobe status on load
   useEffect(() => {
@@ -193,7 +195,7 @@ export default function AdminPage() {
   };
 
   const triggerSync = async () => {
-    setSyncStatus({ status: "syncing", message: "Syncing albums..." });
+    setSyncStatus({ status: "syncing", message: "Syncing all albums..." });
 
     try {
       const res = await fetch("/api/sync", { method: "POST" });
@@ -217,6 +219,41 @@ export default function AdminPage() {
         status: "error",
         message: "Failed to connect to sync service",
       });
+    }
+  };
+
+  const syncGallery = async (gallery: Gallery) => {
+    setSyncingGalleryId(gallery.id);
+    setSyncStatus({ status: "syncing", message: `Syncing ${gallery.title || gallery.albumName || "album"}...` });
+
+    try {
+      const res = await fetch("/api/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ galleryId: gallery.id }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        setSyncStatus({
+          status: "success",
+          message: `Successfully synced ${gallery.title || gallery.albumName || "album"}`,
+          lastSync: new Date().toISOString(),
+        });
+        fetchGalleries();
+      } else {
+        setSyncStatus({
+          status: "error",
+          message: data.error || "Sync failed",
+        });
+      }
+    } catch (error) {
+      setSyncStatus({
+        status: "error",
+        message: "Failed to connect to sync service",
+      });
+    } finally {
+      setSyncingGalleryId(null);
     }
   };
 
@@ -373,6 +410,20 @@ export default function AdminPage() {
                       )}
                     </div>
                     <div className="flex items-center gap-2 ml-4">
+                      <button
+                        onClick={() => syncGallery(gallery)}
+                        disabled={syncingGalleryId !== null || syncStatus.status === "syncing"}
+                        className={`p-2 rounded-lg transition-colors ${
+                          syncingGalleryId === gallery.id
+                            ? "text-primary"
+                            : "text-text-muted hover:text-primary hover:bg-primary/10"
+                        } disabled:opacity-50`}
+                        title="Sync this album"
+                      >
+                        <span className={`material-symbols-outlined ${syncingGalleryId === gallery.id ? "animate-spin" : ""}`}>
+                          sync
+                        </span>
+                      </button>
                       <button
                         onClick={() => toggleFeatured(gallery, !gallery.featured)}
                         className={`p-2 rounded-lg transition-colors ${

@@ -790,22 +790,28 @@ function formatDate(dateStr?: string): string | undefined {
   }
 }
 
-async function runSync(): Promise<void> {
+async function runSync(galleryId?: string): Promise<void> {
   console.log("Starting Lightroom sync...");
 
   // Load authenticated metadata first
   await loadAuthenticatedMetadata();
 
-  // Get all galleries from database
-  const galleries = await prisma.gallery.findMany();
+  // Get galleries from database (optionally filtered by ID)
+  const galleries = galleryId
+    ? await prisma.gallery.findMany({ where: { id: galleryId } })
+    : await prisma.gallery.findMany();
 
   if (galleries.length === 0) {
-    console.log("\nNo galleries configured!");
-    console.log("Add galleries via the admin interface at /admin");
+    if (galleryId) {
+      console.log(`\nGallery not found: ${galleryId}`);
+    } else {
+      console.log("\nNo galleries configured!");
+      console.log("Add galleries via the admin interface at /admin");
+    }
     return;
   }
 
-  console.log(`\nFound ${galleries.length} configured galleries`);
+  console.log(`\nSyncing ${galleries.length} gallery(ies)...`);
 
   for (const gallery of galleries) {
     if (gallery.type === "private" && gallery.albumId) {
@@ -848,18 +854,26 @@ async function main() {
 Lightroom Sync Service
 
 Usage:
-  npx tsx sync/index.ts              Run sync once
-  npx tsx sync/index.ts --watch      Run continuously
-  npx tsx sync/index.ts --help       Show this help
+  npx tsx sync/index.ts                       Sync all galleries
+  npx tsx sync/index.ts --gallery <id>        Sync a specific gallery by ID
+  npx tsx sync/index.ts --watch               Run continuously
+  npx tsx sync/index.ts --help                Show this help
 
 Note: Galleries are now managed via the admin interface at /admin
 `);
     return;
   }
 
-  // Default: run once
-  await runSync();
+  // Check for --gallery argument
+  const galleryIndex = args.indexOf("--gallery");
+  const galleryId = galleryIndex !== -1 ? args[galleryIndex + 1] : undefined;
+
+  // Run sync (optionally for a single gallery)
+  await runSync(galleryId);
   await prisma.$disconnect();
 }
+
+// Export for API usage
+export { runSync };
 
 main().catch(console.error);

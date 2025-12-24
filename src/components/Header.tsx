@@ -42,7 +42,7 @@ export default function Header({ transparent = false }: HeaderProps) {
             {t("nav", "home")}
           </Link>
           <Link
-            href="/#albums"
+            href="/albums"
             className="text-sm font-medium leading-normal hover:text-primary transition-colors"
           >
             {t("nav", "albums")}
@@ -97,7 +97,7 @@ export default function Header({ transparent = false }: HeaderProps) {
               {t("nav", "home")}
             </Link>
             <Link
-              href="/#albums"
+              href="/albums"
               onClick={() => setMobileMenuOpen(false)}
               className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2"
             >

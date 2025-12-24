@@ -1,8 +1,11 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MapContent from "@/components/MapContent";
+import { BreadcrumbStructuredData } from "@/components/StructuredData";
 import { getAllPhotos } from "@/lib/data";
 import type { Metadata } from "next";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +24,12 @@ export default async function MapPage() {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+      <BreadcrumbStructuredData
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Map", url: `${SITE_URL}/map` },
+        ]}
+      />
       <Header />
       <MapContent photos={photos} />
       <Footer />

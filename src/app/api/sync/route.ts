@@ -49,11 +49,25 @@ export async function POST(request: NextRequest) {
       { status: 401 }
     );
   }
+
   try {
-    console.log("Starting sync...");
+    // Check for galleryId in request body
+    let galleryId: string | undefined;
+    try {
+      const body = await request.json();
+      galleryId = body.galleryId;
+    } catch {
+      // No body or invalid JSON, sync all
+    }
+
+    const syncCommand = galleryId
+      ? `npm run sync -- --gallery ${galleryId}`
+      : "npm run sync";
+
+    console.log(`Starting sync... ${galleryId ? `(gallery: ${galleryId})` : "(all)"}`);
 
     // Run the sync script
-    const { stdout, stderr } = await execAsync("npm run sync", {
+    const { stdout, stderr } = await execAsync(syncCommand, {
       cwd: process.cwd(),
       timeout: 300000, // 5 minute timeout
     });
@@ -72,7 +86,10 @@ export async function POST(request: NextRequest) {
       success: true,
       albums,
       photos,
-      message: `Successfully synced ${albums} albums with ${photos} photos`,
+      galleryId,
+      message: galleryId
+        ? `Successfully synced gallery`
+        : `Successfully synced ${albums} albums with ${photos} photos`,
     });
   } catch (error: any) {
     console.error("Sync error:", error);

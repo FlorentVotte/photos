@@ -1,7 +1,10 @@
 import Header from "@/components/Header";
 import HomeContent from "@/components/HomeContent";
 import Footer from "@/components/Footer";
+import { WebsiteStructuredData } from "@/components/StructuredData";
 import { getAlbums, getFeaturedAlbum, siteConfig } from "@/lib/data";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 
 // Force dynamic rendering to pick up synced data
 export const dynamic = "force-dynamic";
@@ -21,6 +24,11 @@ export default async function Home() {
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+      <WebsiteStructuredData
+        name="Regards Perdus - Photo Portfolio"
+        description="Capturing the fleeting moments between departures and arrivals. A visual journey through the world."
+        url={SITE_URL}
+      />
       <Header />
 
       <div className="layout-container flex h-full grow flex-col">
