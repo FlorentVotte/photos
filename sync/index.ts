@@ -22,7 +22,7 @@ import {
   fetchAuthenticatedAsset,
 } from "./lightroom-authenticated";
 import type { LightroomGalleryData } from "./types";
-import type { SyncProgress, ProgressCallback } from "../src/lib/sync-progress";
+import type { SyncProgress, ProgressCallback } from "./progress-types";
 
 // Database setup
 const dbPath = process.env.NODE_ENV === "production" && fs.existsSync("/app/data")
