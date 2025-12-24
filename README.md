@@ -106,6 +106,39 @@ The app will be available at `http://localhost:3000`.
 
 Data is persisted in a Docker volume at `/app/data`.
 
+## CI/CD with GitHub Actions
+
+The project includes a GitHub Actions workflow that automatically builds and deploys on push to `main`.
+
+### Setup
+
+1. **Configure GitHub Secrets** in your repository settings:
+
+   | Secret | Description |
+   |--------|-------------|
+   | `SSH_HOST` | Your server's hostname or IP |
+   | `SSH_USER` | SSH username |
+   | `SSH_KEY` | Private SSH key (paste the entire key) |
+   | `SSH_PORT` | SSH port (optional, defaults to 22) |
+   | `DEPLOY_PATH` | Path to project on server (e.g., `/home/user/photobook`) |
+
+2. **On your server**, authenticate with GitHub Container Registry:
+   ```bash
+   echo $GITHUB_TOKEN | docker login ghcr.io -u YOUR_USERNAME --password-stdin
+   ```
+
+3. **Copy files to server**:
+   ```bash
+   scp docker-compose.yml .env your-server:~/photobook/
+   ```
+
+### How it works
+
+1. Push to `main` triggers the workflow
+2. Docker image is built and pushed to `ghcr.io`
+3. GitHub Actions SSHs into your server
+4. Runs `docker compose pull && docker compose up -d`
+
 ## Project Structure
 
 ```

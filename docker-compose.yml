@@ -1,10 +1,10 @@
 services:
   photobook:
-    build: .
+    image: ghcr.io/florentvotte/photos:latest
     container_name: photobook
     restart: unless-stopped
     networks:
-      - caddy-net # Connect to the Caddy network
+      - caddy-net
     environment:
       - NODE_ENV=production
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
@@ -13,9 +13,7 @@ services:
       - ADOBE_CLIENT_ID=${ADOBE_CLIENT_ID:-}
       - ADOBE_CLIENT_SECRET=${ADOBE_CLIENT_SECRET:-}
     volumes:
-      # Persist all data (galleries config, tokens, photos)
       - ./data:/app/data
-      # Also mount photos to public for static serving
       - ./data/photos:/app/public/photos
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
@@ -26,5 +24,5 @@ services:
 
 networks:
   caddy-net:
-    external: true # Use the existing Caddy network
-    name: caddy-net # Name of the Caddy network
+    external: true
+    name: caddy-net
