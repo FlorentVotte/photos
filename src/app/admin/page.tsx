@@ -580,12 +580,24 @@ export default function AdminPage() {
                   <h2 className="text-xl font-semibold text-white">
                     Select Albums to Sync
                   </h2>
-                  <button
-                    onClick={() => setShowAlbumPicker(false)}
-                    className="p-2 text-text-muted hover:text-white transition-colors"
-                  >
-                    <span className="material-symbols-outlined">close</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={fetchLightroomAlbums}
+                      disabled={loadingAlbums}
+                      className="p-2 text-text-muted hover:text-primary transition-colors disabled:opacity-50"
+                      title="Refresh album list"
+                    >
+                      <span className={`material-symbols-outlined ${loadingAlbums ? "animate-spin" : ""}`}>
+                        refresh
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => setShowAlbumPicker(false)}
+                      className="p-2 text-text-muted hover:text-white transition-colors"
+                    >
+                      <span className="material-symbols-outlined">close</span>
+                    </button>
+                  </div>
                 </div>
                 <div className="p-6 overflow-y-auto max-h-[60vh]">
                   {lightroomAlbums.length === 0 ? (
