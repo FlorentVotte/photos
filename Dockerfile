@@ -37,7 +37,8 @@ RUN npm init -y && \
       @prisma/adapter-better-sqlite3@latest \
       better-sqlite3@latest \
       sharp@latest \
-      exifreader@latest && \
+      exifreader@latest \
+      node-fetch@2 && \
     npx prisma generate
 
 # Stage 4: Runner (minimal)
