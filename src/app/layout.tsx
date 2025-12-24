@@ -4,7 +4,7 @@ import { LocaleProvider } from "@/lib/LocaleContext";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import prisma from "@/lib/db";
-import { DEFAULT_THEME, DEFAULT_MODE, ThemePresetKey } from "@/lib/themes";
+import { DEFAULT_THEME, ThemePresetKey } from "@/lib/themes";
 import { generateThemeCSSVars, getThemeMetaColor } from "@/lib/theme-utils";
 import "./globals.css";
 
@@ -72,7 +72,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const theme = await getTheme();
-  const initialCSSVars = generateThemeCSSVars(theme, DEFAULT_MODE);
+  const initialCSSVars = generateThemeCSSVars(theme);
 
   return (
     <html lang="en" className="dark">

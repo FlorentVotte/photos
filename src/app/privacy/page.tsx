@@ -72,10 +72,6 @@ export default function PrivacyPage() {
             </p>
             <ul className="list-disc list-inside text-text-muted mb-6 space-y-2">
               <li>
-                <strong className="text-foreground">Theme preferences:</strong> Stores your light/dark mode preference
-                in localStorage for a better browsing experience.
-              </li>
-              <li>
                 <strong className="text-foreground">Language preference:</strong> Stores your language choice (English/French)
                 in localStorage.
               </li>

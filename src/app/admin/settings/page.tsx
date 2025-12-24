@@ -114,7 +114,6 @@ export default function SettingsPage() {
               <h2 className="text-xl font-semibold text-foreground mb-2">Theme</h2>
               <p className="text-text-muted text-sm mb-6">
                 Select a color theme for your site. All visitors will see the selected theme.
-                Visitors can toggle between light and dark mode within your chosen theme.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -140,13 +139,13 @@ export default function SettingsPage() {
                         />
                         <div
                           className="w-8 h-8 rounded-full border border-white/20"
-                          style={{ backgroundColor: preset.colors.dark.background }}
-                          title="Dark background"
+                          style={{ backgroundColor: preset.colors.background }}
+                          title="Background"
                         />
                         <div
                           className="w-8 h-8 rounded-full border border-white/20"
-                          style={{ backgroundColor: preset.colors.light.background }}
-                          title="Light background"
+                          style={{ backgroundColor: preset.colors.surface }}
+                          title="Surface"
                         />
                       </div>
 
@@ -161,14 +160,6 @@ export default function SettingsPage() {
                     </button>
                   );
                 })}
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-surface-border">
-                <h3 className="text-sm font-medium text-foreground mb-2">Light / Dark Mode</h3>
-                <p className="text-xs text-text-muted">
-                  Visitors can toggle between light and dark mode using the sun/moon icon in the header.
-                  Their preference is saved in their browser.
-                </p>
               </div>
             </section>
           )}

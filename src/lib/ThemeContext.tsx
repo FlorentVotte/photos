@@ -1,14 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { ThemePresetKey, ThemeMode, DEFAULT_MODE, THEME_PRESETS } from "./themes";
+import { ThemePresetKey, THEME_PRESETS } from "./themes";
 import { generateThemeCSSVars } from "./theme-utils";
 
 interface ThemeContextType {
   theme: ThemePresetKey;
-  mode: ThemeMode;
-  setMode: (mode: ThemeMode) => void;
-  toggleMode: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -16,25 +13,13 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 interface ThemeProviderProps {
   children: ReactNode;
   initialTheme: ThemePresetKey;
-  initialMode?: ThemeMode;
 }
 
-export function ThemeProvider({
-  children,
-  initialTheme,
-  initialMode = DEFAULT_MODE
-}: ThemeProviderProps) {
-  // Theme comes from server (admin setting), mode from localStorage (visitor preference)
+export function ThemeProvider({ children, initialTheme }: ThemeProviderProps) {
   const [theme] = useState<ThemePresetKey>(initialTheme);
-  const [mode, setModeState] = useState<ThemeMode>(initialMode);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check localStorage for visitor's mode preference
-    const savedMode = localStorage.getItem("theme-mode") as ThemeMode;
-    if (savedMode && (savedMode === "light" || savedMode === "dark")) {
-      setModeState(savedMode);
-    }
     setMounted(true);
   }, []);
 
@@ -42,30 +27,11 @@ export function ThemeProvider({
     if (!mounted) return;
 
     // Apply CSS variables to document root
-    const cssVars = generateThemeCSSVars(theme, mode);
+    const cssVars = generateThemeCSSVars(theme);
     document.documentElement.style.cssText = cssVars;
+  }, [theme, mounted]);
 
-    // Update class for light/dark mode
-    document.documentElement.classList.toggle("dark", mode === "dark");
-    document.documentElement.classList.toggle("light", mode === "light");
-  }, [theme, mode, mounted]);
-
-  const setMode = (newMode: ThemeMode) => {
-    setModeState(newMode);
-    localStorage.setItem("theme-mode", newMode);
-  };
-
-  const toggleMode = () => {
-    setMode(mode === "dark" ? "light" : "dark");
-  };
-
-  // Provide the theme preset object for components that need color info
-  const value: ThemeContextType = {
-    theme,
-    mode,
-    setMode,
-    toggleMode,
-  };
+  const value: ThemeContextType = { theme };
 
   return (
     <ThemeContext.Provider value={value}>
