@@ -67,11 +67,11 @@ export default function AlbumsContent({ albums }: AlbumsContentProps) {
               </span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {albumsByYear[year].map((album, index) => (
+              {albumsByYear[year].map((album) => (
                 <AlbumCard
                   key={album.id}
                   album={album}
-                  variant={index === 0 && albumsByYear[year].length > 2 ? "large" : "square"}
+                  variant="square"
                 />
               ))}
             </div>
