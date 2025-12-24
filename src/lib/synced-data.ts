@@ -7,7 +7,7 @@ import type { Album, Photo, Chapter } from "./types";
 // Get all albums
 export async function getAlbums(): Promise<Album[]> {
   const albums = await prisma.album.findMany({
-    orderBy: { lastSynced: "desc" },
+    orderBy: [{ sortOrder: "asc" }, { lastSynced: "desc" }],
   });
 
   return albums.map((a) => ({
@@ -20,6 +20,7 @@ export async function getAlbums(): Promise<Album[]> {
     date: a.date || "",
     coverImage: a.coverImage || "",
     photoCount: a.photoCount,
+    sortOrder: a.sortOrder,
     featured: a.featured,
     galleryUrl: a.galleryUrl || "",
     lastSynced: a.lastSynced?.toISOString() || "",

@@ -5,7 +5,7 @@ import prisma from "@/lib/db";
 export async function GET() {
   try {
     const albums = await prisma.album.findMany({
-      orderBy: { lastSynced: "desc" },
+      orderBy: [{ sortOrder: "asc" }, { lastSynced: "desc" }],
       select: {
         id: true,
         slug: true,
@@ -15,6 +15,7 @@ export async function GET() {
         location: true,
         date: true,
         photoCount: true,
+        sortOrder: true,
         featured: true,
         lastSynced: true,
       },
@@ -25,6 +26,39 @@ export async function GET() {
     console.error("Error fetching albums:", error);
     return NextResponse.json(
       { error: "Failed to fetch albums" },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT - Reorder albums (batch update sortOrder)
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { albumOrder } = body;
+
+    if (!albumOrder || !Array.isArray(albumOrder)) {
+      return NextResponse.json(
+        { error: "albumOrder array is required" },
+        { status: 400 }
+      );
+    }
+
+    // Update each album's sortOrder
+    await Promise.all(
+      albumOrder.map((albumId: string, index: number) =>
+        prisma.album.update({
+          where: { id: albumId },
+          data: { sortOrder: index },
+        })
+      )
+    );
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error reordering albums:", error);
+    return NextResponse.json(
+      { error: "Failed to reorder albums" },
       { status: 500 }
     );
   }

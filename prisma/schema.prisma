@@ -39,6 +39,7 @@ model Album {
   date        String?
   coverImage  String?
   photoCount  Int      @default(0)
+  sortOrder   Int      @default(0)
   featured    Boolean  @default(false)
   galleryUrl  String?
   lastSynced  DateTime?

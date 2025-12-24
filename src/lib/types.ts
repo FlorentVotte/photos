@@ -44,6 +44,7 @@ export interface Album {
   date: string;
   coverImage: string;
   photoCount: number;
+  sortOrder?: number;
   featured?: boolean;
   galleryUrl?: string;
   lastSynced?: string;
