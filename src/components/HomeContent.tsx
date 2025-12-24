@@ -89,6 +89,19 @@ export default function HomeContent({
             />
           ))}
         </div>
+
+        {/* View Archive Button */}
+        <div className="flex justify-center py-8">
+          <Link
+            href="/albums"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-surface-dark border border-surface-border rounded-lg text-foreground font-medium hover:bg-surface-border transition-colors"
+          >
+            {t("home", "viewArchive")}
+            <span className="material-symbols-outlined text-lg">
+              arrow_forward
+            </span>
+          </Link>
+        </div>
       </section>
     </>
   );
