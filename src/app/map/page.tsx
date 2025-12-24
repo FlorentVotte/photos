@@ -7,8 +7,8 @@ import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 
-// Revalidate every hour to pick up synced data while allowing caching
-export const revalidate = 3600;
+// Force dynamic to always fetch fresh data
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Photo Map - Regards Perdus",

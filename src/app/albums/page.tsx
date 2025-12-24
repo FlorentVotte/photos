@@ -16,16 +16,11 @@ export const metadata: Metadata = {
   },
 };
 
-// Revalidate every hour to pick up synced data while allowing caching
-export const revalidate = 3600;
+// Force dynamic to always fetch fresh data
+export const dynamic = "force-dynamic";
 
 export default async function AlbumsPage() {
-  let albums: Awaited<ReturnType<typeof getAlbums>> = [];
-  try {
-    albums = await getAlbums();
-  } catch {
-    // Database may not exist during build
-  }
+  const albums = await getAlbums();
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">

@@ -5,8 +5,8 @@ import { siteConfig } from "@/lib/data";
 import { getGearStats } from "@/lib/synced-data";
 import type { Metadata } from "next";
 
-// Revalidate every hour to pick up synced data while allowing caching
-export const revalidate = 3600;
+// Force dynamic to always fetch fresh data
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: `About - ${siteConfig.siteName}`,
@@ -14,12 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  let gear: Awaited<ReturnType<typeof getGearStats>> = { cameras: [], lenses: [] };
-  try {
-    gear = await getGearStats();
-  } catch {
-    // Database may not exist during build
-  }
+  const gear = await getGearStats();
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">

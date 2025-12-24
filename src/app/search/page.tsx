@@ -10,19 +10,13 @@ export const metadata: Metadata = {
   description: "Search through photos and albums from around the world.",
 };
 
-// Revalidate every hour to pick up synced data while allowing caching
-export const revalidate = 3600;
+// Force dynamic to always fetch fresh data
+export const dynamic = "force-dynamic";
 
 export default async function SearchPage() {
   // Fetch data on server
-  let albums: Awaited<ReturnType<typeof getAlbums>> = [];
-  let photos: Awaited<ReturnType<typeof getAllPhotos>> = [];
-  try {
-    albums = await getAlbums();
-    photos = await getAllPhotos();
-  } catch {
-    // Database may not exist during build
-  }
+  const albums = await getAlbums();
+  const photos = await getAllPhotos();
 
   return (
     <>
