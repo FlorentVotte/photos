@@ -67,31 +67,37 @@ export async function GET() {
 
     const albumsRaw = albumsResponse?.resources || [];
 
-    // Fetch asset counts for each album in parallel
-    const albumsWithCounts = await Promise.all(
-      albumsRaw.map(async (album: any) => {
-        let assetCount = 0;
-        try {
-          // Fetch album assets to get count
-          const assetsResponse = await fetchWithAuth(
-            `${LIGHTROOM_API}/catalogs/${catalog.id}/albums/${album.id}/assets?limit=1`,
-            token.accessToken
-          );
-          // The API returns total count in the response
-          assetCount = assetsResponse?.base?.total || assetsResponse?.resources?.length || 0;
-        } catch {
-          // If fetching assets fails, use 0
-        }
+    // Fetch asset counts for each album in parallel (batch of 5 to avoid rate limits)
+    const albumsWithCounts = [];
+    const batchSize = 5;
 
-        return {
-          id: album.id,
-          name: album.payload?.name || "Untitled Album",
-          created: album.created,
-          updated: album.updated,
-          assetCount,
-        };
-      })
-    );
+    for (let i = 0; i < albumsRaw.length; i += batchSize) {
+      const batch = albumsRaw.slice(i, i + batchSize);
+      const batchResults = await Promise.all(
+        batch.map(async (album: any) => {
+          let assetCount = 0;
+          try {
+            // Fetch all assets to count them (Adobe API doesn't provide count directly)
+            const assetsResponse = await fetchWithAuth(
+              `${LIGHTROOM_API}/catalogs/${catalog.id}/albums/${album.id}/assets`,
+              token.accessToken
+            );
+            assetCount = assetsResponse?.resources?.length || 0;
+          } catch {
+            // If fetching assets fails, use 0
+          }
+
+          return {
+            id: album.id,
+            name: album.payload?.name || "Untitled Album",
+            created: album.created,
+            updated: album.updated,
+            assetCount,
+          };
+        })
+      );
+      albumsWithCounts.push(...batchResults);
+    }
 
     // Sort by updated date (most recent first)
     albumsWithCounts.sort((a: any, b: any) =>
