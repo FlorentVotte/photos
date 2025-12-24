@@ -87,7 +87,7 @@ export default function Header({ transparent = false }: HeaderProps) {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-background-dark/95 backdrop-blur-md border-b border-surface-border md:hidden">
+        <div className="absolute top-full left-0 right-0 bg-background-dark border-b border-surface-border md:hidden">
           <nav className="flex flex-col p-4 gap-4">
             <Link
               href="/"
