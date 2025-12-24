@@ -15,8 +15,14 @@ export const revalidate = 3600;
 
 export default async function SearchPage() {
   // Fetch data on server
-  const albums = await getAlbums();
-  const photos = await getAllPhotos();
+  let albums: Awaited<ReturnType<typeof getAlbums>> = [];
+  let photos: Awaited<ReturnType<typeof getAllPhotos>> = [];
+  try {
+    albums = await getAlbums();
+    photos = await getAllPhotos();
+  } catch {
+    // Database may not exist during build
+  }
 
   return (
     <>

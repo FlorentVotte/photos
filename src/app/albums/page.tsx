@@ -20,7 +20,12 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function AlbumsPage() {
-  const albums = await getAlbums();
+  let albums: Awaited<ReturnType<typeof getAlbums>> = [];
+  try {
+    albums = await getAlbums();
+  } catch {
+    // Database may not exist during build
+  }
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">

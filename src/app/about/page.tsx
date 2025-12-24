@@ -14,7 +14,13 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const gear = await getGearStats();
+  let gear: Awaited<ReturnType<typeof getGearStats>> = { cameras: [], lenses: [] };
+  try {
+    gear = await getGearStats();
+  } catch {
+    // Database may not exist during build
+  }
+
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />
