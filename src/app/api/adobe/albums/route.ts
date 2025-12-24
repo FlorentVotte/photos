@@ -65,32 +65,42 @@ export async function GET() {
       token.accessToken
     );
 
-    const albums = (albumsResponse?.resources || []).map((album: any) => {
-      // Try multiple possible locations for asset count
-      const assetCount =
-        album.payload?.assetCount ||
-        album.asset_count ||
-        album.links?.["/rels/assets"]?.count ||
-        album.relationships?.assets?.count ||
-        0;
+    const albumsRaw = albumsResponse?.resources || [];
 
-      return {
-        id: album.id,
-        name: album.payload?.name || "Untitled Album",
-        created: album.created,
-        updated: album.updated,
-        assetCount,
-      };
-    });
+    // Fetch asset counts for each album in parallel
+    const albumsWithCounts = await Promise.all(
+      albumsRaw.map(async (album: any) => {
+        let assetCount = 0;
+        try {
+          // Fetch album assets to get count
+          const assetsResponse = await fetchWithAuth(
+            `${LIGHTROOM_API}/catalogs/${catalog.id}/albums/${album.id}/assets?limit=1`,
+            token.accessToken
+          );
+          // The API returns total count in the response
+          assetCount = assetsResponse?.base?.total || assetsResponse?.resources?.length || 0;
+        } catch {
+          // If fetching assets fails, use 0
+        }
+
+        return {
+          id: album.id,
+          name: album.payload?.name || "Untitled Album",
+          created: album.created,
+          updated: album.updated,
+          assetCount,
+        };
+      })
+    );
 
     // Sort by updated date (most recent first)
-    albums.sort((a: any, b: any) =>
+    albumsWithCounts.sort((a: any, b: any) =>
       new Date(b.updated).getTime() - new Date(a.updated).getTime()
     );
 
     return NextResponse.json({
       catalogId: catalog.id,
-      albums,
+      albums: albumsWithCounts,
     });
   } catch (error) {
     console.error("Error fetching Adobe albums:", error);
