@@ -35,29 +35,27 @@ export default function GalleryForm({ onSubmit, loading = false }: GalleryFormPr
   const isDisabled = loading || submitting;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label
-          htmlFor="gallery-url"
-          className="block text-sm text-text-muted mb-2"
-        >
-          Lightroom Gallery URL
-        </label>
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <div className="flex gap-2">
         <input
           id="gallery-url"
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://lightroom.adobe.com/shares/... or https://adobe.ly/..."
+          placeholder="https://lightroom.adobe.com/shares/..."
           disabled={isDisabled}
-          aria-describedby="gallery-url-hint"
-          className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground placeholder-text-muted focus:outline-none focus:border-primary transition-colors disabled:opacity-50"
+          aria-label="Lightroom gallery URL"
+          className="flex-1 px-4 py-2.5 bg-background-dark border border-surface-border rounded-lg text-foreground placeholder-text-muted focus:outline-none focus:border-primary transition-colors disabled:opacity-50 text-sm"
         />
-        <p id="gallery-url-hint" className="sr-only">
-          Enter a public Lightroom gallery share URL
-        </p>
+        <button
+          type="submit"
+          disabled={isDisabled || !url.trim()}
+          className="px-5 py-2.5 bg-surface-border text-foreground font-medium rounded-lg hover:bg-surface-border/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
+        >
+          {submitting ? "Adding..." : "Add"}
+        </button>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <input
           type="checkbox"
           id="gallery-featured"
@@ -66,17 +64,10 @@ export default function GalleryForm({ onSubmit, loading = false }: GalleryFormPr
           disabled={isDisabled}
           className="w-4 h-4 accent-primary"
         />
-        <label htmlFor="gallery-featured" className="text-sm text-text-muted">
-          Set as featured album (shown on homepage hero)
+        <label htmlFor="gallery-featured" className="text-xs text-text-muted">
+          Set as featured (shown on homepage)
         </label>
       </div>
-      <button
-        type="submit"
-        disabled={isDisabled || !url.trim()}
-        className="px-6 py-3 bg-primary text-black font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {submitting ? "Adding..." : "Add Gallery"}
-      </button>
     </form>
   );
 }

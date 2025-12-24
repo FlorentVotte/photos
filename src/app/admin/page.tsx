@@ -308,28 +308,26 @@ export default function AdminPage() {
               className="mb-6"
             >
               <div className="space-y-4">
-                {/* Browse Lightroom Albums - Primary option */}
+                {/* Browse Lightroom - Primary option */}
                 {adobeStatus?.connected ? (
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={fetchLightroomAlbums}
-                      disabled={loadingAlbums}
-                      className="flex-1 px-6 py-3 bg-primary text-black font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-                      aria-label="Browse your Lightroom albums"
-                    >
-                      {loadingAlbums ? (
-                        <>
-                          <span className="material-symbols-outlined animate-spin">sync</span>
-                          Loading...
-                        </>
-                      ) : (
-                        <>
-                          <span className="material-symbols-outlined">photo_library</span>
-                          Browse Lightroom Albums
-                        </>
-                      )}
-                    </button>
-                  </div>
+                  <button
+                    onClick={fetchLightroomAlbums}
+                    disabled={loadingAlbums}
+                    className="w-full px-6 py-3 bg-primary text-black font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                    aria-label="Browse your Lightroom albums"
+                  >
+                    {loadingAlbums ? (
+                      <>
+                        <span className="material-symbols-outlined animate-spin">sync</span>
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        <span className="material-symbols-outlined">photo_library</span>
+                        Browse Lightroom
+                      </>
+                    )}
+                  </button>
                 ) : (
                   <div className="flex items-center gap-3 p-3 bg-surface-dark rounded-lg border border-surface-border">
                     <span className="material-symbols-outlined text-text-muted">link_off</span>
@@ -357,6 +355,28 @@ export default function AdminPage() {
               </div>
             </AdminSection>
 
+            {/* Quick Links */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <AdminLinkCard
+                title="Album Metadata"
+                description="Edit titles, locations, dates"
+                href="/admin/albums"
+                icon="edit_note"
+              />
+              <AdminLinkCard
+                title="Album Chapters"
+                description="Organize photos with narratives"
+                href="/admin/chapters"
+                icon="auto_stories"
+              />
+              <AdminLinkCard
+                title="Site Settings"
+                description="Customize theme and colors"
+                href="/admin/settings"
+                icon="palette"
+              />
+            </div>
+
             {/* Sync Controls */}
             <AdminSection className="mb-6">
               <SyncControls
@@ -381,28 +401,6 @@ export default function AdminPage() {
                 loading={loading}
               />
             </AdminSection>
-
-            {/* Quick Links */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <AdminLinkCard
-                title="Album Metadata"
-                description="Edit titles, locations, dates"
-                href="/admin/albums"
-                icon="edit_note"
-              />
-              <AdminLinkCard
-                title="Album Chapters"
-                description="Organize photos with narratives"
-                href="/admin/chapters"
-                icon="auto_stories"
-              />
-              <AdminLinkCard
-                title="Site Settings"
-                description="Customize theme and colors"
-                href="/admin/settings"
-                icon="palette"
-              />
-            </div>
           </div>
         </main>
 
