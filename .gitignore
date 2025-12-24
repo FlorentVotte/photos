@@ -29,6 +29,7 @@ yarn-error.log*
 # IDE
 .idea/
 .vscode/
+.claude/
 *.swp
 *.swo
 .DS_Store
@@ -38,6 +39,9 @@ yarn-error.log*
 
 # Vercel
 .vercel
+
+# Design inspiration (not part of source)
+inspiration/
 
 # Testing
 coverage/

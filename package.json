@@ -1,6 +1,19 @@
 {
   "name": "photobook",
   "version": "1.0.0",
+  "description": "Self-hosted photo gallery that syncs with Adobe Lightroom",
+  "author": "Florent",
+  "license": "CC-BY-NC-SA-4.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/photobook.git"
+  },
+  "keywords": [
+    "photo-gallery",
+    "lightroom",
+    "nextjs",
+    "self-hosted"
+  ],
   "private": true,
   "scripts": {
     "dev": "next dev",
