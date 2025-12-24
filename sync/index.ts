@@ -22,6 +22,7 @@ import {
   fetchAuthenticatedAsset,
 } from "./lightroom-authenticated";
 import type { LightroomGalleryData } from "./types";
+import type { SyncProgress, ProgressCallback } from "../src/lib/sync-progress";
 
 // Database setup
 const dbPath = process.env.NODE_ENV === "production" && fs.existsSync("/app/data")
@@ -98,12 +99,15 @@ function getAuthenticatedMetadata(assetId: string): { title?: string; caption?: 
 /**
  * Sync a private album from authenticated Adobe API
  */
-async function syncPrivateAlbum(gallery: {
-  id: string;
-  albumId: string;
-  albumName: string | null;
-  featured: boolean;
-}): Promise<void> {
+async function syncPrivateAlbum(
+  gallery: {
+    id: string;
+    albumId: string;
+    albumName: string | null;
+    featured: boolean;
+  },
+  onProgress?: (photoIndex: number, totalPhotos: number, photoName: string) => void
+): Promise<void> {
   console.log(`\nSyncing private album: ${gallery.albumName || gallery.albumId}`);
 
   const token = await prisma.adobeToken.findUnique({ where: { id: "default" } });
@@ -162,6 +166,10 @@ async function syncPrivateAlbum(gallery: {
       const catalogAssetId = asset.asset?.id || asset.id;
       // Use catalog asset ID for storage/display
       const assetId = catalogAssetId;
+
+      // Report progress
+      const photoName = asset.payload?.importSource?.fileName || `Photo ${i + 1}`;
+      onProgress?.(i, assets.length, photoName);
 
       const renditionUrl = await getAssetRenditionUrl(catId, catalogAssetId, token.accessToken);
       if (!renditionUrl) {
@@ -323,11 +331,14 @@ async function syncPrivateAlbum(gallery: {
 /**
  * Sync a public gallery
  */
-async function syncPublicGallery(gallery: {
-  id: string;
-  url: string;
-  featured: boolean;
-}): Promise<void> {
+async function syncPublicGallery(
+  gallery: {
+    id: string;
+    url: string;
+    featured: boolean;
+  },
+  onProgress?: (photoIndex: number, totalPhotos: number, photoName: string) => void
+): Promise<void> {
   console.log(`\nSyncing gallery: ${gallery.url}`);
 
   const galleryData = await parseGalleryUrl(gallery.url);
@@ -356,6 +367,10 @@ async function syncPublicGallery(gallery: {
   // Process photos
   for (let i = 0; i < galleryData.photos.length; i++) {
     const lrPhoto = galleryData.photos[i];
+
+    // Report progress
+    const photoName = lrPhoto.title || lrPhoto.caption || `Photo ${i + 1}`;
+    onProgress?.(i, galleryData.photos.length, photoName);
 
     const exists = await thumbnailsExist(albumSlug, lrPhoto.id);
     let thumbnails;
@@ -790,8 +805,32 @@ function formatDate(dateStr?: string): string | undefined {
   }
 }
 
-async function runSync(galleryId?: string): Promise<void> {
+interface SyncResult {
+  success: boolean;
+  albums: number;
+  photos: number;
+  error?: string;
+}
+
+async function runSync(galleryId?: string, onProgress?: ProgressCallback): Promise<SyncResult> {
   console.log("Starting Lightroom sync...");
+
+  const startedAt = new Date().toISOString();
+
+  // Report initializing
+  onProgress?.({
+    status: "syncing",
+    phase: "initializing",
+    totalGalleries: 0,
+    currentGalleryIndex: 0,
+    currentGalleryName: "",
+    totalPhotos: 0,
+    currentPhotoIndex: 0,
+    currentPhotoName: "",
+    message: "Loading metadata...",
+    startedAt,
+    completedAt: null,
+  });
 
   // Load authenticated metadata first
   await loadAuthenticatedMetadata();
@@ -802,31 +841,85 @@ async function runSync(galleryId?: string): Promise<void> {
     : await prisma.gallery.findMany();
 
   if (galleries.length === 0) {
-    if (galleryId) {
-      console.log(`\nGallery not found: ${galleryId}`);
-    } else {
-      console.log("\nNo galleries configured!");
-      console.log("Add galleries via the admin interface at /admin");
-    }
-    return;
+    const message = galleryId
+      ? `Gallery not found: ${galleryId}`
+      : "No galleries configured!";
+    console.log(`\n${message}`);
+
+    onProgress?.({
+      status: "completed",
+      phase: "complete",
+      totalGalleries: 0,
+      currentGalleryIndex: 0,
+      currentGalleryName: "",
+      totalPhotos: 0,
+      currentPhotoIndex: 0,
+      currentPhotoName: "",
+      message,
+      startedAt,
+      completedAt: new Date().toISOString(),
+    });
+
+    return { success: true, albums: 0, photos: 0 };
   }
 
   console.log(`\nSyncing ${galleries.length} gallery(ies)...`);
 
-  for (const gallery of galleries) {
+  for (let galleryIndex = 0; galleryIndex < galleries.length; galleryIndex++) {
+    const gallery = galleries[galleryIndex];
+    const galleryName = gallery.albumName || gallery.url || `Gallery ${galleryIndex + 1}`;
+
+    // Report gallery progress
+    onProgress?.({
+      status: "syncing",
+      phase: "fetching",
+      totalGalleries: galleries.length,
+      currentGalleryIndex: galleryIndex,
+      currentGalleryName: galleryName,
+      totalPhotos: 0,
+      currentPhotoIndex: 0,
+      currentPhotoName: "",
+      message: `Syncing ${galleryName}...`,
+      startedAt,
+      completedAt: null,
+    });
+
+    // Create photo progress callback
+    const photoProgress = (photoIndex: number, totalPhotos: number, photoName: string) => {
+      onProgress?.({
+        status: "syncing",
+        phase: "downloading",
+        totalGalleries: galleries.length,
+        currentGalleryIndex: galleryIndex,
+        currentGalleryName: galleryName,
+        totalPhotos,
+        currentPhotoIndex: photoIndex,
+        currentPhotoName: photoName,
+        message: `Processing ${photoName}...`,
+        startedAt,
+        completedAt: null,
+      });
+    };
+
     if (gallery.type === "private" && gallery.albumId) {
-      await syncPrivateAlbum({
-        id: gallery.id,
-        albumId: gallery.albumId,
-        albumName: gallery.albumName,
-        featured: gallery.featured,
-      });
+      await syncPrivateAlbum(
+        {
+          id: gallery.id,
+          albumId: gallery.albumId,
+          albumName: gallery.albumName,
+          featured: gallery.featured,
+        },
+        photoProgress
+      );
     } else if (gallery.url) {
-      await syncPublicGallery({
-        id: gallery.id,
-        url: gallery.url,
-        featured: gallery.featured,
-      });
+      await syncPublicGallery(
+        {
+          id: gallery.id,
+          url: gallery.url,
+          featured: gallery.featured,
+        },
+        photoProgress
+      );
     }
   }
 
@@ -836,6 +929,23 @@ async function runSync(galleryId?: string): Promise<void> {
   console.log("\nSync complete!");
   console.log(`Total albums: ${albumCount}`);
   console.log(`Total photos: ${photoCount}`);
+
+  // Report completion
+  onProgress?.({
+    status: "completed",
+    phase: "complete",
+    totalGalleries: galleries.length,
+    currentGalleryIndex: galleries.length,
+    currentGalleryName: "",
+    totalPhotos: 0,
+    currentPhotoIndex: 0,
+    currentPhotoName: "",
+    message: `Synced ${albumCount} albums with ${photoCount} photos`,
+    startedAt,
+    completedAt: new Date().toISOString(),
+  });
+
+  return { success: true, albums: albumCount, photos: photoCount };
 }
 
 // CLI handling

@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import Link from "next/link";
+import { Breadcrumb, SkipLink } from "@/components/admin";
 
 interface Photo {
   id: string;
@@ -165,13 +166,16 @@ function ChaptersEditorContent() {
   };
 
   return (
-    <main className="flex-1 py-12 px-4 md:px-8 lg:px-16">
+    <main id="main-content" className="flex-1 py-12 px-4 md:px-8 lg:px-16">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Link href="/admin" className="text-text-muted hover:text-primary text-sm mb-2 inline-block">
-              &larr; Back to Admin
-            </Link>
+            <Breadcrumb
+              items={[
+                { label: "Admin", href: "/admin" },
+                { label: "Chapter Editor" },
+              ]}
+            />
             <h1 className="text-3xl font-bold text-foreground">Chapter Editor</h1>
           </div>
           {selectedAlbum && (
@@ -470,6 +474,7 @@ function ChaptersEditorContent() {
 export default function ChaptersEditorPage() {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+      <SkipLink />
       <Header />
       <Suspense fallback={
         <div className="flex-1 flex items-center justify-center">

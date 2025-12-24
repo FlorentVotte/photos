@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Link from "next/link";
+import { Breadcrumb, SkipLink } from "@/components/admin";
 
 interface Album {
   id: string;
@@ -136,15 +137,19 @@ export default function AlbumsEditorPage() {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+      <SkipLink />
       <Header />
 
-      <main className="flex-1 py-12 px-4 md:px-8 lg:px-16">
+      <main id="main-content" className="flex-1 py-12 px-4 md:px-8 lg:px-16">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <Link href="/admin" className="text-text-muted hover:text-primary text-sm mb-2 inline-block">
-                &larr; Back to Admin
-              </Link>
+              <Breadcrumb
+                items={[
+                  { label: "Admin", href: "/admin" },
+                  { label: "Album Metadata" },
+                ]}
+              />
               <h1 className="text-3xl font-bold text-foreground">Album Metadata</h1>
               <p className="text-text-muted mt-1">
                 {reorderMode ? "Drag albums or use arrows to reorder" : "Override synced album information"}
@@ -203,10 +208,14 @@ export default function AlbumsEditorPage() {
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs text-text-muted mb-1 uppercase tracking-wider">
+                          <label
+                            htmlFor={`album-title-${album.id}`}
+                            className="block text-xs text-text-muted mb-1 uppercase tracking-wider"
+                          >
                             Title
                           </label>
                           <input
+                            id={`album-title-${album.id}`}
                             type="text"
                             value={editingAlbum.title}
                             onChange={(e) => updateEditingAlbum({ title: e.target.value })}
@@ -214,10 +223,14 @@ export default function AlbumsEditorPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-text-muted mb-1 uppercase tracking-wider">
+                          <label
+                            htmlFor={`album-subtitle-${album.id}`}
+                            className="block text-xs text-text-muted mb-1 uppercase tracking-wider"
+                          >
                             Subtitle
                           </label>
                           <input
+                            id={`album-subtitle-${album.id}`}
                             type="text"
                             value={editingAlbum.subtitle || ""}
                             onChange={(e) => updateEditingAlbum({ subtitle: e.target.value })}
@@ -229,10 +242,14 @@ export default function AlbumsEditorPage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs text-text-muted mb-1 uppercase tracking-wider">
+                          <label
+                            htmlFor={`album-location-${album.id}`}
+                            className="block text-xs text-text-muted mb-1 uppercase tracking-wider"
+                          >
                             Location
                           </label>
                           <input
+                            id={`album-location-${album.id}`}
                             type="text"
                             value={editingAlbum.location || ""}
                             onChange={(e) => updateEditingAlbum({ location: e.target.value })}
@@ -241,10 +258,14 @@ export default function AlbumsEditorPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-text-muted mb-1 uppercase tracking-wider">
+                          <label
+                            htmlFor={`album-date-${album.id}`}
+                            className="block text-xs text-text-muted mb-1 uppercase tracking-wider"
+                          >
                             Date
                           </label>
                           <input
+                            id={`album-date-${album.id}`}
                             type="text"
                             value={editingAlbum.date || ""}
                             onChange={(e) => updateEditingAlbum({ date: e.target.value })}
@@ -255,10 +276,14 @@ export default function AlbumsEditorPage() {
                       </div>
 
                       <div>
-                        <label className="block text-xs text-text-muted mb-1 uppercase tracking-wider">
+                        <label
+                          htmlFor={`album-description-${album.id}`}
+                          className="block text-xs text-text-muted mb-1 uppercase tracking-wider"
+                        >
                           Description
                         </label>
                         <textarea
+                          id={`album-description-${album.id}`}
                           value={editingAlbum.description || ""}
                           onChange={(e) => updateEditingAlbum({ description: e.target.value })}
                           placeholder="Write a description for this album..."
@@ -292,6 +317,7 @@ export default function AlbumsEditorPage() {
                             onClick={() => moveAlbum(index, index - 1)}
                             disabled={index === 0}
                             className="p-1 text-text-muted hover:text-foreground disabled:opacity-30 transition-colors"
+                            aria-label={`Move ${album.title} up`}
                             title="Move up"
                           >
                             <span className="material-symbols-outlined">arrow_upward</span>
@@ -301,6 +327,7 @@ export default function AlbumsEditorPage() {
                             onClick={() => moveAlbum(index, index + 1)}
                             disabled={index === albums.length - 1}
                             className="p-1 text-text-muted hover:text-foreground disabled:opacity-30 transition-colors"
+                            aria-label={`Move ${album.title} down`}
                             title="Move down"
                           >
                             <span className="material-symbols-outlined">arrow_downward</span>

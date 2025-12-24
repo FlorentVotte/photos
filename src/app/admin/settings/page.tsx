@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Header from "@/components/Header";
-import Link from "next/link";
 import { THEME_PRESETS, ThemePresetKey, DEFAULT_THEME } from "@/lib/themes";
+import { Breadcrumb, SkipLink } from "@/components/admin";
 
 interface Settings {
   id: string;
@@ -74,18 +74,18 @@ export default function SettingsPage() {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+      <SkipLink />
       <Header />
 
-      <main className="flex-1 py-12 px-4 md:px-8 lg:px-16">
+      <main id="main-content" className="flex-1 py-12 px-4 md:px-8 lg:px-16">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <Link
-              href="/admin"
-              className="text-text-muted hover:text-primary text-sm mb-2 inline-flex items-center gap-1"
-            >
-              <span className="material-symbols-outlined text-sm">arrow_back</span>
-              Back to Admin
-            </Link>
+            <Breadcrumb
+              items={[
+                { label: "Admin", href: "/admin" },
+                { label: "Site Settings" },
+              ]}
+            />
             <h1 className="text-3xl font-bold text-foreground mt-2">Site Settings</h1>
             <p className="text-text-muted mt-1">
               Customize the look and feel of your photobook
