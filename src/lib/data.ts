@@ -86,9 +86,7 @@ export const siteConfig: SiteConfig = {
   photographerBio:
     "I travel the world documenting landscapes, cultures, and the quiet moments in between. Join me as I explore the intersection of nature and humanity.",
   socialLinks: {
-    instagram: "#",
-    twitter: "#",
-    unsplash: "#",
+    instagram: "https://instagram.com/flovotte",
   },
 };
 
