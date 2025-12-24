@@ -1,14 +1,12 @@
-# Stage 1: Dependencies
+# Stage 1: Dependencies (all)
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Install dependencies for sharp (image processing) and better-sqlite3 (native compilation)
 RUN apk add --no-cache libc6-compat python3 make g++
 
 COPY package.json package-lock.json ./
 COPY prisma ./prisma
 RUN npm ci
-# Generate Prisma client
 RUN npx prisma generate
 
 # Stage 2: Builder
@@ -18,49 +16,64 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build the Next.js app
+# Build Next.js
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-# Stage 3: Runner
+# Pre-compile sync scripts to JavaScript (eliminates tsx at runtime)
+RUN npx tsc -p tsconfig.sync.json
+
+# Stage 3: Production dependencies (minimal)
+FROM node:20-alpine AS prod-deps
+WORKDIR /app
+
+RUN apk add --no-cache libc6-compat python3 make g++
+
+# Create minimal package.json with only runtime deps
+COPY package.json package-lock.json ./
+COPY prisma ./prisma
+
+# Install production only, then remove unnecessary packages
+RUN npm ci --omit=dev && \
+    rm -rf node_modules/typescript node_modules/tsx node_modules/@types && \
+    rm -rf node_modules/eslint* node_modules/tailwindcss node_modules/autoprefixer node_modules/postcss
+
+RUN npx prisma generate
+
+# Stage 4: Runner (minimal)
 FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install runtime dependencies
-RUN apk add --no-cache libc6-compat wget
+# Minimal runtime dependencies only
+RUN apk add --no-cache libc6-compat
 
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-# Copy standalone build
+# Copy standalone Next.js build (minimal)
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 
-# Create public directory (photos will be mounted as volume)
-RUN mkdir -p /app/public/photos
+# Copy pre-compiled sync scripts (JS, no tsx needed)
+COPY --from=builder /app/dist/sync ./dist/sync
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=prod-deps /app/prisma ./prisma
 
-# Copy sync scripts and node_modules for runtime sync capability
-COPY --from=builder /app/sync ./sync
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
-# Copy Prisma schema for database migrations
-COPY --from=builder /app/prisma ./prisma
-# Copy entrypoint script
-COPY docker-entrypoint.sh ./docker-entrypoint.sh
+# Entrypoint
+COPY docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
 
-# Create directories for data persistence and tsx temp
-RUN mkdir -p /app/public/photos /app/data /tmp/tsx-1001
-RUN chown -R nextjs:nodejs /app /tmp/tsx-1001
-RUN chmod +x ./docker-entrypoint.sh
+# Create directories
+RUN mkdir -p /app/public/photos /app/data && \
+    chown -R nextjs:nodejs /app
 
 USER nextjs
 
 EXPOSE 3000
-
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
