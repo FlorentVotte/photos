@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import Link from "next/link";
 import { useLocale } from "@/lib/LocaleContext";
 
@@ -38,6 +38,51 @@ export default function Lightbox({
   const [isLoading, setIsLoading] = useState(true);
 
   const currentPhoto = photos[currentIndex];
+
+  // Touch/swipe handling
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (touchStartX.current === null || touchStartY.current === null) return;
+
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const deltaX = touchEndX - touchStartX.current;
+      const deltaY = touchEndY - touchStartY.current;
+
+      // Minimum swipe distance (50px) and ensure horizontal swipe is dominant
+      const minSwipeDistance = 50;
+      if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX > 0) {
+          // Swipe right - go to previous
+          if (currentIndex > 0) {
+            onNavigate(currentIndex - 1);
+          } else {
+            onNavigate(photos.length - 1);
+          }
+        } else {
+          // Swipe left - go to next
+          if (currentIndex < photos.length - 1) {
+            onNavigate(currentIndex + 1);
+          } else {
+            onNavigate(0);
+          }
+        }
+      }
+
+      touchStartX.current = null;
+      touchStartY.current = null;
+    },
+    [currentIndex, photos.length, onNavigate]
+  );
 
   const goNext = useCallback(() => {
     if (currentIndex < photos.length - 1) {
@@ -120,8 +165,11 @@ export default function Lightbox({
 
   return (
     <div
+      ref={containerRef}
       className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
       onClick={onClose}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Top right controls */}
       <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
