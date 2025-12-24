@@ -83,8 +83,7 @@ export const siteConfig: SiteConfig = {
   siteName: "Regards Perdus",
   tagline: "Capturing the fleeting moments between departures and arrivals.",
   photographerName: "Florent",
-  photographerBio:
-    "I travel the world documenting landscapes, cultures, and the quiet moments in between. Join me as I explore the intersection of nature and humanity.",
+  photographerBio: "", // Now using translations (about.shortBio)
   socialLinks: {
     instagram: "https://instagram.com/flovotte",
   },

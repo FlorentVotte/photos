@@ -24,7 +24,6 @@ interface SocialLinks {
 
 interface AboutContentProps {
   photographerName: string;
-  photographerBio: string;
   gear: {
     cameras: GearItem[];
     lenses: GearItem[];
@@ -35,7 +34,6 @@ interface AboutContentProps {
 
 export default function AboutContent({
   photographerName,
-  photographerBio,
   gear,
   journeyStats,
   socialLinks,
@@ -84,7 +82,7 @@ export default function AboutContent({
                 {photographerName}
               </h2>
               <p className="text-text-muted leading-relaxed max-w-xl">
-                {photographerBio}
+                {t("about", "shortBio")}
               </p>
 
               {/* Social Links */}

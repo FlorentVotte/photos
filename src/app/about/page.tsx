@@ -24,7 +24,6 @@ export default async function AboutPage() {
       <Header />
       <AboutContent
         photographerName={siteConfig.photographerName}
-        photographerBio={siteConfig.photographerBio}
         gear={gear}
         journeyStats={journeyStats}
         socialLinks={siteConfig.socialLinks}
