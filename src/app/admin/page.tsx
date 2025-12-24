@@ -490,6 +490,25 @@ export default function AdminPage() {
             </div>
           </section>
 
+          {/* Site Settings Link */}
+          <section className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-white mb-1">Site Settings</h2>
+                <p className="text-sm text-text-muted">
+                  Customize theme, colors, and appearance
+                </p>
+              </div>
+              <a
+                href="/admin/settings"
+                className="px-6 py-3 bg-surface-border text-white font-semibold rounded-lg hover:bg-surface-border/80 transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined">palette</span>
+                Site Settings
+              </a>
+            </div>
+          </section>
+
           {/* Adobe API Connection */}
           <section className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
             <div className="flex items-center justify-between">

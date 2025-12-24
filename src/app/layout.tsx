@@ -1,7 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Serif, Noto_Sans } from "next/font/google";
 import { LocaleProvider } from "@/lib/LocaleContext";
+import { ThemeProvider } from "@/lib/ThemeContext";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
+import prisma from "@/lib/db";
+import { DEFAULT_THEME, DEFAULT_MODE, ThemePresetKey } from "@/lib/themes";
+import { generateThemeCSSVars, getThemeMetaColor } from "@/lib/theme-utils";
 import "./globals.css";
 
 const notoSerif = Noto_Serif({
@@ -16,12 +20,28 @@ const notoSans = Noto_Sans({
   display: "swap",
 });
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5,
-  themeColor: "#1dc964",
-};
+// Fetch theme from database
+async function getTheme(): Promise<ThemePresetKey> {
+  try {
+    const settings = await prisma.settings.findUnique({
+      where: { id: "default" },
+      select: { theme: true },
+    });
+    return (settings?.theme as ThemePresetKey) || DEFAULT_THEME;
+  } catch {
+    return DEFAULT_THEME;
+  }
+}
+
+export async function generateViewport(): Promise<Viewport> {
+  const theme = await getTheme();
+  return {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    themeColor: getThemeMetaColor(theme),
+  };
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu"),
@@ -46,14 +66,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const theme = await getTheme();
+  const initialCSSVars = generateThemeCSSVars(theme, DEFAULT_MODE);
+
   return (
     <html lang="en" className="dark">
       <head>
+        {/* Inject theme CSS variables inline for SSR - prevents flash */}
+        <style dangerouslySetInnerHTML={{
+          __html: `:root { ${initialCSSVars} }`
+        }} />
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
@@ -67,7 +94,9 @@ export default function RootLayout({
       <body
         className={`${notoSerif.variable} ${notoSans.variable} bg-background-dark text-white font-display antialiased overflow-x-hidden`}
       >
-        <LocaleProvider>{children}</LocaleProvider>
+        <ThemeProvider initialTheme={theme}>
+          <LocaleProvider>{children}</LocaleProvider>
+        </ThemeProvider>
         <ServiceWorkerRegistration />
       </body>
     </html>

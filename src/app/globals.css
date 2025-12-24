@@ -2,22 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom scrollbar for dark theme */
+/* Theme CSS Variables - defaults to forest-green dark */
+:root {
+  --color-primary: #1dc964;
+  --color-background: #112118;
+  --color-surface: #1a2e22;
+  --color-surface-border: #254633;
+  --color-text-primary: #ffffff;
+  --color-text-muted: #95c6a9;
+}
+
+/* Custom scrollbar using theme colors */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #112118;
+  background: var(--color-background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #254633;
+  background: var(--color-surface-border);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1dc964;
+  background: var(--color-primary);
 }
 
 /* Disable image selection/dragging for basic protection */

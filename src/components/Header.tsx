@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useLocale } from "@/lib/LocaleContext";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 interface HeaderProps {
   transparent?: boolean;
@@ -65,6 +66,7 @@ export default function Header({ transparent = false }: HeaderProps) {
           >
             {t("nav", "about")}
           </Link>
+          <ThemeSwitcher />
           <button
             onClick={toggleLocale}
             className="text-sm font-medium leading-normal hover:text-primary transition-colors uppercase"
@@ -124,15 +126,18 @@ export default function Header({ transparent = false }: HeaderProps) {
             >
               {t("nav", "about")}
             </Link>
-            <button
-              onClick={() => {
-                toggleLocale();
-                setMobileMenuOpen(false);
-              }}
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2 text-left uppercase"
-            >
-              {locale === "en" ? "FR - Français" : "EN - English"}
-            </button>
+            <div className="flex items-center gap-4 py-2">
+              <ThemeSwitcher />
+              <button
+                onClick={() => {
+                  toggleLocale();
+                  setMobileMenuOpen(false);
+                }}
+                className="text-sm font-medium leading-normal hover:text-primary transition-colors uppercase"
+              >
+                {locale === "en" ? "FR - Français" : "EN - English"}
+              </button>
+            </div>
           </nav>
         </div>
       )}

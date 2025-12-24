@@ -126,9 +126,10 @@ model AdobeToken {
 
 // Site settings (single row)
 model Settings {
-  id        String   @id @default("default")
-  siteTitle String   @default("Photo Portfolio")
+  id              String   @id @default("default")
+  siteTitle       String   @default("Photo Portfolio")
   siteDescription String?
-  aboutText String?
-  updatedAt DateTime @updatedAt
+  aboutText       String?
+  theme           String   @default("forest-green")
+  updatedAt       DateTime @updatedAt
 }

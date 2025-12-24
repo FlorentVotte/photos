@@ -10,12 +10,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#1dc964",
-        "background-light": "#f6f8f7",
-        "background-dark": "#112118",
-        "surface-dark": "#1a2e22",
-        "surface-border": "#254633",
-        "text-muted": "#95c6a9",
+        // Dynamic theme colors via CSS variables
+        primary: "var(--color-primary)",
+        "background-light": "var(--color-background)",
+        "background-dark": "var(--color-background)",
+        "surface-dark": "var(--color-surface)",
+        "surface-border": "var(--color-surface-border)",
+        "text-muted": "var(--color-text-muted)",
       },
       fontFamily: {
         display: ["var(--font-display)", "Noto Serif", "serif"],
