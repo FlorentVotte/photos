@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import {
   AdminSection,
   AdminLinkCard,
-  AdobeConnectionCard,
   AlbumPickerModal,
   DashboardStats,
   GalleryForm,
@@ -303,13 +302,59 @@ export default function AdminPage() {
               loading={loading}
             />
 
-            {/* Add New Gallery */}
+            {/* Add New Album */}
             <AdminSection
               title="Add New Album"
-              description="Add a public Lightroom gallery by URL"
               className="mb-6"
             >
-              <GalleryForm onSubmit={addGallery} loading={loading} />
+              <div className="space-y-4">
+                {/* Browse Lightroom Albums - Primary option */}
+                {adobeStatus?.connected ? (
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={fetchLightroomAlbums}
+                      disabled={loadingAlbums}
+                      className="flex-1 px-6 py-3 bg-primary text-black font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                      aria-label="Browse your Lightroom albums"
+                    >
+                      {loadingAlbums ? (
+                        <>
+                          <span className="material-symbols-outlined animate-spin">sync</span>
+                          Loading...
+                        </>
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined">photo_library</span>
+                          Browse Lightroom Albums
+                        </>
+                      )}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 p-3 bg-surface-dark rounded-lg border border-surface-border">
+                    <span className="material-symbols-outlined text-text-muted">link_off</span>
+                    <span className="text-sm text-text-muted flex-1">
+                      Connect Adobe to browse private albums
+                    </span>
+                    <a
+                      href="/api/auth/adobe"
+                      className="px-4 py-2 bg-[#FF0000] text-white text-sm font-semibold rounded-lg hover:bg-[#CC0000] transition-colors"
+                    >
+                      Connect
+                    </a>
+                  </div>
+                )}
+
+                {/* Divider */}
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 h-px bg-surface-border" />
+                  <span className="text-xs text-text-muted uppercase">or add by URL</span>
+                  <div className="flex-1 h-px bg-surface-border" />
+                </div>
+
+                {/* Public URL form */}
+                <GalleryForm onSubmit={addGallery} loading={loading} />
+              </div>
             </AdminSection>
 
             {/* Sync Controls */}
@@ -358,49 +403,6 @@ export default function AdminPage() {
                 icon="palette"
               />
             </div>
-
-            {/* Adobe Connection */}
-            <AdminSection className="mb-6">
-              <AdobeConnectionCard
-                status={adobeStatus}
-                onBrowseAlbums={fetchLightroomAlbums}
-                browsingAlbums={loadingAlbums}
-              />
-            </AdminSection>
-
-            {/* Help Section */}
-            <section className="p-6 bg-surface-dark/50 rounded-xl border border-surface-border/50">
-              <h3 className="text-lg font-semibold text-foreground mb-3">
-                How to add albums
-              </h3>
-
-              <div className="mb-6">
-                <h4 className="text-sm font-semibold text-primary mb-2">
-                  Option 1: Private Albums (Recommended)
-                </h4>
-                <ol className="list-decimal list-inside space-y-1 text-text-muted text-sm">
-                  <li>Connect your Adobe account above</li>
-                  <li>Click &quot;Browse Lightroom Albums&quot;</li>
-                  <li>Select the albums you want to sync</li>
-                  <li>Click &quot;Sync Now&quot; to download the photos</li>
-                </ol>
-                <p className="mt-2 text-xs text-text-muted/70">
-                  This method gives you full metadata including titles and captions.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="text-sm font-semibold text-text-muted mb-2">
-                  Option 2: Public Share Links
-                </h4>
-                <ol className="list-decimal list-inside space-y-1 text-text-muted text-sm">
-                  <li>Open Lightroom CC and select an album</li>
-                  <li>Click &quot;Share&quot; and enable &quot;Allow public access&quot;</li>
-                  <li>Copy the share link and paste it above</li>
-                  <li>Click &quot;Sync Now&quot; to download the photos</li>
-                </ol>
-              </div>
-            </section>
           </div>
         </main>
 
