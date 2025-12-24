@@ -28,7 +28,7 @@ export default function Header({ transparent = false }: HeaderProps) {
         <div className="size-8 flex items-center justify-center text-primary">
           <span className="material-symbols-outlined text-3xl">public</span>
         </div>
-        <h2 className="text-xl font-bold leading-tight tracking-[-0.015em] hidden sm:block">
+        <h2 className="text-lg sm:text-xl font-bold leading-tight tracking-[-0.015em]">
           REGARDS PERDUS
         </h2>
       </Link>
