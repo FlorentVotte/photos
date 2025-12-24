@@ -20,6 +20,10 @@ export const translations = {
     },
     recentAlbums: { en: "Recent Albums", fr: "Albums récents" },
     viewArchive: { en: "View Archive", fr: "Voir les archives" },
+    tagline: {
+      en: "Capturing the fleeting moments between departures and arrivals.",
+      fr: "Capturer les instants fugaces entre les départs et les arrivées.",
+    },
   },
 
   // Albums archive page

@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import HomeContent from "@/components/HomeContent";
 import Footer from "@/components/Footer";
 import { WebsiteStructuredData } from "@/components/StructuredData";
-import { getAlbums, getFeaturedAlbum, siteConfig } from "@/lib/data";
+import { getAlbums, getFeaturedAlbum } from "@/lib/data";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 
@@ -37,7 +37,6 @@ export default async function Home() {
             <HomeContent
               featuredAlbum={featuredAlbum}
               recentAlbums={recentAlbums}
-              tagline={siteConfig.tagline}
             />
           </div>
         </div>

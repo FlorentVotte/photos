@@ -21,13 +21,11 @@ interface Album {
 interface HomeContentProps {
   featuredAlbum?: Album;
   recentAlbums: Album[];
-  tagline: string;
 }
 
 export default function HomeContent({
   featuredAlbum,
   recentAlbums,
-  tagline,
 }: HomeContentProps) {
   const { t } = useLocale();
 
@@ -55,7 +53,7 @@ export default function HomeContent({
         <h2 className="text-2xl md:text-4xl font-bold leading-tight tracking-tight max-w-3xl mx-auto italic">
           &ldquo;{t("home", "quote")}&rdquo;
         </h2>
-        <p className="mt-4 text-gray-500 font-sans">{tagline}</p>
+        <p className="mt-4 text-gray-500 font-sans">{t("home", "tagline")}</p>
       </div>
 
       {/* Albums Section */}
