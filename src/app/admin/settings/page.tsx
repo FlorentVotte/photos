@@ -58,7 +58,11 @@ export default function SettingsPage() {
         throw new Error(error.error || "Failed to save theme");
       }
 
-      setMessage({ type: "success", text: "Theme saved! Refresh to see changes." });
+      setMessage({ type: "success", text: "Theme saved! Reloading..." });
+      // Reload the page to apply the new theme from server
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (error) {
       console.error("Failed to save theme:", error);
       setSelectedTheme(previousTheme);

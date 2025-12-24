@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
 import { THEME_PRESETS, DEFAULT_THEME, ThemePresetKey } from "@/lib/themes";
 
@@ -74,6 +75,11 @@ export async function PATCH(request: NextRequest) {
         aboutText: updateData.aboutText || null,
       },
     });
+
+    // Revalidate all pages when theme changes to clear the cache
+    if (updateData.theme) {
+      revalidatePath("/", "layout");
+    }
 
     return NextResponse.json({ success: true, settings });
   } catch (error) {
