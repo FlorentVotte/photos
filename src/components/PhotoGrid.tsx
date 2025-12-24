@@ -98,12 +98,12 @@ export default function PhotoGrid({
             {/* Photo info overlay */}
             <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
               {photo.title && !isFilename(photo.title) && (
-                <h3 className="text-lg md:text-xl text-white font-bold mb-1 truncate">
+                <h3 className="text-lg md:text-xl text-foreground font-bold mb-1 truncate">
                   {photo.title}
                 </h3>
               )}
               {photo.metadata.date && (
-                <p className="text-sm text-white/70">{photo.metadata.date}</p>
+                <p className="text-sm text-foreground/70">{photo.metadata.date}</p>
               )}
             </div>
           </Link>

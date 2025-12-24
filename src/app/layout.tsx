@@ -92,7 +92,7 @@ export default async function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body
-        className={`${notoSerif.variable} ${notoSans.variable} bg-background-dark text-white font-display antialiased overflow-x-hidden`}
+        className={`${notoSerif.variable} ${notoSans.variable} bg-background-dark text-foreground font-display antialiased overflow-x-hidden`}
       >
         <ThemeProvider initialTheme={theme}>
           <LocaleProvider>{children}</LocaleProvider>

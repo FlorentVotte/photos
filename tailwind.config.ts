@@ -17,6 +17,7 @@ const config: Config = {
         "surface-dark": "var(--color-surface)",
         "surface-border": "var(--color-surface-border)",
         "text-muted": "var(--color-text-muted)",
+        foreground: "var(--color-text-primary)",
       },
       fontFamily: {
         display: ["var(--font-display)", "Noto Serif", "serif"],

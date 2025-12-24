@@ -86,7 +86,7 @@ export default function SettingsPage() {
               <span className="material-symbols-outlined text-sm">arrow_back</span>
               Back to Admin
             </Link>
-            <h1 className="text-3xl font-bold text-white mt-2">Site Settings</h1>
+            <h1 className="text-3xl font-bold text-foreground mt-2">Site Settings</h1>
             <p className="text-text-muted mt-1">
               Customize the look and feel of your photobook
             </p>
@@ -111,7 +111,7 @@ export default function SettingsPage() {
             </div>
           ) : (
             <section className="bg-surface-dark rounded-xl p-6 border border-surface-border">
-              <h2 className="text-xl font-semibold text-white mb-2">Theme</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-2">Theme</h2>
               <p className="text-text-muted text-sm mb-6">
                 Select a color theme for your site. All visitors will see the selected theme.
                 Visitors can toggle between light and dark mode within your chosen theme.
@@ -150,7 +150,7 @@ export default function SettingsPage() {
                         />
                       </div>
 
-                      <h3 className="font-semibold text-white">{preset.name}</h3>
+                      <h3 className="font-semibold text-foreground">{preset.name}</h3>
                       <p className="text-xs text-text-muted mt-1">{preset.description}</p>
 
                       {isSelected && (
@@ -164,7 +164,7 @@ export default function SettingsPage() {
               </div>
 
               <div className="mt-8 pt-6 border-t border-surface-border">
-                <h3 className="text-sm font-medium text-white mb-2">Light / Dark Mode</h3>
+                <h3 className="text-sm font-medium text-foreground mb-2">Light / Dark Mode</h3>
                 <p className="text-xs text-text-muted">
                   Visitors can toggle between light and dark mode using the sun/moon icon in the header.
                   Their preference is saved in their browser.

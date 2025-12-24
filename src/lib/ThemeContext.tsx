@@ -48,15 +48,6 @@ export function ThemeProvider({
     // Update class for light/dark mode
     document.documentElement.classList.toggle("dark", mode === "dark");
     document.documentElement.classList.toggle("light", mode === "light");
-
-    // Update body text color based on mode
-    if (mode === "light") {
-      document.body.classList.remove("text-white");
-      document.body.classList.add("text-gray-900");
-    } else {
-      document.body.classList.remove("text-gray-900");
-      document.body.classList.add("text-white");
-    }
   }, [theme, mode, mounted]);
 
   const setMode = (newMode: ThemeMode) => {

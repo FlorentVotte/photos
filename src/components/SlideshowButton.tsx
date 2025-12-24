@@ -36,7 +36,7 @@ export default function SlideshowButton({
     <>
       <button
         onClick={handleOpen}
-        className="flex items-center gap-2 px-4 py-2 bg-surface-dark border border-surface-border rounded-lg text-white hover:border-primary hover:text-primary transition-colors"
+        className="flex items-center gap-2 px-4 py-2 bg-surface-dark border border-surface-border rounded-lg text-foreground hover:border-primary hover:text-primary transition-colors"
       >
         <span className="material-symbols-outlined text-xl">slideshow</span>
         <span className="text-sm font-medium">{t("photo", "slideshow")}</span>

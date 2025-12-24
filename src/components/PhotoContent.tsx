@@ -61,7 +61,7 @@ export default function PhotoContent({
                   </span>
                 </>
               )}
-              <span className="text-white text-sm font-medium leading-normal">
+              <span className="text-foreground text-sm font-medium leading-normal">
                 {photo.title}
               </span>
             </div>
@@ -75,7 +75,7 @@ export default function PhotoContent({
                   className="absolute inset-y-0 left-0 w-16 md:w-24 bg-gradient-to-r from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10"
                 >
                   <div className="size-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-primary hover:text-black transition-colors">
-                    <span className="material-symbols-outlined text-white hover:text-black">
+                    <span className="material-symbols-outlined text-foreground hover:text-black">
                       arrow_back
                     </span>
                   </div>
@@ -87,7 +87,7 @@ export default function PhotoContent({
                   className="absolute inset-y-0 right-0 w-16 md:w-24 bg-gradient-to-l from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10"
                 >
                   <div className="size-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-primary hover:text-black transition-colors">
-                    <span className="material-symbols-outlined text-white hover:text-black">
+                    <span className="material-symbols-outlined text-foreground hover:text-black">
                       arrow_forward
                     </span>
                   </div>
@@ -108,7 +108,7 @@ export default function PhotoContent({
                 {prevPhoto && (
                   <Link
                     href={`/photo/${prevPhoto.id}`}
-                    className="size-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white border border-white/10"
+                    className="size-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-foreground border border-white/10"
                   >
                     <span className="material-symbols-outlined">arrow_back</span>
                   </Link>
@@ -116,7 +116,7 @@ export default function PhotoContent({
                 {nextPhoto && (
                   <Link
                     href={`/photo/${nextPhoto.id}`}
-                    className="size-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-white border border-white/10"
+                    className="size-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-foreground border border-white/10"
                   >
                     <span className="material-symbols-outlined">
                       arrow_forward
@@ -131,7 +131,7 @@ export default function PhotoContent({
               {/* Title and Actions */}
               <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
-                  <h1 className="text-white text-2xl md:text-3xl font-bold leading-tight tracking-[-0.015em] font-display">
+                  <h1 className="text-foreground text-2xl md:text-3xl font-bold leading-tight tracking-[-0.015em] font-display">
                     {photo.title}
                   </h1>
                   {photo.caption && (
@@ -155,7 +155,7 @@ export default function PhotoContent({
                       <span className="material-symbols-outlined text-xl">location_on</span>
                     </div>
                     <div>
-                      <h3 className="text-white text-sm font-semibold">
+                      <h3 className="text-foreground text-sm font-semibold">
                         {photo.metadata.city
                           ? `${photo.metadata.city}, ${photo.metadata.location}`
                           : photo.metadata.location}
@@ -184,7 +184,7 @@ export default function PhotoContent({
                       <span className="material-symbols-outlined text-xl">camera</span>
                     </div>
                     <div>
-                      <h3 className="text-white text-sm font-semibold">
+                      <h3 className="text-foreground text-sm font-semibold">
                         {photo.metadata.camera || t("photo", "camera")}
                       </h3>
                       <p className="text-text-muted text-xs">{photo.metadata.lens || t("photo", "unknownLens")}</p>
@@ -196,25 +196,25 @@ export default function PhotoContent({
                     {photo.metadata.aperture && (
                       <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">{t("photo", "aperture")}</span>
-                        <span className="text-white text-sm font-medium">{photo.metadata.aperture}</span>
+                        <span className="text-foreground text-sm font-medium">{photo.metadata.aperture}</span>
                       </div>
                     )}
                     {photo.metadata.shutterSpeed && (
                       <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">{t("photo", "shutter")}</span>
-                        <span className="text-white text-sm font-medium">{photo.metadata.shutterSpeed}</span>
+                        <span className="text-foreground text-sm font-medium">{photo.metadata.shutterSpeed}</span>
                       </div>
                     )}
                     {photo.metadata.iso && (
                       <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">{t("photo", "iso")}</span>
-                        <span className="text-white text-sm font-medium">{photo.metadata.iso}</span>
+                        <span className="text-foreground text-sm font-medium">{photo.metadata.iso}</span>
                       </div>
                     )}
                     {photo.metadata.focalLength && (
                       <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">{t("photo", "focal")}</span>
-                        <span className="text-white text-sm font-medium">{photo.metadata.focalLength}</span>
+                        <span className="text-foreground text-sm font-medium">{photo.metadata.focalLength}</span>
                       </div>
                     )}
                   </div>

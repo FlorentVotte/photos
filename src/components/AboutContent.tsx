@@ -72,13 +72,13 @@ export default function AboutContent({
 
             {/* Name and Bio */}
             <div className="text-center md:text-left">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
                 {t("about", "title")}{" "}
                 <span className="text-primary italic font-serif">
                   {t("about", "me")}
                 </span>
               </h1>
-              <h2 className="text-xl md:text-2xl text-white font-medium mb-4">
+              <h2 className="text-xl md:text-2xl text-foreground font-medium mb-4">
                 {photographerName}
               </h2>
               <p className="text-text-muted leading-relaxed max-w-xl">
@@ -127,7 +127,7 @@ export default function AboutContent({
       {/* Journey Stats */}
       <section className="py-12 px-4 md:px-8 lg:px-16 bg-surface-dark/30">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-xl font-bold text-white mb-8 text-center flex items-center justify-center gap-2">
+          <h3 className="text-xl font-bold text-foreground mb-8 text-center flex items-center justify-center gap-2">
             <span className="material-symbols-outlined text-primary">explore</span>
             {t("about", "myJourney")}
             {journeyStats.dateRange && (
@@ -142,7 +142,7 @@ export default function AboutContent({
               <span className="material-symbols-outlined text-3xl text-primary mb-2 block">
                 photo_camera
               </span>
-              <div className="text-3xl md:text-4xl font-bold text-white">
+              <div className="text-3xl md:text-4xl font-bold text-foreground">
                 {journeyStats.totalPhotos.toLocaleString()}
               </div>
               <div className="text-sm text-text-muted mt-1">
@@ -154,7 +154,7 @@ export default function AboutContent({
               <span className="material-symbols-outlined text-3xl text-primary mb-2 block">
                 photo_library
               </span>
-              <div className="text-3xl md:text-4xl font-bold text-white">
+              <div className="text-3xl md:text-4xl font-bold text-foreground">
                 {journeyStats.totalAlbums}
               </div>
               <div className="text-sm text-text-muted mt-1">
@@ -166,7 +166,7 @@ export default function AboutContent({
               <span className="material-symbols-outlined text-3xl text-primary mb-2 block">
                 flag
               </span>
-              <div className="text-3xl md:text-4xl font-bold text-white">
+              <div className="text-3xl md:text-4xl font-bold text-foreground">
                 {journeyStats.countries.length}
               </div>
               <div className="text-sm text-text-muted mt-1">
@@ -178,7 +178,7 @@ export default function AboutContent({
               <span className="material-symbols-outlined text-3xl text-primary mb-2 block">
                 location_city
               </span>
-              <div className="text-3xl md:text-4xl font-bold text-white">
+              <div className="text-3xl md:text-4xl font-bold text-foreground">
                 {journeyStats.cities.length}
               </div>
               <div className="text-sm text-text-muted mt-1">
@@ -207,7 +207,7 @@ export default function AboutContent({
       {(gear.cameras.length > 0 || gear.lenses.length > 0) && (
         <section className="py-12 px-4 md:px-8 lg:px-16">
           <div className="max-w-3xl mx-auto">
-            <h3 className="text-xl font-bold text-white mb-8 text-center flex items-center justify-center gap-2">
+            <h3 className="text-xl font-bold text-foreground mb-8 text-center flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-primary">
                 photo_camera
               </span>
@@ -230,7 +230,7 @@ export default function AboutContent({
                       return (
                         <li key={camera.name}>
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-white text-sm font-medium">
+                            <span className="text-foreground text-sm font-medium">
                               {camera.name}
                             </span>
                             <span className="text-text-muted text-xs">
@@ -265,7 +265,7 @@ export default function AboutContent({
                       return (
                         <li key={lens.name}>
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-white text-sm font-medium truncate mr-2">
+                            <span className="text-foreground text-sm font-medium truncate mr-2">
                               {lens.name}
                             </span>
                             <span className="text-text-muted text-xs whitespace-nowrap">
@@ -309,7 +309,7 @@ export default function AboutContent({
             href="https://www.votte.eu"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-surface-dark border border-surface-border text-white font-medium rounded-lg hover:border-primary hover:text-primary transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-surface-dark border border-surface-border text-foreground font-medium rounded-lg hover:border-primary hover:text-primary transition-colors"
           >
             <span className="material-symbols-outlined">open_in_new</span>
             {t("about", "visitSite")}

@@ -265,13 +265,13 @@ export default function AdminPage() {
       <main className="flex-1 py-6 md:py-12 px-4 md:px-8 lg:px-16">
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Album Manager</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Album Manager</h1>
             <button
               onClick={async () => {
                 await fetch("/api/auth/logout", { method: "POST" });
                 window.location.href = "/";
               }}
-              className="px-4 py-2 text-sm text-text-muted hover:text-white transition-colors flex items-center gap-2"
+              className="px-4 py-2 text-sm text-text-muted hover:text-foreground transition-colors flex items-center gap-2"
             >
               <span className="material-symbols-outlined text-base">logout</span>
               Logout
@@ -280,7 +280,7 @@ export default function AdminPage() {
 
           {/* Add New Gallery */}
           <section className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
-            <h2 className="text-xl font-semibold text-white mb-4">Add New Album</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">Add New Album</h2>
             <form onSubmit={addGallery} className="space-y-4">
               <div>
                 <label className="block text-sm text-text-muted mb-2">
@@ -291,7 +291,7 @@ export default function AdminPage() {
                   value={newUrl}
                   onChange={(e) => setNewUrl(e.target.value)}
                   placeholder="https://lightroom.adobe.com/shares/... or https://adobe.ly/..."
-                  className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-white placeholder-text-muted focus:outline-none focus:border-primary transition-colors"
+                  className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground placeholder-text-muted focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
               <div className="flex items-center gap-3">
@@ -319,7 +319,7 @@ export default function AdminPage() {
           <section className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white mb-1">Sync Albums</h2>
+                <h2 className="text-xl font-semibold text-foreground mb-1">Sync Albums</h2>
                 <p className="text-sm text-text-muted">
                   Download photos from all configured Lightroom galleries
                 </p>
@@ -363,7 +363,7 @@ export default function AdminPage() {
 
           {/* Gallery List */}
           <section className="bg-surface-dark rounded-xl p-6 border border-surface-border">
-            <h2 className="text-xl font-semibold text-white mb-4">
+            <h2 className="text-xl font-semibold text-foreground mb-4">
               Configured Galleries ({galleries.length})
             </h2>
 
@@ -392,7 +392,7 @@ export default function AdminPage() {
                             Private
                           </span>
                         )}
-                        <span className="text-white font-medium truncate">
+                        <span className="text-foreground font-medium truncate">
                           {gallery.title || gallery.albumName || "Untitled Album"}
                         </span>
                       </div>
@@ -456,14 +456,14 @@ export default function AdminPage() {
           <section className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white mb-1">Album Metadata</h2>
+                <h2 className="text-xl font-semibold text-foreground mb-1">Album Metadata</h2>
                 <p className="text-sm text-text-muted">
                   Override album titles, locations, dates, and descriptions
                 </p>
               </div>
               <a
                 href="/admin/albums"
-                className="px-6 py-3 bg-surface-border text-white font-semibold rounded-lg hover:bg-surface-border/80 transition-colors flex items-center gap-2"
+                className="px-6 py-3 bg-surface-border text-foreground font-semibold rounded-lg hover:bg-surface-border/80 transition-colors flex items-center gap-2"
               >
                 <span className="material-symbols-outlined">edit_note</span>
                 Edit Metadata
@@ -475,14 +475,14 @@ export default function AdminPage() {
           <section className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white mb-1">Album Chapters</h2>
+                <h2 className="text-xl font-semibold text-foreground mb-1">Album Chapters</h2>
                 <p className="text-sm text-text-muted">
                   Organize photos into chapters with narrative text
                 </p>
               </div>
               <a
                 href="/admin/chapters"
-                className="px-6 py-3 bg-surface-border text-white font-semibold rounded-lg hover:bg-surface-border/80 transition-colors flex items-center gap-2"
+                className="px-6 py-3 bg-surface-border text-foreground font-semibold rounded-lg hover:bg-surface-border/80 transition-colors flex items-center gap-2"
               >
                 <span className="material-symbols-outlined">auto_stories</span>
                 Edit Chapters
@@ -494,14 +494,14 @@ export default function AdminPage() {
           <section className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white mb-1">Site Settings</h2>
+                <h2 className="text-xl font-semibold text-foreground mb-1">Site Settings</h2>
                 <p className="text-sm text-text-muted">
                   Customize theme, colors, and appearance
                 </p>
               </div>
               <a
                 href="/admin/settings"
-                className="px-6 py-3 bg-surface-border text-white font-semibold rounded-lg hover:bg-surface-border/80 transition-colors flex items-center gap-2"
+                className="px-6 py-3 bg-surface-border text-foreground font-semibold rounded-lg hover:bg-surface-border/80 transition-colors flex items-center gap-2"
               >
                 <span className="material-symbols-outlined">palette</span>
                 Site Settings
@@ -513,7 +513,7 @@ export default function AdminPage() {
           <section className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-white mb-1 flex items-center gap-2">
+                <h2 className="text-xl font-semibold text-foreground mb-1 flex items-center gap-2">
                   Adobe Lightroom API
                   {adobeStatus && (
                     <span
@@ -548,8 +548,8 @@ export default function AdminPage() {
                 href="/api/auth/adobe"
                 className={`px-6 py-3 font-semibold rounded-lg transition-colors flex items-center gap-2 ${
                   adobeStatus?.connected
-                    ? "bg-surface-border text-white hover:bg-surface-border/80"
-                    : "bg-[#FF0000] text-white hover:bg-[#CC0000]"
+                    ? "bg-surface-border text-foreground hover:bg-surface-border/80"
+                    : "bg-[#FF0000] text-foreground hover:bg-[#CC0000]"
                 }`}
               >
                 <span className="material-symbols-outlined">
@@ -597,7 +597,7 @@ export default function AdminPage() {
             <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
               <div className="bg-surface-dark rounded-xl border border-surface-border max-w-2xl w-full max-h-[80vh] overflow-hidden">
                 <div className="p-6 border-b border-surface-border flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-white">
+                  <h2 className="text-xl font-semibold text-foreground">
                     Select Albums to Sync
                   </h2>
                   <div className="flex items-center gap-2">
@@ -613,7 +613,7 @@ export default function AdminPage() {
                     </button>
                     <button
                       onClick={() => setShowAlbumPicker(false)}
-                      className="p-2 text-text-muted hover:text-white transition-colors"
+                      className="p-2 text-text-muted hover:text-foreground transition-colors"
                     >
                       <span className="material-symbols-outlined">close</span>
                     </button>
@@ -641,7 +641,7 @@ export default function AdminPage() {
                           >
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-white font-medium">
+                                <span className="text-foreground font-medium">
                                   {album.name}
                                 </span>
                                 {isAdded && (
@@ -672,7 +672,7 @@ export default function AdminPage() {
                 <div className="p-6 border-t border-surface-border flex justify-end">
                   <button
                     onClick={() => setShowAlbumPicker(false)}
-                    className="px-6 py-2 bg-surface-border text-white font-semibold rounded-lg hover:bg-surface-border/80 transition-colors"
+                    className="px-6 py-2 bg-surface-border text-foreground font-semibold rounded-lg hover:bg-surface-border/80 transition-colors"
                   >
                     Done
                   </button>
@@ -683,7 +683,7 @@ export default function AdminPage() {
 
           {/* Help */}
           <section className="mt-8 p-6 bg-surface-dark/50 rounded-xl border border-surface-border/50">
-            <h3 className="text-lg font-semibold text-white mb-3">How to add albums</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-3">How to add albums</h3>
 
             <div className="mb-6">
               <h4 className="text-sm font-semibold text-primary mb-2">Option 1: Private Albums (Recommended)</h4>

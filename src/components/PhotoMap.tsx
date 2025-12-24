@@ -176,7 +176,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
                   className="w-full h-32 object-cover"
                 />
                 <div className="p-3">
-                  <p className="font-medium text-white truncate">{photo.title}</p>
+                  <p className="font-medium text-foreground truncate">{photo.title}</p>
                   {photo.metadata.date && (
                     <p className="text-xs text-text-muted mt-1">{photo.metadata.date}</p>
                   )}

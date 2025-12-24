@@ -42,7 +42,7 @@ export default function ChapterStats({
         <span className="material-symbols-outlined text-xl text-primary">
           photo_camera
         </span>
-        <span className="text-white font-medium">{photoCount}</span>
+        <span className="text-foreground font-medium">{photoCount}</span>
         <span className="text-sm">{t("stats", "photos")}</span>
       </div>
 
@@ -54,7 +54,7 @@ export default function ChapterStats({
             <span className="material-symbols-outlined text-xl text-primary">
               route
             </span>
-            <span className="text-white font-medium">
+            <span className="text-foreground font-medium">
               {formatDistance(distanceKm)}
             </span>
             <span className="text-sm">{t("stats", "traveled")}</span>
@@ -70,7 +70,7 @@ export default function ChapterStats({
             <span className="material-symbols-outlined text-xl text-primary">
               calendar_month
             </span>
-            <span className="text-white font-medium">
+            <span className="text-foreground font-medium">
               {dateRange.start === dateRange.end
                 ? dateRange.start
                 : `${dateRange.start} - ${dateRange.end}`}

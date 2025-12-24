@@ -46,7 +46,7 @@ function LoginForm() {
             <span className="material-symbols-outlined text-5xl text-primary mb-4 block">
               admin_panel_settings
             </span>
-            <h1 className="text-2xl font-bold text-white">Admin Access</h1>
+            <h1 className="text-2xl font-bold text-foreground">Admin Access</h1>
             <p className="text-text-muted mt-2">
               Enter your password to continue
             </p>
@@ -62,7 +62,7 @@ function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter admin password"
-                className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-white placeholder-text-muted focus:outline-none focus:border-primary transition-colors"
+                className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground placeholder-text-muted focus:outline-none focus:border-primary transition-colors"
                 autoFocus
               />
             </div>

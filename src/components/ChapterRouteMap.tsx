@@ -219,7 +219,7 @@ export default function ChapterRouteMap({
                       className="w-full h-24 object-cover"
                     />
                     <div className="p-2">
-                      <p className="font-medium text-white text-sm truncate">
+                      <p className="font-medium text-foreground text-sm truncate">
                         {photo.title}
                       </p>
                       {photo.metadata.city && (

@@ -16,7 +16,7 @@ export default function PrivacyPage() {
         {/* Hero Section */}
         <section className="relative py-16 md:py-24 px-4 md:px-8 lg:px-16">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
               Privacy <span className="text-primary italic font-serif">Policy</span>
             </h1>
             <div className="h-px w-24 bg-primary mx-auto mb-8"></div>
@@ -30,16 +30,16 @@ export default function PrivacyPage() {
               Last updated: December 2024
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Overview</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Overview</h2>
             <p className="text-text-muted leading-relaxed mb-6">
               This website is a personal photography portfolio. We are committed to protecting your privacy
               and processing your data in accordance with the General Data Protection Regulation (GDPR)
               and other applicable data protection laws.
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Data Controller</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Data Controller</h2>
             <p className="text-text-muted leading-relaxed mb-2">
-              <strong className="text-white">Florent Votte</strong>
+              <strong className="text-foreground">Florent Votte</strong>
             </p>
             <p className="text-text-muted leading-relaxed mb-2">
               Email:{" "}
@@ -54,33 +54,33 @@ export default function PrivacyPage() {
               </a>
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Data We Collect</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Data We Collect</h2>
             <p className="text-text-muted leading-relaxed mb-4">
               This website collects minimal data:
             </p>
             <ul className="list-disc list-inside text-text-muted mb-6 space-y-2">
               <li>
-                <strong className="text-white">Navigation data:</strong> Server logs including IP addresses,
+                <strong className="text-foreground">Navigation data:</strong> Server logs including IP addresses,
                 browser type, operating system, pages visited, timestamps, and referrer URLs. These are used
                 for security and website maintenance purposes and are retained for a maximum of 12 months.
               </li>
             </ul>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Cookies</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Cookies</h2>
             <p className="text-text-muted leading-relaxed mb-4">
               This website uses only essential cookies:
             </p>
             <ul className="list-disc list-inside text-text-muted mb-6 space-y-2">
               <li>
-                <strong className="text-white">Theme preferences:</strong> Stores your light/dark mode preference
+                <strong className="text-foreground">Theme preferences:</strong> Stores your light/dark mode preference
                 in localStorage for a better browsing experience.
               </li>
               <li>
-                <strong className="text-white">Language preference:</strong> Stores your language choice (English/French)
+                <strong className="text-foreground">Language preference:</strong> Stores your language choice (English/French)
                 in localStorage.
               </li>
               <li>
-                <strong className="text-white">Service Worker / Cache:</strong> Enables offline mode and improves
+                <strong className="text-foreground">Service Worker / Cache:</strong> Enables offline mode and improves
                 loading performance.
               </li>
             </ul>
@@ -88,7 +88,7 @@ export default function PrivacyPage() {
               No advertising or third-party tracking cookies are used on this website.
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Third-Party Services</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Third-Party Services</h2>
             <p className="text-text-muted leading-relaxed mb-6">
               Images on this website are served from Adobe Lightroom servers. Please refer to{" "}
               <a href="https://www.adobe.com/privacy.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
@@ -98,7 +98,7 @@ export default function PrivacyPage() {
               third parties for marketing or advertising purposes.
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Your Rights</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Your Rights</h2>
             <p className="text-text-muted leading-relaxed mb-4">
               Under the GDPR, you have the following rights:
             </p>
@@ -118,7 +118,7 @@ export default function PrivacyPage() {
               </a>. We will respond within one month.
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Data Security</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Data Security</h2>
             <p className="text-text-muted leading-relaxed mb-4">
               We implement appropriate technical and organizational measures to protect your personal data:
             </p>
@@ -129,17 +129,17 @@ export default function PrivacyPage() {
               <li>Regular backups</li>
             </ul>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Complaints</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Complaints</h2>
             <p className="text-text-muted leading-relaxed mb-6">
               If you believe your data protection rights have been violated, you have the right to lodge
               a complaint with the French data protection authority (CNIL):<br />
-              <strong className="text-white">CNIL</strong> - 3 Place de Fontenoy, TSA 80715, 75334 Paris Cedex 07, France<br />
+              <strong className="text-foreground">CNIL</strong> - 3 Place de Fontenoy, TSA 80715, 75334 Paris Cedex 07, France<br />
               <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                 www.cnil.fr
               </a>
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Changes to This Policy</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Changes to This Policy</h2>
             <p className="text-text-muted leading-relaxed mb-6">
               We may update this privacy policy from time to time. Any changes will be posted on this
               page with an updated revision date.

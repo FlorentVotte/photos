@@ -71,7 +71,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
 
       <main className="flex-1 py-12 px-4 md:px-8 lg:px-16">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold text-white mb-8">{t("search", "title")}</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-8">{t("search", "title")}</h1>
 
           {/* Search Input */}
           <div className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
@@ -86,7 +86,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={t("search", "placeholder")}
-                  className="w-full pl-12 pr-4 py-3 bg-background-dark border border-surface-border rounded-lg text-white placeholder-text-muted focus:outline-none focus:border-primary transition-colors"
+                  className="w-full pl-12 pr-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground placeholder-text-muted focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
 
@@ -94,7 +94,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
               <select
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
-                className="px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-white min-w-[180px]"
+                className="px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground min-w-[180px]"
               >
                 <option value="">{t("search", "allLocations")}</option>
                 {locations.map((loc) => (
@@ -113,7 +113,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                     className={`px-4 py-3 capitalize transition-colors ${
                       filterType === type
                         ? "bg-primary text-black"
-                        : "bg-background-dark text-white hover:bg-surface-border"
+                        : "bg-background-dark text-foreground hover:bg-surface-border"
                     }`}
                   >
                     {t("search", type)}
@@ -133,7 +133,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
           {/* Albums Results */}
           {filteredAlbums.length > 0 && (
             <section className="mb-12">
-              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">photo_album</span>
                 Albums ({filteredAlbums.length})
               </h2>
@@ -150,7 +150,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 p-6">
-                      <h3 className="text-xl font-bold text-white mb-1">
+                      <h3 className="text-xl font-bold text-foreground mb-1">
                         {album.title}
                       </h3>
                       <p className="text-sm text-text-muted">
@@ -169,7 +169,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
           {/* Photos Results */}
           {filteredPhotos.length > 0 && (
             <section>
-              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">image</span>
                 Photos ({filteredPhotos.length})
               </h2>
@@ -187,7 +187,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform">
-                      <p className="text-xs text-white truncate">
+                      <p className="text-xs text-foreground truncate">
                         {photo.metadata.date}
                       </p>
                     </div>

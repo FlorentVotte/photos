@@ -16,7 +16,7 @@ export default function LegalPage() {
         {/* Hero Section */}
         <section className="relative py-16 md:py-24 px-4 md:px-8 lg:px-16">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
               Legal <span className="text-primary italic font-serif">Notice</span>
             </h1>
             <div className="h-px w-24 bg-primary mx-auto mb-8"></div>
@@ -30,9 +30,9 @@ export default function LegalPage() {
               Last updated: December 2024
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Website Owner</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Website Owner</h2>
             <p className="text-text-muted leading-relaxed mb-2">
-              <strong className="text-white">Florent Votte</strong> (Individual)
+              <strong className="text-foreground">Florent Votte</strong> (Individual)
             </p>
             <p className="text-text-muted leading-relaxed mb-2">
               Email:{" "}
@@ -47,14 +47,14 @@ export default function LegalPage() {
               </a>
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Publication Director</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Publication Director</h2>
             <p className="text-text-muted leading-relaxed mb-6">
               Florent Votte
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Hosting</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Hosting</h2>
             <p className="text-text-muted leading-relaxed mb-2">
-              <strong className="text-white">OVH SAS</strong>
+              <strong className="text-foreground">OVH SAS</strong>
             </p>
             <p className="text-text-muted leading-relaxed mb-2">
               2 rue Kellermann, 59100 Roubaix, France
@@ -63,7 +63,7 @@ export default function LegalPage() {
               Phone: 09 72 10 10 07
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Intellectual Property</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Intellectual Property</h2>
             <p className="text-text-muted leading-relaxed mb-6">
               All content on this website (photographs, images, texts, graphics, logos) is the exclusive
               property of Florent Votte unless otherwise stated. Any reproduction, distribution,
@@ -76,7 +76,7 @@ export default function LegalPage() {
               </a>.
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Terms of Use</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Terms of Use</h2>
             <p className="text-text-muted leading-relaxed mb-4">
               By accessing and using this website, you agree to the following terms:
             </p>
@@ -87,7 +87,7 @@ export default function LegalPage() {
               <li>You may share links to pages on this website.</li>
             </ul>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Disclaimer</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Disclaimer</h2>
             <p className="text-text-muted leading-relaxed mb-6">
               The information provided on this website is for general informational purposes only.
               While we strive to keep the information accurate and up-to-date, we make no representations
@@ -95,21 +95,21 @@ export default function LegalPage() {
               of the website or the information contained on it.
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">External Links</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">External Links</h2>
             <p className="text-text-muted leading-relaxed mb-6">
               This website may contain links to external websites (Adobe Lightroom, social networks).
               We have no control over the content and availability of these sites and are not responsible
               for their content or privacy practices.
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Applicable Law</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Applicable Law</h2>
             <p className="text-text-muted leading-relaxed mb-6">
               This legal notice is governed by and construed in accordance with the laws of the
               European Union and France. Any disputes arising from the use of this website shall
               be subject to the exclusive jurisdiction of the French courts.
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Credits</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Credits</h2>
             <p className="text-text-muted leading-relaxed mb-6">
               Design and development: Florent Votte<br />
               Photography: Florent Votte

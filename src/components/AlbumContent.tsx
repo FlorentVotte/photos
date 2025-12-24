@@ -61,10 +61,10 @@ export default function AlbumContent({
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-black/20 to-background-dark" />
 
         <div className="relative z-20 text-center px-4 max-w-4xl mx-auto flex flex-col items-center gap-6">
-          <span className="inline-block py-1 px-3 rounded-full border border-white/30 bg-black/20 text-xs font-sans tracking-widest uppercase text-white backdrop-blur-sm">
+          <span className="inline-block py-1 px-3 rounded-full border border-white/30 bg-black/20 text-xs font-sans tracking-widest uppercase text-foreground backdrop-blur-sm">
             {t("album", "travelDiary")}
           </span>
-          <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight drop-shadow-2xl">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-foreground leading-tight tracking-tight drop-shadow-2xl">
             {album.title.split(" ")[0]}{" "}
             <span className="italic text-primary font-serif font-medium">
               {album.subtitle || album.title.split(" ").slice(1).join(" ")}
@@ -74,7 +74,7 @@ export default function AlbumContent({
           <p className="text-lg md:text-xl text-gray-200 font-light tracking-wide max-w-2xl">
             {album.date} • {album.location}
           </p>
-          <div className="mt-8 animate-bounce text-white/50">
+          <div className="mt-8 animate-bounce text-foreground/50">
             <span className="material-symbols-outlined text-3xl">
               keyboard_arrow_down
             </span>
@@ -119,7 +119,7 @@ export default function AlbumContent({
               {/* Chapter Title */}
               <div className="flex items-center justify-center gap-4 mb-6">
                 <div className="h-px w-12 bg-gray-700" />
-                <h2 className="text-3xl text-white font-bold tracking-tight">
+                <h2 className="text-3xl text-foreground font-bold tracking-tight">
                   {t("album", "chapter")} {chapterIndex + 1}: {getChapterTitle(chapter)}
                 </h2>
                 <div className="h-px w-12 bg-gray-700" />
@@ -170,7 +170,7 @@ export default function AlbumContent({
           <section className="w-full">
             <div className="flex items-center justify-center gap-4 mb-12">
               <div className="h-px w-12 bg-gray-700" />
-              <h2 className="text-3xl text-white font-bold tracking-tight">
+              <h2 className="text-3xl text-foreground font-bold tracking-tight">
                 {t("album", "gallery")}
               </h2>
               <div className="h-px w-12 bg-gray-700" />
@@ -194,7 +194,7 @@ export default function AlbumContent({
                   <p className="text-primary font-bold tracking-widest uppercase text-sm font-sans">
                     {t("album", "nextJourney")}
                   </p>
-                  <h3 className="text-4xl md:text-5xl text-white font-bold leading-tight">
+                  <h3 className="text-4xl md:text-5xl text-foreground font-bold leading-tight">
                     {nextAlbum.title}
                   </h3>
                   <p className="text-gray-400 max-w-md">
@@ -203,7 +203,7 @@ export default function AlbumContent({
                   </p>
                   <Link
                     href={`/album/${nextAlbum.slug}`}
-                    className="mt-4 flex items-center gap-2 text-white hover:text-primary transition-colors group"
+                    className="mt-4 flex items-center gap-2 text-foreground hover:text-primary transition-colors group"
                   >
                     <span className="font-bold underline decoration-primary underline-offset-4">
                       {t("home", "viewAlbum")}

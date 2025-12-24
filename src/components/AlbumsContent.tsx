@@ -45,7 +45,7 @@ export default function AlbumsContent({ albums }: AlbumsContentProps) {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             {t("albums", "title")}
           </h1>
           <p className="text-lg text-text-muted max-w-2xl">
@@ -60,7 +60,7 @@ export default function AlbumsContent({ albums }: AlbumsContentProps) {
         {sortedYears.map((year) => (
           <section key={year} className="mb-16">
             <div className="flex items-center gap-4 mb-6">
-              <h2 className="text-2xl font-bold text-white">{year}</h2>
+              <h2 className="text-2xl font-bold text-foreground">{year}</h2>
               <div className="flex-1 h-px bg-surface-border" />
               <span className="text-sm text-text-muted">
                 {albumsByYear[year].length} {albumsByYear[year].length === 1 ? "album" : "albums"}

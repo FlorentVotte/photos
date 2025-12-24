@@ -42,7 +42,7 @@ export default function AlbumCard({
 
           {/* Title */}
           <h3
-            className={`text-white font-bold leading-tight mb-1 ${
+            className={`text-foreground font-bold leading-tight mb-1 ${
               variant === "large" ? "text-3xl" : "text-xl md:text-2xl"
             }`}
           >

@@ -145,7 +145,7 @@ export default function AlbumsEditorPage() {
               <Link href="/admin" className="text-text-muted hover:text-primary text-sm mb-2 inline-block">
                 &larr; Back to Admin
               </Link>
-              <h1 className="text-3xl font-bold text-white">Album Metadata</h1>
+              <h1 className="text-3xl font-bold text-foreground">Album Metadata</h1>
               <p className="text-text-muted mt-1">
                 {reorderMode ? "Drag albums or use arrows to reorder" : "Override synced album information"}
               </p>
@@ -159,7 +159,7 @@ export default function AlbumsEditorPage() {
                       setHasOrderChanges(false);
                       fetchAlbums(); // Reset order
                     }}
-                    className="px-4 py-2 text-text-muted hover:text-white transition-colors"
+                    className="px-4 py-2 text-text-muted hover:text-foreground transition-colors"
                   >
                     Cancel
                   </button>
@@ -174,7 +174,7 @@ export default function AlbumsEditorPage() {
               ) : (
                 <button
                   onClick={() => setReorderMode(true)}
-                  className="px-4 py-2 bg-surface-border text-white rounded-lg hover:bg-surface-border/80 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-surface-border text-foreground rounded-lg hover:bg-surface-border/80 transition-colors flex items-center gap-2"
                 >
                   <span className="material-symbols-outlined text-base">swap_vert</span>
                   Reorder
@@ -210,7 +210,7 @@ export default function AlbumsEditorPage() {
                             type="text"
                             value={editingAlbum.title}
                             onChange={(e) => updateEditingAlbum({ title: e.target.value })}
-                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-white"
+                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-foreground"
                           />
                         </div>
                         <div>
@@ -222,7 +222,7 @@ export default function AlbumsEditorPage() {
                             value={editingAlbum.subtitle || ""}
                             onChange={(e) => updateEditingAlbum({ subtitle: e.target.value })}
                             placeholder="Optional subtitle"
-                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-white placeholder-text-muted/50"
+                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-foreground placeholder-text-muted/50"
                           />
                         </div>
                       </div>
@@ -237,7 +237,7 @@ export default function AlbumsEditorPage() {
                             value={editingAlbum.location || ""}
                             onChange={(e) => updateEditingAlbum({ location: e.target.value })}
                             placeholder="e.g., Rome, Italy"
-                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-white placeholder-text-muted/50"
+                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-foreground placeholder-text-muted/50"
                           />
                         </div>
                         <div>
@@ -249,7 +249,7 @@ export default function AlbumsEditorPage() {
                             value={editingAlbum.date || ""}
                             onChange={(e) => updateEditingAlbum({ date: e.target.value })}
                             placeholder="e.g., September 2023"
-                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-white placeholder-text-muted/50"
+                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-foreground placeholder-text-muted/50"
                           />
                         </div>
                       </div>
@@ -263,14 +263,14 @@ export default function AlbumsEditorPage() {
                           onChange={(e) => updateEditingAlbum({ description: e.target.value })}
                           placeholder="Write a description for this album..."
                           rows={3}
-                          className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-white placeholder-text-muted/50 resize-none"
+                          className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground placeholder-text-muted/50 resize-none"
                         />
                       </div>
 
                       <div className="flex items-center justify-end gap-3 pt-2">
                         <button
                           onClick={() => setEditingAlbum(null)}
-                          className="px-4 py-2 text-text-muted hover:text-white transition-colors"
+                          className="px-4 py-2 text-text-muted hover:text-foreground transition-colors"
                         >
                           Cancel
                         </button>
@@ -291,7 +291,7 @@ export default function AlbumsEditorPage() {
                           <button
                             onClick={() => moveAlbum(index, index - 1)}
                             disabled={index === 0}
-                            className="p-1 text-text-muted hover:text-white disabled:opacity-30 transition-colors"
+                            className="p-1 text-text-muted hover:text-foreground disabled:opacity-30 transition-colors"
                             title="Move up"
                           >
                             <span className="material-symbols-outlined">arrow_upward</span>
@@ -300,7 +300,7 @@ export default function AlbumsEditorPage() {
                           <button
                             onClick={() => moveAlbum(index, index + 1)}
                             disabled={index === albums.length - 1}
-                            className="p-1 text-text-muted hover:text-white disabled:opacity-30 transition-colors"
+                            className="p-1 text-text-muted hover:text-foreground disabled:opacity-30 transition-colors"
                             title="Move down"
                           >
                             <span className="material-symbols-outlined">arrow_downward</span>
@@ -309,7 +309,7 @@ export default function AlbumsEditorPage() {
                       )}
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-xl font-bold text-white">{album.title}</h3>
+                          <h3 className="text-xl font-bold text-foreground">{album.title}</h3>
                           {album.featured && (
                             <span className="px-2 py-0.5 text-xs bg-primary/20 text-primary rounded">
                               Featured
@@ -343,7 +343,7 @@ export default function AlbumsEditorPage() {
                         <div className="flex items-center gap-2 ml-4">
                           <Link
                             href={`/album/${album.slug}`}
-                            className="p-2 text-text-muted hover:text-white transition-colors"
+                            className="p-2 text-text-muted hover:text-foreground transition-colors"
                             title="View album"
                           >
                             <span className="material-symbols-outlined">visibility</span>

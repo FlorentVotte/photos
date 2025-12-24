@@ -64,7 +64,7 @@ export default function HomeContent({
           </h2>
           <Link
             href="/albums"
-            className="hidden md:flex items-center gap-1 text-sm font-medium text-primary hover:text-white transition-colors"
+            className="hidden md:flex items-center gap-1 text-sm font-medium text-primary hover:text-foreground transition-colors"
           >
             {t("home", "viewArchive")}{" "}
             <span className="material-symbols-outlined text-sm">

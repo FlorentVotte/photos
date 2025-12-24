@@ -35,13 +35,13 @@ export default function Hero({
               <span className="material-symbols-outlined text-primary text-sm">
                 auto_awesome
               </span>
-              <span className="text-white text-xs font-bold uppercase tracking-widest">
+              <span className="text-foreground text-xs font-bold uppercase tracking-widest">
                 {tag}
               </span>
             </div>
           )}
 
-          <h1 className="text-white text-4xl md:text-6xl font-black leading-tight tracking-[-0.033em]">
+          <h1 className="text-foreground text-4xl md:text-6xl font-black leading-tight tracking-[-0.033em]">
             {title}
           </h1>
 
@@ -71,7 +71,7 @@ export default function Hero({
         )}
 
         {showScrollHint && (
-          <div className="animate-bounce text-white/50 mt-4 self-center">
+          <div className="animate-bounce text-foreground/50 mt-4 self-center">
             <span className="material-symbols-outlined text-3xl">
               keyboard_arrow_down
             </span>

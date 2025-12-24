@@ -172,7 +172,7 @@ function ChaptersEditorContent() {
             <Link href="/admin" className="text-text-muted hover:text-primary text-sm mb-2 inline-block">
               &larr; Back to Admin
             </Link>
-            <h1 className="text-3xl font-bold text-white">Chapter Editor</h1>
+            <h1 className="text-3xl font-bold text-foreground">Chapter Editor</h1>
           </div>
           {selectedAlbum && (
             <button
@@ -191,7 +191,7 @@ function ChaptersEditorContent() {
           <select
             value={selectedAlbum}
             onChange={(e) => setSelectedAlbum(e.target.value)}
-            className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-white"
+            className="w-full px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground"
           >
             <option value="">Choose an album...</option>
             {albums.map((album) => (
@@ -223,7 +223,7 @@ function ChaptersEditorContent() {
                             value={chapter.title}
                             onChange={(e) => updateChapter(index, { title: e.target.value })}
                             placeholder="Chapter title"
-                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-white text-lg font-bold mb-2"
+                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-foreground text-lg font-bold mb-2"
                           />
                           <textarea
                             value={chapter.narrative || ""}
@@ -241,7 +241,7 @@ function ChaptersEditorContent() {
                             value={chapter.titleFr || ""}
                             onChange={(e) => updateChapter(index, { titleFr: e.target.value })}
                             placeholder="Titre du chapitre"
-                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-white text-lg font-bold mb-2"
+                            className="w-full px-4 py-2 bg-background-dark border border-surface-border rounded-lg text-foreground text-lg font-bold mb-2"
                           />
                           <textarea
                             value={chapter.narrativeFr || ""}
@@ -273,7 +273,7 @@ function ChaptersEditorContent() {
                           className={`text-xs px-3 py-1 rounded-lg transition-colors flex items-center gap-1 ${
                             reorderMode === index
                               ? "bg-primary text-black"
-                              : "bg-surface-border text-text-muted hover:text-white"
+                              : "bg-surface-border text-text-muted hover:text-foreground"
                           }`}
                         >
                           <span className="material-symbols-outlined text-sm">swap_vert</span>
@@ -307,7 +307,7 @@ function ChaptersEditorContent() {
                                 alt={photo.title}
                                 className="w-full h-full object-cover pointer-events-none"
                               />
-                              <div className="absolute top-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                              <div className="absolute top-1 left-1 bg-black/60 text-foreground text-xs px-1.5 py-0.5 rounded">
                                 {photoIndex + 1}
                               </div>
                               <div className="absolute bottom-1 right-1 flex gap-1">
@@ -317,7 +317,7 @@ function ChaptersEditorContent() {
                                     movePhotoInChapter(index, photoIndex, "up");
                                   }}
                                   disabled={photoIndex === 0}
-                                  className="bg-black/60 text-white p-0.5 rounded disabled:opacity-30"
+                                  className="bg-black/60 text-foreground p-0.5 rounded disabled:opacity-30"
                                 >
                                   <span className="material-symbols-outlined text-sm">arrow_back</span>
                                 </button>
@@ -327,7 +327,7 @@ function ChaptersEditorContent() {
                                     movePhotoInChapter(index, photoIndex, "down");
                                   }}
                                   disabled={photoIndex === chapter.photoIds.length - 1}
-                                  className="bg-black/60 text-white p-0.5 rounded disabled:opacity-30"
+                                  className="bg-black/60 text-foreground p-0.5 rounded disabled:opacity-30"
                                 >
                                   <span className="material-symbols-outlined text-sm">arrow_forward</span>
                                 </button>
@@ -358,7 +358,7 @@ function ChaptersEditorContent() {
                                 className="w-full h-full object-cover"
                               />
                               {isSelected && (
-                                <div className="absolute top-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                                <div className="absolute top-1 left-1 bg-black/60 text-foreground text-xs px-1.5 py-0.5 rounded">
                                   {photoIndex + 1}
                                 </div>
                               )}
@@ -402,7 +402,7 @@ function ChaptersEditorContent() {
                               />
                               {isCover && (
                                 <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                                  <span className="material-symbols-outlined text-white text-lg drop-shadow-md">
+                                  <span className="material-symbols-outlined text-foreground text-lg drop-shadow-md">
                                     check_circle
                                   </span>
                                 </div>
@@ -434,7 +434,7 @@ function ChaptersEditorContent() {
             {/* Unassigned Photos */}
             {getUnassignedPhotos().length > 0 && (
               <div className="mt-8 p-6 bg-surface-dark/50 rounded-xl border border-surface-border/50">
-                <h3 className="text-lg font-semibold text-white mb-4">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
                   Unassigned Photos ({getUnassignedPhotos().length})
                 </h3>
                 <p className="text-sm text-text-muted mb-4">

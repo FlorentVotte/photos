@@ -79,7 +79,7 @@ export default function Header({ transparent = false }: HeaderProps) {
         {/* Mobile menu button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden flex items-center justify-center size-10 text-white hover:text-primary transition-colors"
+          className="md:hidden flex items-center justify-center size-10 text-foreground hover:text-primary transition-colors"
         >
           <span className="material-symbols-outlined">
             {mobileMenuOpen ? "close" : "menu"}

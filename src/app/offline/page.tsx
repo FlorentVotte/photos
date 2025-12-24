@@ -11,7 +11,7 @@ export default function OfflinePage() {
           <span className="material-symbols-outlined text-6xl text-text-muted mb-6 block">
             cloud_off
           </span>
-          <h1 className="text-3xl font-bold text-white mb-4">
+          <h1 className="text-3xl font-bold text-foreground mb-4">
             You're Offline
           </h1>
           <p className="text-text-muted mb-8">

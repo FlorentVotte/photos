@@ -36,7 +36,7 @@ export default function ChapterLocationSummary({
             {cities.map((city) => (
               <span
                 key={city}
-                className="px-3 py-1 bg-surface-dark rounded-full text-sm text-white border border-surface-border"
+                className="px-3 py-1 bg-surface-dark rounded-full text-sm text-foreground border border-surface-border"
               >
                 {city}
               </span>
