@@ -8,6 +8,23 @@ const WEBHOOK_SECRET = process.env.SYNC_WEBHOOK_SECRET;
 // Track active syncs to prevent concurrent runs
 let activeSyncAbortController: AbortController | null = null;
 
+// Rate limiting
+const syncAttempts = new Map<string, number>();
+const SYNC_RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+
+function isSyncRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const lastAttempt = syncAttempts.get(ip);
+
+  if (!lastAttempt) return false;
+  if (now - lastAttempt > SYNC_RATE_LIMIT_WINDOW) {
+    syncAttempts.delete(ip);
+    return false;
+  }
+
+  return true;
+}
+
 // Timing-safe comparison for webhook secret
 function secureCompare(a: string, b: string): boolean {
   if (!a || !b) return false;
@@ -21,6 +38,19 @@ function secureCompare(a: string, b: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0] ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+
+  // Rate limit sync requests
+  if (isSyncRateLimited(ip)) {
+    return new Response(
+      JSON.stringify({ error: "Please wait before triggering another sync." }),
+      { status: 429, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   // Check authentication (session cookie or webhook secret)
   const webhookSecret = request.headers.get("x-webhook-secret");
   const isWebhookValid =
@@ -34,6 +64,9 @@ export async function POST(request: NextRequest) {
       headers: { "Content-Type": "application/json" },
     });
   }
+
+  // Record sync attempt for rate limiting
+  syncAttempts.set(ip, Date.now());
 
   // Check for galleryId in request body
   let galleryId: string | undefined;
@@ -144,8 +177,15 @@ export async function POST(request: NextRequest) {
   });
 }
 
-// GET endpoint to check if sync is in progress
+// GET endpoint to check if sync is in progress (authenticated)
 export async function GET() {
+  if (!isAuthenticated()) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   return new Response(
     JSON.stringify({
       syncing: activeSyncAbortController !== null,
