@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { cookies } from "next/headers";
 import crypto from "crypto";
 import prisma from "@/lib/db";
+import { isAuthenticated } from "@/lib/auth";
 
 const execAsync = promisify(exec);
 const WEBHOOK_SECRET = process.env.SYNC_WEBHOOK_SECRET;
@@ -11,7 +11,6 @@ const WEBHOOK_SECRET = process.env.SYNC_WEBHOOK_SECRET;
 // Rate limiting for sync endpoint
 const syncAttempts = new Map<string, number>();
 const SYNC_RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const MAX_SYNC_ATTEMPTS = 3;
 
 function isSyncRateLimited(ip: string): boolean {
   const now = Date.now();
@@ -36,13 +35,6 @@ function secureCompare(a: string, b: string): boolean {
     return false;
   }
   return crypto.timingSafeEqual(bufA, bufB);
-}
-
-// Validate session token format
-function isValidSessionToken(token: string | undefined): boolean {
-  if (!token) return false;
-  if (token === "authenticated") return true; // Backwards compatibility
-  return /^[a-f0-9]{64}$/.test(token);
 }
 
 // GET - Get sync status
@@ -85,14 +77,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Check authentication
-  const authCookie = cookies().get("admin_auth");
+  // Check authentication (session cookie or webhook secret)
   const webhookSecret = request.headers.get("x-webhook-secret");
-
-  const isSessionValid = isValidSessionToken(authCookie?.value);
   const isWebhookValid = WEBHOOK_SECRET && webhookSecret && secureCompare(webhookSecret, WEBHOOK_SECRET);
 
-  if (!isSessionValid && !isWebhookValid) {
+  if (!isAuthenticated() && !isWebhookValid) {
     return NextResponse.json(
       { error: "Unauthorized" },
       { status: 401 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
 import { THEME_PRESETS, DEFAULT_THEME, ThemePresetKey } from "@/lib/themes";
+import { requireAuth } from "@/lib/auth";
 
 // Force dynamic to always fetch fresh data
 export const dynamic = "force-dynamic";
@@ -34,8 +35,11 @@ export async function GET() {
   }
 }
 
-// PATCH - Update settings (admin only, protected by middleware)
+// PATCH - Update settings (admin only)
 export async function PATCH(request: NextRequest) {
+  const authError = requireAuth();
+  if (authError) return authError;
+
   try {
     const body = await request.json();
     const { theme, siteTitle, siteDescription, aboutText } = body;

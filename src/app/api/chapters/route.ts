@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { requireAuth } from "@/lib/auth";
 
 interface ChapterInput {
   id: string;
@@ -61,6 +62,9 @@ export async function GET(request: NextRequest) {
 
 // POST - Create or update chapters for an album
 export async function POST(request: NextRequest) {
+  const authError = requireAuth();
+  if (authError) return authError;
+
   try {
     const { albumId, chapters } = (await request.json()) as {
       albumId: string;
@@ -101,6 +105,9 @@ export async function POST(request: NextRequest) {
 
 // DELETE - Remove all chapters for an album
 export async function DELETE(request: NextRequest) {
+  const authError = requireAuth();
+  if (authError) return authError;
+
   try {
     const { albumId } = await request.json();
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import prisma from "@/lib/db";
+import { requireAuth } from "@/lib/auth";
 
 /**
  * Resolve short URLs (adobe.ly) to full Lightroom URLs
@@ -62,6 +63,9 @@ export async function GET() {
 
 // POST - Add a new gallery (public URL or private album)
 export async function POST(request: NextRequest) {
+  const authError = requireAuth();
+  if (authError) return authError;
+
   try {
     const body = await request.json();
     const { url, albumId, albumName, featured = false, type = "public" } = body;
@@ -160,6 +164,9 @@ export async function POST(request: NextRequest) {
 
 // DELETE - Remove a gallery and its synced data
 export async function DELETE(request: NextRequest) {
+  const authError = requireAuth();
+  if (authError) return authError;
+
   try {
     const body = await request.json();
     const { id, url, albumId } = body;
@@ -228,6 +235,9 @@ export async function DELETE(request: NextRequest) {
 
 // PATCH - Update gallery (toggle featured)
 export async function PATCH(request: NextRequest) {
+  const authError = requireAuth();
+  if (authError) return authError;
+
   try {
     const body = await request.json();
     const { id, url, albumId, featured } = body;

@@ -1,10 +1,19 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { isAuthenticated } from "@/lib/auth";
 
 // Force dynamic to prevent caching
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  // Require authentication to prevent info leakage
+  if (!isAuthenticated()) {
+    return NextResponse.json(
+      { configured: false, connected: false },
+      { status: 401 }
+    );
+  }
+
   const hasClientId = !!process.env.ADOBE_CLIENT_ID;
   const hasClientSecret = !!process.env.ADOBE_CLIENT_SECRET;
 

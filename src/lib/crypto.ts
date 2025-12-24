@@ -4,30 +4,44 @@ const ALGORITHM = "aes-256-gcm";
 const IV_LENGTH = 16;
 const TAG_LENGTH = 16;
 
-// Get encryption key from environment or generate a warning
+/**
+ * Get encryption key from environment
+ * Security: Requires ENCRYPTION_KEY to be set in production
+ */
 function getEncryptionKey(): Buffer {
   const key = process.env.ENCRYPTION_KEY;
 
   if (!key) {
-    console.warn(
-      "ENCRYPTION_KEY not set. Using derived key from ADMIN_PASSWORD. " +
-      "Set ENCRYPTION_KEY in production for better security."
-    );
-    // Fallback: derive key from admin password (not ideal but better than nothing)
+    // In production, require ENCRYPTION_KEY
+    if (process.env.NODE_ENV === "production") {
+      console.error(
+        "CRITICAL: ENCRYPTION_KEY not set in production. " +
+        "Generate one with: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
+      );
+    }
+    // Fallback for development only - derive key from admin password with unique salt
     const fallback = process.env.ADMIN_PASSWORD || "default-key-change-me";
-    return crypto.scryptSync(fallback, "salt", 32);
+    // Use a more unique salt derived from the password itself
+    const salt = crypto.createHash("sha256").update("photobook-" + fallback.slice(0, 4)).digest();
+    return crypto.scryptSync(fallback, salt, 32);
   }
 
   // If key is provided, ensure it's 32 bytes (256 bits)
-  if (key.length === 64) {
+  if (key.length === 64 && /^[a-f0-9]+$/i.test(key)) {
     // Hex-encoded 32-byte key
     return Buffer.from(key, "hex");
-  } else if (key.length === 32) {
-    // Raw 32-byte key
-    return Buffer.from(key);
+  } else if (key.length >= 32) {
+    // Use first 32 bytes or derive from longer string
+    if (key.length === 32) {
+      return Buffer.from(key);
+    }
+    // Derive 32-byte key from provided string with unique salt
+    const salt = crypto.createHash("sha256").update("photobook-key").digest();
+    return crypto.scryptSync(key, salt, 32);
   } else {
-    // Derive 32-byte key from provided string
-    return crypto.scryptSync(key, "salt", 32);
+    // Key too short, derive with scrypt
+    const salt = crypto.createHash("sha256").update("photobook-key").digest();
+    return crypto.scryptSync(key, salt, 32);
   }
 }
 

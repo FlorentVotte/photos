@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { requireAuth } from "@/lib/auth";
 
 // GET - List all synced albums
 export async function GET() {
@@ -33,6 +34,9 @@ export async function GET() {
 
 // PUT - Reorder albums (batch update sortOrder)
 export async function PUT(request: NextRequest) {
+  const authError = requireAuth();
+  if (authError) return authError;
+
   try {
     const body = await request.json();
     const { albumOrder } = body;
@@ -64,8 +68,18 @@ export async function PUT(request: NextRequest) {
   }
 }
 
+// Input validation limits
+const MAX_TITLE_LENGTH = 200;
+const MAX_SUBTITLE_LENGTH = 500;
+const MAX_DESCRIPTION_LENGTH = 5000;
+const MAX_LOCATION_LENGTH = 200;
+const MAX_DATE_LENGTH = 100;
+
 // PATCH - Update album metadata
 export async function PATCH(request: NextRequest) {
+  const authError = requireAuth();
+  if (authError) return authError;
+
   try {
     const body = await request.json();
     const { id, title, subtitle, description, location, date } = body;
@@ -73,6 +87,46 @@ export async function PATCH(request: NextRequest) {
     if (!id) {
       return NextResponse.json(
         { error: "Album ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate ID format
+    if (typeof id !== "string" || id.length > 100) {
+      return NextResponse.json(
+        { error: "Invalid album ID" },
+        { status: 400 }
+      );
+    }
+
+    // Validate string lengths
+    if (title && (typeof title !== "string" || title.length > MAX_TITLE_LENGTH)) {
+      return NextResponse.json(
+        { error: `Title must be less than ${MAX_TITLE_LENGTH} characters` },
+        { status: 400 }
+      );
+    }
+    if (subtitle && (typeof subtitle !== "string" || subtitle.length > MAX_SUBTITLE_LENGTH)) {
+      return NextResponse.json(
+        { error: `Subtitle must be less than ${MAX_SUBTITLE_LENGTH} characters` },
+        { status: 400 }
+      );
+    }
+    if (description && (typeof description !== "string" || description.length > MAX_DESCRIPTION_LENGTH)) {
+      return NextResponse.json(
+        { error: `Description must be less than ${MAX_DESCRIPTION_LENGTH} characters` },
+        { status: 400 }
+      );
+    }
+    if (location && (typeof location !== "string" || location.length > MAX_LOCATION_LENGTH)) {
+      return NextResponse.json(
+        { error: `Location must be less than ${MAX_LOCATION_LENGTH} characters` },
+        { status: 400 }
+      );
+    }
+    if (date && (typeof date !== "string" || date.length > MAX_DATE_LENGTH)) {
+      return NextResponse.json(
+        { error: `Date must be less than ${MAX_DATE_LENGTH} characters` },
         { status: 400 }
       );
     }

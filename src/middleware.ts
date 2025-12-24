@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Validate session token format (64-char hex string)
+/**
+ * Validate session token format (64-char hex string only)
+ * Security: No longer accepts legacy "authenticated" token
+ */
 function isValidSessionToken(token: string | undefined): boolean {
   if (!token) return false;
-  // Accept both old "authenticated" value and new secure tokens for backwards compatibility during transition
-  if (token === "authenticated") return true;
-  // New secure token: 64-character hex string
   return /^[a-f0-9]{64}$/.test(token);
 }
 
