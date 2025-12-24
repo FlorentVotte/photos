@@ -58,6 +58,7 @@ jobs:
     name: Deploy to Server
     needs: build
     runs-on: ubuntu-latest
+    environment: VPS_server
 
     steps:
       - name: Deploy via SSH
