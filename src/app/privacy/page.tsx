@@ -1,10 +1,9 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { siteConfig } from "@/lib/data";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: `Privacy Policy - ${siteConfig.siteName}`,
+  title: "Privacy Policy - Regards Perdus",
   description: "Privacy policy and data protection information.",
 };
 
@@ -39,12 +38,20 @@ export default function PrivacyPage() {
             </p>
 
             <h2 className="text-2xl font-bold text-white mb-4">Data Controller</h2>
+            <p className="text-text-muted leading-relaxed mb-2">
+              <strong className="text-white">Florent Votte</strong>
+            </p>
+            <p className="text-text-muted leading-relaxed mb-2">
+              Email:{" "}
+              <a href="mailto:florent@votte.eu" className="text-primary hover:underline">
+                florent@votte.eu
+              </a>
+            </p>
             <p className="text-text-muted leading-relaxed mb-6">
-              The data controller responsible for this website is {siteConfig.photographerName}.
-              For any questions regarding your personal data, please visit{" "}
+              Website:{" "}
               <a href="https://www.votte.eu" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                votte.eu
-              </a>.
+                www.votte.eu
+              </a>
             </p>
 
             <h2 className="text-2xl font-bold text-white mb-4">Data We Collect</h2>
@@ -53,24 +60,42 @@ export default function PrivacyPage() {
             </p>
             <ul className="list-disc list-inside text-text-muted mb-6 space-y-2">
               <li>
-                <strong className="text-white">Server logs:</strong> Standard web server logs including IP addresses,
-                browser type, and pages visited. These are used for security and website maintenance purposes
-                and are automatically deleted after 30 days.
+                <strong className="text-white">Navigation data:</strong> Server logs including IP addresses,
+                browser type, operating system, pages visited, timestamps, and referrer URLs. These are used
+                for security and website maintenance purposes and are retained for a maximum of 12 months.
               </li>
             </ul>
 
             <h2 className="text-2xl font-bold text-white mb-4">Cookies</h2>
+            <p className="text-text-muted leading-relaxed mb-4">
+              This website uses only essential cookies:
+            </p>
+            <ul className="list-disc list-inside text-text-muted mb-6 space-y-2">
+              <li>
+                <strong className="text-white">Theme preferences:</strong> Stores your light/dark mode preference
+                in localStorage for a better browsing experience.
+              </li>
+              <li>
+                <strong className="text-white">Language preference:</strong> Stores your language choice (English/French)
+                in localStorage.
+              </li>
+              <li>
+                <strong className="text-white">Service Worker / Cache:</strong> Enables offline mode and improves
+                loading performance.
+              </li>
+            </ul>
             <p className="text-text-muted leading-relaxed mb-6">
-              This website does not use tracking cookies or analytics services. We may use essential
-              cookies that are strictly necessary for the website to function properly. These do not
-              require your consent under GDPR.
+              No advertising or third-party tracking cookies are used on this website.
             </p>
 
             <h2 className="text-2xl font-bold text-white mb-4">Third-Party Services</h2>
             <p className="text-text-muted leading-relaxed mb-6">
-              Images on this website may be served from Adobe Lightroom servers. Please refer to
-              Adobe's privacy policy for information on how they handle data. We do not share any
-              of your personal data with third parties for marketing purposes.
+              Images on this website are served from Adobe Lightroom servers. Please refer to{" "}
+              <a href="https://www.adobe.com/privacy.html" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                Adobe&apos;s privacy policy
+              </a>{" "}
+              for information on how they handle data. We do not share any of your personal data with
+              third parties for marketing or advertising purposes.
             </p>
 
             <h2 className="text-2xl font-bold text-white mb-4">Your Rights</h2>
@@ -80,23 +105,38 @@ export default function PrivacyPage() {
             <ul className="list-disc list-inside text-text-muted mb-6 space-y-2">
               <li>Right of access to your personal data</li>
               <li>Right to rectification of inaccurate data</li>
-              <li>Right to erasure ("right to be forgotten")</li>
+              <li>Right to erasure (&quot;right to be forgotten&quot;)</li>
               <li>Right to restriction of processing</li>
               <li>Right to data portability</li>
               <li>Right to object to processing</li>
+              <li>Right to withdraw consent at any time</li>
             </ul>
             <p className="text-text-muted leading-relaxed mb-6">
-              To exercise any of these rights, please contact us through{" "}
-              <a href="https://www.votte.eu" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                votte.eu
-              </a>.
+              To exercise any of these rights, please contact{" "}
+              <a href="mailto:florent@votte.eu" className="text-primary hover:underline">
+                florent@votte.eu
+              </a>. We will respond within one month.
             </p>
 
             <h2 className="text-2xl font-bold text-white mb-4">Data Security</h2>
+            <p className="text-text-muted leading-relaxed mb-4">
+              We implement appropriate technical and organizational measures to protect your personal data:
+            </p>
+            <ul className="list-disc list-inside text-text-muted mb-6 space-y-2">
+              <li>HTTPS secure connection (SSL/TLS)</li>
+              <li>Certified hosting infrastructure</li>
+              <li>Restricted access to data</li>
+              <li>Regular backups</li>
+            </ul>
+
+            <h2 className="text-2xl font-bold text-white mb-4">Complaints</h2>
             <p className="text-text-muted leading-relaxed mb-6">
-              We implement appropriate technical and organizational measures to protect your personal
-              data against unauthorized access, alteration, disclosure, or destruction. This website
-              uses HTTPS encryption to secure all data in transit.
+              If you believe your data protection rights have been violated, you have the right to lodge
+              a complaint with the French data protection authority (CNIL):<br />
+              <strong className="text-white">CNIL</strong> - 3 Place de Fontenoy, TSA 80715, 75334 Paris Cedex 07, France<br />
+              <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                www.cnil.fr
+              </a>
             </p>
 
             <h2 className="text-2xl font-bold text-white mb-4">Changes to This Policy</h2>

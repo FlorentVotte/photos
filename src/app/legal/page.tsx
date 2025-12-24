@@ -1,10 +1,9 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { siteConfig } from "@/lib/data";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: `Legal Notice - ${siteConfig.siteName}`,
+  title: "Legal Notice - Regards Perdus",
   description: "Legal information and terms of use.",
 };
 
@@ -27,27 +26,53 @@ export default function LegalPage() {
         {/* Content Section */}
         <section className="py-8 md:py-12 px-4 md:px-8 lg:px-16">
           <div className="max-w-3xl mx-auto prose prose-invert prose-lg">
+            <p className="text-text-muted leading-relaxed mb-8">
+              Last updated: December 2024
+            </p>
+
             <h2 className="text-2xl font-bold text-white mb-4">Website Owner</h2>
+            <p className="text-text-muted leading-relaxed mb-2">
+              <strong className="text-white">Florent Votte</strong> (Individual)
+            </p>
+            <p className="text-text-muted leading-relaxed mb-2">
+              Email:{" "}
+              <a href="mailto:florent@votte.eu" className="text-primary hover:underline">
+                florent@votte.eu
+              </a>
+            </p>
             <p className="text-text-muted leading-relaxed mb-6">
-              This website is owned and operated by {siteConfig.photographerName}.
-              <br />
-              For contact information, please visit{" "}
+              Website:{" "}
               <a href="https://www.votte.eu" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                votte.eu
-              </a>.
+                www.votte.eu
+              </a>
+            </p>
+
+            <h2 className="text-2xl font-bold text-white mb-4">Publication Director</h2>
+            <p className="text-text-muted leading-relaxed mb-6">
+              Florent Votte
+            </p>
+
+            <h2 className="text-2xl font-bold text-white mb-4">Hosting</h2>
+            <p className="text-text-muted leading-relaxed mb-2">
+              <strong className="text-white">OVH SAS</strong>
+            </p>
+            <p className="text-text-muted leading-relaxed mb-2">
+              2 rue Kellermann, 59100 Roubaix, France
+            </p>
+            <p className="text-text-muted leading-relaxed mb-6">
+              Phone: 09 72 10 10 07
             </p>
 
             <h2 className="text-2xl font-bold text-white mb-4">Intellectual Property</h2>
             <p className="text-text-muted leading-relaxed mb-6">
-              All photographs, images, and content on this website are protected by copyright law.
-              They are the exclusive property of {siteConfig.photographerName} unless otherwise stated.
+              All content on this website (photographs, images, texts, graphics, logos) is the exclusive
+              property of Florent Votte unless otherwise stated. Any reproduction, distribution,
+              modification, or use without prior written permission is strictly prohibited.
             </p>
             <p className="text-text-muted leading-relaxed mb-6">
-              Reproduction, distribution, modification, or any other use of the content without prior
-              written permission is strictly prohibited. For licensing inquiries, please contact us
-              through{" "}
-              <a href="https://www.votte.eu" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                votte.eu
+              For licensing inquiries, please contact{" "}
+              <a href="mailto:florent@votte.eu" className="text-primary hover:underline">
+                florent@votte.eu
               </a>.
             </p>
 
@@ -69,15 +94,12 @@ export default function LegalPage() {
               or warranties of any kind about the completeness, accuracy, reliability, or availability
               of the website or the information contained on it.
             </p>
-            <p className="text-text-muted leading-relaxed mb-6">
-              Your use of this website is at your own risk. We shall not be liable for any loss or
-              damage arising from your use of, or reliance on, the content of this website.
-            </p>
 
             <h2 className="text-2xl font-bold text-white mb-4">External Links</h2>
             <p className="text-text-muted leading-relaxed mb-6">
-              This website may contain links to external websites. We have no control over the content
-              and availability of these sites and are not responsible for their content or privacy practices.
+              This website may contain links to external websites (Adobe Lightroom, social networks).
+              We have no control over the content and availability of these sites and are not responsible
+              for their content or privacy practices.
             </p>
 
             <h2 className="text-2xl font-bold text-white mb-4">Applicable Law</h2>
@@ -87,9 +109,10 @@ export default function LegalPage() {
               be subject to the exclusive jurisdiction of the French courts.
             </p>
 
-            <h2 className="text-2xl font-bold text-white mb-4">Hosting</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">Credits</h2>
             <p className="text-text-muted leading-relaxed mb-6">
-              This website is self-hosted on private infrastructure.
+              Design and development: Florent Votte<br />
+              Photography: Florent Votte
             </p>
           </div>
         </section>
