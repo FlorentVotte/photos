@@ -110,6 +110,15 @@ export const translations = {
       en: "Photography has always been my way of preserving memories and sharing the beauty I discover during my travels. Each image tells a story - a moment frozen in time that speaks of the places I've been and the experiences that shaped my journey.",
       fr: "La photographie a toujours été ma façon de préserver les souvenirs et de partager la beauté que je découvre lors de mes voyages. Chaque image raconte une histoire - un moment figé dans le temps qui parle des lieux que j'ai visités et des expériences qui ont façonné mon parcours.",
     },
+    // Journey stats
+    myJourney: { en: "My Journey", fr: "Mon parcours" },
+    totalPhotos: { en: "Photos", fr: "Photos" },
+    totalAlbums: { en: "Albums", fr: "Albums" },
+    countries: { en: "Countries", fr: "Pays" },
+    cities: { en: "Cities", fr: "Villes" },
+    since: { en: "Since", fr: "Depuis" },
+    // Social
+    followMe: { en: "Follow me", fr: "Me suivre" },
   },
 
   // Footer

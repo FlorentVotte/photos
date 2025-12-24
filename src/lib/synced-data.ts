@@ -289,6 +289,74 @@ export async function searchPhotos(query: string): Promise<Photo[]> {
   }));
 }
 
+// Get journey statistics (countries, cities, photos, date range)
+export async function getJourneyStats(): Promise<{
+  totalPhotos: number;
+  totalAlbums: number;
+  countries: string[];
+  cities: string[];
+  dateRange: { first: string; last: string } | null;
+}> {
+  const [photoCount, albumCount, photos] = await Promise.all([
+    prisma.photo.count(),
+    prisma.album.count(),
+    prisma.photo.findMany({
+      select: {
+        location: true,
+        city: true,
+        date: true,
+      },
+    }),
+  ]);
+
+  // Extract unique countries from location (format: "City, Country" or just "Country")
+  const countrySet = new Set<string>();
+  const citySet = new Set<string>();
+  const dates: Date[] = [];
+
+  for (const p of photos) {
+    // Extract country from location
+    if (p.location) {
+      const parts = p.location.split(",").map((s) => s.trim());
+      if (parts.length >= 2) {
+        countrySet.add(parts[parts.length - 1]); // Last part is usually country
+      } else if (parts.length === 1 && parts[0] !== "Unknown") {
+        countrySet.add(parts[0]);
+      }
+    }
+
+    // Add city
+    if (p.city) {
+      citySet.add(p.city);
+    }
+
+    // Parse date
+    if (p.date) {
+      const parsed = new Date(p.date);
+      if (!isNaN(parsed.getTime())) {
+        dates.push(parsed);
+      }
+    }
+  }
+
+  // Sort dates to get range
+  dates.sort((a, b) => a.getTime() - b.getTime());
+  const dateRange = dates.length > 0
+    ? {
+        first: dates[0].toLocaleDateString("en-US", { year: "numeric", month: "short" }),
+        last: dates[dates.length - 1].toLocaleDateString("en-US", { year: "numeric", month: "short" }),
+      }
+    : null;
+
+  return {
+    totalPhotos: photoCount,
+    totalAlbums: albumCount,
+    countries: Array.from(countrySet).sort(),
+    cities: Array.from(citySet).sort(),
+    dateRange,
+  };
+}
+
 // Get unique gear (cameras and lenses) with photo counts
 export async function getGearStats(): Promise<{
   cameras: { name: string; count: number }[];

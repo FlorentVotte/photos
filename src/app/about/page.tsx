@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AboutContent from "@/components/AboutContent";
 import { siteConfig } from "@/lib/data";
-import { getGearStats } from "@/lib/synced-data";
+import { getGearStats, getJourneyStats } from "@/lib/synced-data";
 import type { Metadata } from "next";
 
 // Force dynamic to always fetch fresh data
@@ -14,7 +14,10 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const gear = await getGearStats();
+  const [gear, journeyStats] = await Promise.all([
+    getGearStats(),
+    getJourneyStats(),
+  ]);
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
@@ -23,6 +26,8 @@ export default async function AboutPage() {
         photographerName={siteConfig.photographerName}
         photographerBio={siteConfig.photographerBio}
         gear={gear}
+        journeyStats={journeyStats}
+        socialLinks={siteConfig.socialLinks}
       />
       <Footer />
     </div>
