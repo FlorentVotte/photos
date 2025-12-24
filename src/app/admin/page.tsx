@@ -67,7 +67,8 @@ export default function AdminPage() {
   const fetchLightroomAlbums = async () => {
     setLoadingAlbums(true);
     try {
-      const res = await fetch("/api/adobe/albums");
+      // Add cache-busting parameter to force fresh data
+      const res = await fetch(`/api/adobe/albums?t=${Date.now()}`);
       const data = await res.json();
       if (data.albums) {
         setLightroomAlbums(data.albums);

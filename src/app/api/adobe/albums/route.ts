@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
+// Force dynamic to prevent caching
+export const dynamic = "force-dynamic";
+
 const LIGHTROOM_API = "https://lr.adobe.io/v2";
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
 
@@ -10,6 +13,7 @@ async function fetchWithAuth(url: string, accessToken: string) {
       Authorization: `Bearer ${accessToken}`,
       "X-API-Key": ADOBE_CLIENT_ID!,
     },
+    cache: "no-store",
   });
 
   if (!response.ok) {
