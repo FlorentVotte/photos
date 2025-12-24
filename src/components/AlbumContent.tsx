@@ -1,10 +1,10 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import PhotoGrid from "./PhotoGrid";
 import ChapterStats from "./ChapterStats";
 import ChapterLocationSummary from "./ChapterLocationSummary";
-import ChapterRouteMap from "./ChapterRouteMap";
 import ProtectedImage from "./ProtectedImage";
 import { useLocale } from "@/lib/LocaleContext";
 import { extractLocations, computeChapterStats } from "@/lib/geo-utils";
@@ -13,6 +13,16 @@ import type {
   Album,
   Chapter,
 } from "@/lib/types";
+
+// Lazy load the route map component to reduce initial bundle size
+const ChapterRouteMap = dynamic(() => import("./ChapterRouteMap"), {
+  loading: () => (
+    <div className="w-full h-[300px] bg-surface-dark/50 rounded-xl flex items-center justify-center">
+      <span className="material-symbols-outlined text-2xl text-text-muted animate-pulse">map</span>
+    </div>
+  ),
+  ssr: false,
+});
 
 interface AlbumContentProps {
   album: Album;

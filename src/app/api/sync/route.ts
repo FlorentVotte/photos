@@ -2,10 +2,48 @@ import { NextRequest, NextResponse } from "next/server";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { cookies } from "next/headers";
+import crypto from "crypto";
 import prisma from "@/lib/db";
 
 const execAsync = promisify(exec);
 const WEBHOOK_SECRET = process.env.SYNC_WEBHOOK_SECRET;
+
+// Rate limiting for sync endpoint
+const syncAttempts = new Map<string, number>();
+const SYNC_RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_SYNC_ATTEMPTS = 3;
+
+function isSyncRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const lastAttempt = syncAttempts.get(ip);
+
+  if (!lastAttempt) return false;
+  if (now - lastAttempt > SYNC_RATE_LIMIT_WINDOW) {
+    syncAttempts.delete(ip);
+    return false;
+  }
+
+  return true;
+}
+
+// Timing-safe comparison for webhook secret
+function secureCompare(a: string, b: string): boolean {
+  if (!a || !b) return false;
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) {
+    crypto.timingSafeEqual(bufA, bufA);
+    return false;
+  }
+  return crypto.timingSafeEqual(bufA, bufB);
+}
+
+// Validate session token format
+function isValidSessionToken(token: string | undefined): boolean {
+  if (!token) return false;
+  if (token === "authenticated") return true; // Backwards compatibility
+  return /^[a-f0-9]{64}$/.test(token);
+}
 
 // GET - Get sync status
 export async function GET() {
@@ -35,20 +73,34 @@ export async function GET() {
 
 // POST - Trigger sync (authenticated via cookie or webhook secret)
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0] ||
+             request.headers.get("x-real-ip") ||
+             "unknown";
+
+  // Rate limit sync requests
+  if (isSyncRateLimited(ip)) {
+    return NextResponse.json(
+      { error: "Please wait before triggering another sync." },
+      { status: 429 }
+    );
+  }
+
   // Check authentication
   const authCookie = cookies().get("admin_auth");
   const webhookSecret = request.headers.get("x-webhook-secret");
 
-  const isAuthenticated =
-    authCookie?.value === "authenticated" ||
-    (WEBHOOK_SECRET && webhookSecret === WEBHOOK_SECRET);
+  const isSessionValid = isValidSessionToken(authCookie?.value);
+  const isWebhookValid = WEBHOOK_SECRET && webhookSecret && secureCompare(webhookSecret, WEBHOOK_SECRET);
 
-  if (!isAuthenticated) {
+  if (!isSessionValid && !isWebhookValid) {
     return NextResponse.json(
-      { error: "Unauthorized. Provide valid admin session or webhook secret." },
+      { error: "Unauthorized" },
       { status: 401 }
     );
   }
+
+  // Record sync attempt for rate limiting
+  syncAttempts.set(ip, Date.now());
 
   try {
     // Check for galleryId in request body
@@ -56,6 +108,10 @@ export async function POST(request: NextRequest) {
     try {
       const body = await request.json();
       galleryId = body.galleryId;
+      // Validate galleryId format to prevent command injection
+      if (galleryId && !/^[a-zA-Z0-9_-]+$/.test(galleryId)) {
+        return NextResponse.json({ error: "Invalid gallery ID" }, { status: 400 });
+      }
     } catch {
       // No body or invalid JSON, sync all
     }
@@ -72,7 +128,6 @@ export async function POST(request: NextRequest) {
       timeout: 300000, // 5 minute timeout
     });
 
-    console.log("Sync stdout:", stdout);
     if (stderr) console.log("Sync stderr:", stderr);
 
     // Parse results from the output
@@ -91,15 +146,12 @@ export async function POST(request: NextRequest) {
         ? `Successfully synced gallery`
         : `Successfully synced ${albums} albums with ${photos} photos`,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Sync error:", error);
 
+    // Don't leak error details to client
     return NextResponse.json(
-      {
-        error: "Sync failed",
-        message: error.message || "Unknown error",
-        stderr: error.stderr,
-      },
+      { error: "Sync failed. Please check server logs." },
       { status: 500 }
     );
   }

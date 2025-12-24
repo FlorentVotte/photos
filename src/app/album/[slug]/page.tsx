@@ -11,8 +11,8 @@ import {
 } from "@/lib/data";
 import type { Metadata } from "next";
 
-// Force dynamic rendering to pick up synced data
-export const dynamic = "force-dynamic";
+// Revalidate every hour to pick up synced data while allowing caching
+export const revalidate = 3600;
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 

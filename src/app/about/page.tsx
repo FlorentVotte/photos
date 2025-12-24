@@ -5,8 +5,8 @@ import { siteConfig } from "@/lib/data";
 import { getGearStats } from "@/lib/synced-data";
 import type { Metadata } from "next";
 
-// Force dynamic rendering to pick up synced data
-export const dynamic = "force-dynamic";
+// Revalidate every hour to pick up synced data while allowing caching
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: `About - ${siteConfig.siteName}`,

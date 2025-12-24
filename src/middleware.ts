@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// Validate session token format (64-char hex string)
+function isValidSessionToken(token: string | undefined): boolean {
+  if (!token) return false;
+  // Accept both old "authenticated" value and new secure tokens for backwards compatibility during transition
+  if (token === "authenticated") return true;
+  // New secure token: 64-character hex string
+  return /^[a-f0-9]{64}$/.test(token);
+}
+
 export function middleware(request: NextRequest) {
   // Only protect /admin routes
   if (!request.nextUrl.pathname.startsWith("/admin")) {
@@ -10,7 +19,7 @@ export function middleware(request: NextRequest) {
   // Check for auth cookie
   const authCookie = request.cookies.get("admin_auth");
 
-  if (authCookie?.value === "authenticated") {
+  if (isValidSessionToken(authCookie?.value)) {
     return NextResponse.next();
   }
 

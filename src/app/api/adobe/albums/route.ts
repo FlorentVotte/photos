@@ -1,11 +1,21 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { decrypt, isEncrypted } from "@/lib/crypto";
 
 // Force dynamic to prevent caching
 export const dynamic = "force-dynamic";
 
 const LIGHTROOM_API = "https://lr.adobe.io/v2";
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
+
+// Helper to get decrypted access token
+function getAccessToken(token: { accessToken: string }): string {
+  // Support both encrypted and plain tokens for migration
+  if (isEncrypted(token.accessToken)) {
+    return decrypt(token.accessToken);
+  }
+  return token.accessToken;
+}
 
 async function fetchWithAuth(url: string, accessToken: string) {
   const response = await fetch(url, {
@@ -46,10 +56,13 @@ export async function GET() {
       );
     }
 
+    // Decrypt access token
+    const accessToken = getAccessToken(token);
+
     // Get catalog
     const catalog = await fetchWithAuth(
       `${LIGHTROOM_API}/catalog`,
-      token.accessToken
+      accessToken
     );
 
     if (!catalog?.id) {
@@ -62,7 +75,7 @@ export async function GET() {
     // Get albums
     const albumsResponse = await fetchWithAuth(
       `${LIGHTROOM_API}/catalogs/${catalog.id}/albums`,
-      token.accessToken
+      accessToken
     );
 
     const albumsRaw = albumsResponse?.resources || [];
@@ -80,7 +93,7 @@ export async function GET() {
             // Fetch all assets to count them (Adobe API doesn't provide count directly)
             const assetsResponse = await fetchWithAuth(
               `${LIGHTROOM_API}/catalogs/${catalog.id}/albums/${album.id}/assets`,
-              token.accessToken
+              accessToken
             );
             assetCount = assetsResponse?.resources?.length || 0;
           } catch {

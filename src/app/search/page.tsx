@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   description: "Search through photos and albums from around the world.",
 };
 
-// Force dynamic rendering to pick up synced data
-export const dynamic = "force-dynamic";
+// Revalidate every hour to pick up synced data while allowing caching
+export const revalidate = 3600;
 
 export default async function SearchPage() {
   // Fetch data on server

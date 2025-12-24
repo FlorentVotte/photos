@@ -16,7 +16,8 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = "force-dynamic";
+// Revalidate every hour to pick up synced data while allowing caching
+export const revalidate = 3600;
 
 export default async function AlbumsPage() {
   const albums = await getAlbums();

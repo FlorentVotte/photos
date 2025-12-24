@@ -6,8 +6,8 @@ import { getAlbums, getFeaturedAlbum, siteConfig } from "@/lib/data";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 
-// Force dynamic rendering to pick up synced data
-export const dynamic = "force-dynamic";
+// Revalidate every hour to pick up synced data while allowing caching
+export const revalidate = 3600;
 
 export default async function Home() {
   let featuredAlbum: Awaited<ReturnType<typeof getFeaturedAlbum>> = undefined;

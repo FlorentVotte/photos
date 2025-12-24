@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { encrypt } from "@/lib/crypto";
 
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
 const ADOBE_CLIENT_SECRET = process.env.ADOBE_CLIENT_SECRET;
@@ -13,7 +14,8 @@ export async function GET(request: NextRequest) {
   const error = request.nextUrl.searchParams.get("error");
 
   if (error) {
-    return NextResponse.json({ error }, { status: 400 });
+    console.error("Adobe OAuth error:", error);
+    return NextResponse.json({ error: "Authentication failed" }, { status: 400 });
   }
 
   if (!code) {
@@ -44,35 +46,40 @@ export async function GET(request: NextRequest) {
     });
 
     if (!tokenResponse.ok) {
-      const errorText = await tokenResponse.text();
-      console.error("Token exchange failed:", errorText);
+      console.error("Token exchange failed:", tokenResponse.status);
       return NextResponse.json(
-        { error: "Token exchange failed", details: errorText },
+        { error: "Failed to authenticate with Adobe" },
         { status: 400 }
       );
     }
 
     const tokens = await tokenResponse.json();
 
-    // Save tokens to database
+    // Encrypt tokens before storing
+    const encryptedAccessToken = encrypt(tokens.access_token);
+    const encryptedRefreshToken = tokens.refresh_token
+      ? encrypt(tokens.refresh_token)
+      : null;
+
+    // Save encrypted tokens to database
     const expiresAt = new Date(Date.now() + tokens.expires_in * 1000);
 
     await prisma.adobeToken.upsert({
       where: { id: "default" },
       update: {
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token,
+        accessToken: encryptedAccessToken,
+        refreshToken: encryptedRefreshToken,
         expiresAt,
       },
       create: {
         id: "default",
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token,
+        accessToken: encryptedAccessToken,
+        refreshToken: encryptedRefreshToken,
         expiresAt,
       },
     });
 
-    console.log("Adobe tokens saved successfully to database");
+    console.log("Adobe tokens saved (encrypted)");
 
     // Redirect to admin page with success message
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";

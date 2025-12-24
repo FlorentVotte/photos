@@ -1,5 +1,6 @@
 import fetch, { Response } from "node-fetch";
 import fs from "fs";
+import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
@@ -12,6 +13,59 @@ const dbPath = process.env.NODE_ENV === "production" && fs.existsSync("/app/data
   : "./photobook.db";
 const adapter = new PrismaBetterSqlite3({ url: dbPath });
 const prisma = new PrismaClient({ adapter });
+
+// Crypto constants (must match src/lib/crypto.ts)
+const ALGORITHM = "aes-256-gcm";
+const IV_LENGTH = 16;
+const TAG_LENGTH = 16;
+
+function getEncryptionKey(): Buffer {
+  const key = process.env.ENCRYPTION_KEY;
+  if (!key) {
+    const fallback = process.env.ADMIN_PASSWORD || "default-key-change-me";
+    return crypto.scryptSync(fallback, "salt", 32);
+  }
+  if (key.length === 64) return Buffer.from(key, "hex");
+  if (key.length === 32) return Buffer.from(key);
+  return crypto.scryptSync(key, "salt", 32);
+}
+
+function isEncrypted(value: string): boolean {
+  const parts = value.split(":");
+  if (parts.length !== 3) return false;
+  const [iv, tag, data] = parts;
+  return (
+    iv.length === IV_LENGTH * 2 &&
+    tag.length === TAG_LENGTH * 2 &&
+    /^[a-f0-9]+$/i.test(iv) &&
+    /^[a-f0-9]+$/i.test(tag) &&
+    /^[a-f0-9]+$/i.test(data)
+  );
+}
+
+function decrypt(ciphertext: string): string {
+  const key = getEncryptionKey();
+  const parts = ciphertext.split(":");
+  if (parts.length !== 3) throw new Error("Invalid encrypted format");
+
+  const [ivHex, tagHex, encrypted] = parts;
+  const iv = Buffer.from(ivHex, "hex");
+  const tag = Buffer.from(tagHex, "hex");
+
+  const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
+  decipher.setAuthTag(tag);
+
+  let decrypted = decipher.update(encrypted, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
+}
+
+function getAccessToken(encryptedToken: string): string {
+  if (isEncrypted(encryptedToken)) {
+    return decrypt(encryptedToken);
+  }
+  return encryptedToken;
+}
 
 interface TokenData {
   access_token: string;
@@ -74,7 +128,7 @@ interface LightroomAsset {
 }
 
 /**
- * Load saved Adobe tokens from database
+ * Load saved Adobe tokens from database and decrypt them
  */
 async function loadTokens(): Promise<TokenData | null> {
   try {
@@ -82,8 +136,8 @@ async function loadTokens(): Promise<TokenData | null> {
     if (!token) return null;
 
     return {
-      access_token: token.accessToken,
-      refresh_token: token.refreshToken || "",
+      access_token: getAccessToken(token.accessToken),
+      refresh_token: token.refreshToken ? getAccessToken(token.refreshToken) : "",
       expires_at: token.expiresAt.getTime(),
     };
   } catch {

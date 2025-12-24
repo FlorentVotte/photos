@@ -1,8 +1,23 @@
 "use client";
 
-import PhotoMap from "./PhotoMap";
+import dynamic from "next/dynamic";
 import { useLocale } from "@/lib/LocaleContext";
 import type { Photo } from "@/lib/types";
+
+// Lazy load the map component to reduce initial bundle size (~80KB for Leaflet)
+const PhotoMap = dynamic(() => import("./PhotoMap"), {
+  loading: () => (
+    <div className="w-full h-[600px] bg-surface-dark rounded-xl flex items-center justify-center">
+      <div className="text-center">
+        <span className="material-symbols-outlined text-4xl text-text-muted animate-pulse mb-2 block">
+          map
+        </span>
+        <p className="text-text-muted">Loading map...</p>
+      </div>
+    </div>
+  ),
+  ssr: false, // Maps require client-side rendering
+});
 
 interface MapContentProps {
   photos: Photo[];
