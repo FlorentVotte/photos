@@ -40,8 +40,12 @@ export default function AboutContent({
 }: AboutContentProps) {
   const { t } = useLocale();
 
-  const totalGearPhotos = Math.max(
+  const totalCameraPhotos = Math.max(
     gear.cameras.reduce((sum, c) => sum + c.count, 0),
+    1
+  );
+  const totalLensPhotos = Math.max(
+    gear.lenses.reduce((sum, l) => sum + l.count, 0),
     1
   );
 
@@ -226,7 +230,7 @@ export default function AboutContent({
                   </h4>
                   <ul className="space-y-4">
                     {gear.cameras.map((camera) => {
-                      const percentage = (camera.count / totalGearPhotos) * 100;
+                      const percentage = (camera.count / totalCameraPhotos) * 100;
                       return (
                         <li key={camera.name}>
                           <div className="flex items-center justify-between mb-1">
@@ -261,7 +265,7 @@ export default function AboutContent({
                   </h4>
                   <ul className="space-y-4">
                     {gear.lenses.slice(0, 5).map((lens) => {
-                      const percentage = (lens.count / totalGearPhotos) * 100;
+                      const percentage = (lens.count / totalLensPhotos) * 100;
                       return (
                         <li key={lens.name}>
                           <div className="flex items-center justify-between mb-1">
