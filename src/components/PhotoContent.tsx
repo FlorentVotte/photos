@@ -107,7 +107,7 @@ export default function PhotoContent({
 
             {/* Main Photo Stage */}
             <div
-              className="relative group w-full bg-[#0a140f] rounded-xl overflow-hidden shadow-2xl shadow-black/40 border border-surface-border"
+              className="relative group w-full bg-surface-dark rounded-xl overflow-hidden shadow-2xl shadow-black/40 border border-surface-border"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
@@ -138,7 +138,7 @@ export default function PhotoContent({
               )}
 
               {/* The Image */}
-              <div className="relative w-full aspect-[4/3] md:aspect-[16/10] flex items-center justify-center bg-[#0e1a13]">
+              <div className="relative w-full aspect-[4/3] md:aspect-[16/10] flex items-center justify-center bg-background-dark">
                 <ProtectedImage
                   alt={photo.title}
                   className="max-h-full max-w-full object-contain shadow-lg"
@@ -214,7 +214,7 @@ export default function PhotoContent({
                       title={photo.title}
                     />
                   ) : (
-                    <div className="h-[200px] bg-[#0e1a13] rounded-lg flex items-center justify-center">
+                    <div className="h-[200px] bg-background-dark rounded-lg flex items-center justify-center">
                       <span className="text-text-muted text-sm">{t("photo", "noGpsData")}</span>
                     </div>
                   )}
@@ -237,25 +237,25 @@ export default function PhotoContent({
                   {/* EXIF Grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {photo.metadata.aperture && (
-                      <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
+                      <div className="bg-background-dark rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">{t("photo", "aperture")}</span>
                         <span className="text-foreground text-sm font-medium">{photo.metadata.aperture}</span>
                       </div>
                     )}
                     {photo.metadata.shutterSpeed && (
-                      <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
+                      <div className="bg-background-dark rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">{t("photo", "shutter")}</span>
                         <span className="text-foreground text-sm font-medium">{photo.metadata.shutterSpeed}</span>
                       </div>
                     )}
                     {photo.metadata.iso && (
-                      <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
+                      <div className="bg-background-dark rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">{t("photo", "iso")}</span>
                         <span className="text-foreground text-sm font-medium">{photo.metadata.iso}</span>
                       </div>
                     )}
                     {photo.metadata.focalLength && (
-                      <div className="bg-[#0e1a13] rounded-lg p-3 text-center">
+                      <div className="bg-background-dark rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">{t("photo", "focal")}</span>
                         <span className="text-foreground text-sm font-medium">{photo.metadata.focalLength}</span>
                       </div>
@@ -264,7 +264,7 @@ export default function PhotoContent({
 
                   {/* Back to Album */}
                   {album && (
-                    <div className="mt-5 pt-4 border-t border-[#254633]">
+                    <div className="mt-5 pt-4 border-t border-surface-border">
                       <Link
                         href={`/album/${album.slug}`}
                         className="flex items-center gap-2 text-text-muted hover:text-primary transition-colors text-sm"
