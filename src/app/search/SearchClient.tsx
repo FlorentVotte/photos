@@ -100,7 +100,6 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
 
           {/* Search Input */}
           <div className="bg-surface-dark rounded-xl p-5 mb-8 border border-surface-border">
-            {/* Row 1: Search box and type filter */}
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="flex-1 relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted material-symbols-outlined">
@@ -131,75 +130,6 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                   </button>
                 ))}
               </div>
-            </div>
-
-            {/* Row 2: Filters */}
-            <div className="flex flex-wrap gap-2 mt-3">
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className={`px-3 py-2 border rounded-lg text-sm transition-colors ${
-                  selectedLocation
-                    ? "bg-primary/20 border-primary text-foreground"
-                    : "bg-background-dark border-surface-border text-text-muted"
-                }`}
-              >
-                <option value="">{t("search", "allLocations")}</option>
-                {locations.map((loc) => (
-                  <option key={loc} value={loc}>
-                    {loc}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={selectedCamera}
-                onChange={(e) => setSelectedCamera(e.target.value)}
-                className={`px-3 py-2 border rounded-lg text-sm transition-colors ${
-                  selectedCamera
-                    ? "bg-primary/20 border-primary text-foreground"
-                    : "bg-background-dark border-surface-border text-text-muted"
-                }`}
-              >
-                <option value="">{t("search", "allCameras")}</option>
-                {cameras.map((cam) => (
-                  <option key={cam} value={cam}>
-                    {cam}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                value={selectedLens}
-                onChange={(e) => setSelectedLens(e.target.value)}
-                className={`px-3 py-2 border rounded-lg text-sm transition-colors ${
-                  selectedLens
-                    ? "bg-primary/20 border-primary text-foreground"
-                    : "bg-background-dark border-surface-border text-text-muted"
-                }`}
-              >
-                <option value="">{t("search", "allLenses")}</option>
-                {lenses.map((lens) => (
-                  <option key={lens} value={lens}>
-                    {lens}
-                  </option>
-                ))}
-              </select>
-
-              {/* Clear filters button */}
-              {(selectedLocation || selectedCamera || selectedLens) && (
-                <button
-                  onClick={() => {
-                    setSelectedLocation("");
-                    setSelectedCamera("");
-                    setSelectedLens("");
-                  }}
-                  className="px-3 py-2 text-sm text-text-muted hover:text-foreground transition-colors flex items-center gap-1"
-                >
-                  <span className="material-symbols-outlined text-base">close</span>
-                  {t("search", "clearFilters")}
-                </button>
-              )}
             </div>
           </div>
 
