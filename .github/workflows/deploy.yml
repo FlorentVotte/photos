@@ -64,6 +64,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: VPS_server
     if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
 
     steps:
       - name: Deploy via SSH

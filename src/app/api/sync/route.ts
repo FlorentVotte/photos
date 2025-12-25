@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 import { promisify } from "util";
 import crypto from "crypto";
 import prisma from "@/lib/db";
 import { isAuthenticated } from "@/lib/auth";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 const WEBHOOK_SECRET = process.env.SYNC_WEBHOOK_SECRET;
 
 // Rate limiting for sync endpoint
@@ -105,14 +105,16 @@ export async function POST(request: NextRequest) {
       // No body or invalid JSON, sync all
     }
 
-    const syncCommand = galleryId
-      ? `npm run sync -- --gallery ${galleryId}`
-      : "npm run sync";
+    // Build command arguments safely (no string concatenation)
+    const args = ["run", "sync"];
+    if (galleryId) {
+      args.push("--", "--gallery", galleryId);
+    }
 
     console.log(`Starting sync... ${galleryId ? `(gallery: ${galleryId})` : "(all)"}`);
 
-    // Run the sync script
-    const { stdout, stderr } = await execAsync(syncCommand, {
+    // Run the sync script using execFile (prevents command injection)
+    const { stdout, stderr } = await execFileAsync("npm", args, {
       cwd: process.cwd(),
       timeout: 300000, // 5 minute timeout
     });

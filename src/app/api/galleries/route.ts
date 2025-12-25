@@ -5,19 +5,46 @@ import prisma from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
 
 /**
+ * Allowed domains for URL resolution (SSRF protection)
+ */
+const ALLOWED_DOMAINS = ["adobe.ly", "lightroom.adobe.com"];
+
+/**
+ * Validate URL is from allowed domain
+ */
+function isAllowedUrl(urlString: string): boolean {
+  try {
+    const url = new URL(urlString);
+    return ALLOWED_DOMAINS.some(domain => url.hostname === domain || url.hostname.endsWith(`.${domain}`));
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Resolve short URLs (adobe.ly) to full Lightroom URLs
  */
 async function resolveShortUrl(url: string): Promise<string> {
-  if (url.includes("adobe.ly/")) {
-    try {
+  // Validate URL is from allowed domain before making request
+  if (!isAllowedUrl(url)) {
+    console.error("URL not from allowed domain:", url);
+    return url;
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    if (parsedUrl.hostname === "adobe.ly") {
       const response = await fetch(url, { method: "HEAD", redirect: "manual" });
       const location = response.headers.get("location");
-      if (location && location.includes("lightroom.adobe.com/shares/")) {
-        return location;
+      if (location && isAllowedUrl(location)) {
+        const locationUrl = new URL(location);
+        if (locationUrl.hostname === "lightroom.adobe.com" && locationUrl.pathname.startsWith("/shares/")) {
+          return location;
+        }
       }
-    } catch (error) {
-      console.error("Failed to resolve short URL:", error);
     }
+  } catch (error) {
+    console.error("Failed to resolve short URL:", error);
   }
   return url;
 }

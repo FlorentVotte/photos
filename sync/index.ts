@@ -188,13 +188,19 @@ async function syncPrivateAlbum(
           full: `/photos/${albumSlug}/full/${assetId}.jpg`,
         };
       } else {
-        // Pass auth headers for Adobe API URLs
-        const authHeaders = renditionUrl.includes("lr.adobe.io")
-          ? {
+        // Pass auth headers for Adobe API URLs (use URL parsing for security)
+        let authHeaders: Record<string, string> | undefined;
+        try {
+          const parsedUrl = new URL(renditionUrl);
+          if (parsedUrl.hostname === "lr.adobe.io" || parsedUrl.hostname.endsWith(".adobe.io")) {
+            authHeaders = {
               Authorization: `Bearer ${token.accessToken}`,
               "X-API-Key": process.env.ADOBE_CLIENT_ID!,
-            }
-          : undefined;
+            };
+          }
+        } catch {
+          // Invalid URL, no auth headers
+        }
         thumbnails = await generateThumbnails(renditionUrl, albumSlug, assetId, authHeaders);
       }
 

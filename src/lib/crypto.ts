@@ -4,6 +4,14 @@ const ALGORITHM = "aes-256-gcm";
 const IV_LENGTH = 16;
 const TAG_LENGTH = 16;
 
+// Scrypt cost parameters for key derivation (OWASP recommended)
+const SCRYPT_OPTIONS = {
+  N: 32768,  // CPU/memory cost parameter (2^15)
+  r: 8,      // Block size
+  p: 1,      // Parallelization parameter
+  maxmem: 64 * 1024 * 1024, // 64MB max memory
+};
+
 /**
  * Get encryption key from environment
  * Security: Requires ENCRYPTION_KEY to be set in production
@@ -23,7 +31,7 @@ function getEncryptionKey(): Buffer {
     const fallback = process.env.ADMIN_PASSWORD || "default-key-change-me";
     // Use a more unique salt derived from the password itself
     const salt = crypto.createHash("sha256").update("photobook-" + fallback.slice(0, 4)).digest();
-    return crypto.scryptSync(fallback, salt, 32);
+    return crypto.scryptSync(fallback, salt, 32, SCRYPT_OPTIONS);
   }
 
   // If key is provided, ensure it's 32 bytes (256 bits)
@@ -37,11 +45,11 @@ function getEncryptionKey(): Buffer {
     }
     // Derive 32-byte key from provided string with unique salt
     const salt = crypto.createHash("sha256").update("photobook-key").digest();
-    return crypto.scryptSync(key, salt, 32);
+    return crypto.scryptSync(key, salt, 32, SCRYPT_OPTIONS);
   } else {
     // Key too short, derive with scrypt
     const salt = crypto.createHash("sha256").update("photobook-key").digest();
-    return crypto.scryptSync(key, salt, 32);
+    return crypto.scryptSync(key, salt, 32, SCRYPT_OPTIONS);
   }
 }
 

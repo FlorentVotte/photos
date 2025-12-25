@@ -34,12 +34,19 @@ export async function generateThumbnails(
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
     };
 
-    // Add auth headers for Adobe API URLs
+    // Add auth headers for Adobe API URLs (use URL parsing for security)
     if (authHeaders) {
       Object.assign(headers, authHeaders);
-    } else if (imageUrl.includes("lr.adobe.io")) {
-      // Fallback for public gallery URLs
-      headers["x-api-key"] = "LightroomMobileWeb1";
+    } else {
+      try {
+        const parsedUrl = new URL(imageUrl);
+        if (parsedUrl.hostname === "lr.adobe.io" || parsedUrl.hostname.endsWith(".adobe.io")) {
+          // Fallback for public gallery URLs
+          headers["x-api-key"] = "LightroomMobileWeb1";
+        }
+      } catch {
+        // Invalid URL, skip adding headers
+      }
     }
 
     const response = await fetch(imageUrl, { headers });
