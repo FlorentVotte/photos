@@ -15,6 +15,8 @@ interface Photo {
     longitude?: number;
   };
   albumId: string;
+  albumTitle?: string;
+  albumSlug?: string;
 }
 
 interface PhotoMapProps {
@@ -177,11 +179,14 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
                 />
                 <div className="p-3">
                   <p className="font-medium text-foreground truncate">{photo.title}</p>
+                  {photo.albumTitle && (
+                    <p className="text-xs text-primary mt-1 truncate">{photo.albumTitle}</p>
+                  )}
                   {photo.metadata.date && (
                     <p className="text-xs text-text-muted mt-1">{photo.metadata.date}</p>
                   )}
                   {photo.metadata.location && (
-                    <p className="text-xs text-primary mt-1">{photo.metadata.location}</p>
+                    <p className="text-xs text-text-muted">{photo.metadata.location}</p>
                   )}
                 </div>
               </Link>

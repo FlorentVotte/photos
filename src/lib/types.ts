@@ -31,6 +31,8 @@ export interface Photo {
     };
   };
   albumId: string;
+  albumTitle?: string;
+  albumSlug?: string;
   sortOrder?: number;
 }
 

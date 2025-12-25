@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ProtectedImage from "./ProtectedImage";
 import PhotoLocationMap from "./PhotoLocationMap";
@@ -26,6 +28,43 @@ export default function PhotoContent({
   nextPhoto,
 }: PhotoContentProps) {
   const { t } = useLocale();
+  const router = useRouter();
+
+  // Touch/swipe handling for mobile navigation
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (touchStartX.current === null || touchStartY.current === null) return;
+
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const deltaX = touchEndX - touchStartX.current;
+      const deltaY = touchEndY - touchStartY.current;
+
+      // Minimum swipe distance (50px) and ensure horizontal swipe is dominant
+      const minSwipeDistance = 50;
+      if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX > 0 && prevPhoto) {
+          // Swipe right - go to previous
+          router.push(`/photo/${prevPhoto.id}`);
+        } else if (deltaX < 0 && nextPhoto) {
+          // Swipe left - go to next
+          router.push(`/photo/${nextPhoto.id}`);
+        }
+      }
+
+      touchStartX.current = null;
+      touchStartY.current = null;
+    },
+    [prevPhoto, nextPhoto, router]
+  );
 
   return (
     <>
@@ -67,7 +106,11 @@ export default function PhotoContent({
             </div>
 
             {/* Main Photo Stage */}
-            <div className="relative group w-full bg-[#0a140f] rounded-xl overflow-hidden shadow-2xl shadow-black/40 border border-surface-border">
+            <div
+              className="relative group w-full bg-[#0a140f] rounded-xl overflow-hidden shadow-2xl shadow-black/40 border border-surface-border"
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
               {/* Navigation Overlays */}
               {prevPhoto && (
                 <Link

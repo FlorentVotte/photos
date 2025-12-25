@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import PhotoGrid from "./PhotoGrid";
@@ -38,6 +39,47 @@ export default function AlbumContent({
   nextAlbum,
 }: AlbumContentProps) {
   const { t, locale } = useLocale();
+
+  // Scroll position restoration
+  useEffect(() => {
+    const storageKey = `scroll-album-${album.slug}`;
+    const savedPosition = sessionStorage.getItem(storageKey);
+
+    if (savedPosition) {
+      // Small delay to ensure content is rendered
+      const timer = setTimeout(() => {
+        window.scrollTo(0, parseInt(savedPosition, 10));
+        sessionStorage.removeItem(storageKey);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [album.slug]);
+
+  // Save scroll position before navigating away
+  useEffect(() => {
+    const storageKey = `scroll-album-${album.slug}`;
+
+    const handleBeforeUnload = () => {
+      sessionStorage.setItem(storageKey, String(window.scrollY));
+    };
+
+    // Save on any click that might navigate away (photo links)
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a[href^="/photo/"]');
+      if (link) {
+        sessionStorage.setItem(storageKey, String(window.scrollY));
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("click", handleClick);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("click", handleClick);
+    };
+  }, [album.slug]);
 
   // Helper to get localized chapter content
   const getChapterTitle = (chapter: Chapter) => {

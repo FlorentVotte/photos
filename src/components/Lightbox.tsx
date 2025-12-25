@@ -37,20 +37,108 @@ export default function Lightbox({
   const [isPlaying, setIsPlaying] = useState(slideshowEnabled);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Zoom state
+  const [scale, setScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const imageRef = useRef<HTMLImageElement>(null);
+
   const currentPhoto = photos[currentIndex];
 
-  // Touch/swipe handling
+  // Touch/swipe and pinch-zoom handling
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
+  const lastTapTime = useRef<number>(0);
+  const initialPinchDistance = useRef<number | null>(null);
+  const initialScale = useRef<number>(1);
+  const isPinching = useRef<boolean>(false);
+  const lastPanPosition = useRef<{ x: number; y: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Calculate distance between two touch points
+  const getTouchDistance = (touches: React.TouchList): number => {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  // Reset zoom when photo changes
+  useEffect(() => {
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+  }, [currentIndex]);
+
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-  }, []);
+    if (e.touches.length === 2) {
+      // Pinch start
+      isPinching.current = true;
+      initialPinchDistance.current = getTouchDistance(e.touches);
+      initialScale.current = scale;
+    } else if (e.touches.length === 1) {
+      touchStartX.current = e.touches[0].clientX;
+      touchStartY.current = e.touches[0].clientY;
+
+      // Track for panning when zoomed
+      if (scale > 1) {
+        lastPanPosition.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+
+      // Double-tap detection
+      const now = Date.now();
+      if (now - lastTapTime.current < 300) {
+        // Double tap - toggle zoom
+        if (scale > 1) {
+          setScale(1);
+          setPosition({ x: 0, y: 0 });
+        } else {
+          setScale(2.5);
+        }
+        lastTapTime.current = 0;
+      } else {
+        lastTapTime.current = now;
+      }
+    }
+  }, [scale]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2 && initialPinchDistance.current !== null) {
+      // Pinch zoom
+      e.preventDefault();
+      const currentDistance = getTouchDistance(e.touches);
+      const scaleChange = currentDistance / initialPinchDistance.current;
+      const newScale = Math.min(Math.max(initialScale.current * scaleChange, 1), 4);
+      setScale(newScale);
+
+      if (newScale === 1) {
+        setPosition({ x: 0, y: 0 });
+      }
+    } else if (e.touches.length === 1 && scale > 1 && lastPanPosition.current) {
+      // Pan when zoomed
+      e.preventDefault();
+      const deltaX = e.touches[0].clientX - lastPanPosition.current.x;
+      const deltaY = e.touches[0].clientY - lastPanPosition.current.y;
+
+      setPosition(prev => ({
+        x: prev.x + deltaX,
+        y: prev.y + deltaY,
+      }));
+
+      lastPanPosition.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  }, [scale]);
 
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
+      if (isPinching.current) {
+        isPinching.current = false;
+        initialPinchDistance.current = null;
+        return;
+      }
+
+      lastPanPosition.current = null;
+
+      // Only handle swipe if not zoomed
+      if (scale > 1) return;
+
       if (touchStartX.current === null || touchStartY.current === null) return;
 
       const touchEndX = e.changedTouches[0].clientX;
@@ -81,7 +169,7 @@ export default function Lightbox({
       touchStartX.current = null;
       touchStartY.current = null;
     },
-    [currentIndex, photos.length, onNavigate]
+    [currentIndex, photos.length, onNavigate, scale]
   );
 
   const goNext = useCallback(() => {
@@ -166,9 +254,10 @@ export default function Lightbox({
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+      className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center touch-none"
       onClick={onClose}
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {/* Top right controls */}
@@ -254,11 +343,16 @@ export default function Lightbox({
           </div>
         )}
         <img
+          ref={imageRef}
           src={currentPhoto.src.full}
           alt={currentPhoto.title || "Photo"}
           className={`max-w-full max-h-[85vh] object-contain select-none transition-opacity duration-300 ${
             isLoading ? "opacity-0" : "opacity-100"
           }`}
+          style={{
+            transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
+            transformOrigin: "center center",
+          }}
           onLoad={() => setIsLoading(false)}
           onContextMenu={(e) => e.preventDefault()}
           draggable={false}

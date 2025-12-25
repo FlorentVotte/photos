@@ -210,6 +210,11 @@ export async function getFeaturedAlbum(): Promise<Album | undefined> {
 // Get all photos (for search, map, etc.)
 export async function getAllPhotos(): Promise<Photo[]> {
   const photos = await prisma.photo.findMany({
+    include: {
+      album: {
+        select: { title: true, slug: true },
+      },
+    },
     orderBy: [{ albumId: "asc" }, { sortOrder: "asc" }],
   });
 
@@ -239,6 +244,8 @@ export async function getAllPhotos(): Promise<Photo[]> {
       longitude: p.longitude || undefined,
     },
     albumId: p.albumId,
+    albumTitle: p.album?.title || undefined,
+    albumSlug: p.album?.slug || undefined,
     sortOrder: p.sortOrder,
   }));
 }
