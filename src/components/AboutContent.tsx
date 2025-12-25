@@ -278,8 +278,8 @@ export default function AboutContent({
                           </div>
                           <div className="h-2 bg-background-dark rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-primary/70 rounded-full transition-all duration-500"
-                              style={{ width: `${percentage}%` }}
+                              className="h-full bg-primary rounded-full transition-all duration-500"
+                              style={{ width: `${Math.max(percentage, 2)}%` }}
                             />
                           </div>
                         </li>
