@@ -72,6 +72,7 @@ export const translations = {
     allLocations: { en: "All Locations", fr: "Tous les lieux" },
     allCameras: { en: "All Cameras", fr: "Tous les boîtiers" },
     allLenses: { en: "All Lenses", fr: "Tous les objectifs" },
+    clearFilters: { en: "Clear", fr: "Effacer" },
     all: { en: "all", fr: "tout" },
     albums: { en: "albums", fr: "albums" },
     photos: { en: "photos", fr: "photos" },

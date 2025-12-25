@@ -99,9 +99,9 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
           <h1 className="text-3xl font-bold text-foreground mb-8">{t("search", "title")}</h1>
 
           {/* Search Input */}
-          <div className="bg-surface-dark rounded-xl p-6 mb-8 border border-surface-border">
-            <div className="flex flex-col md:flex-row gap-4">
-              {/* Search Box */}
+          <div className="bg-surface-dark rounded-xl p-5 mb-8 border border-surface-border">
+            {/* Row 1: Search box and type filter */}
+            <div className="flex flex-col sm:flex-row gap-3">
               <div className="flex-1 relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted material-symbols-outlined">
                   search
@@ -115,55 +115,13 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                 />
               </div>
 
-              {/* Location Filter */}
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className="px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground min-w-[150px]"
-              >
-                <option value="">{t("search", "allLocations")}</option>
-                {locations.map((loc) => (
-                  <option key={loc} value={loc}>
-                    {loc}
-                  </option>
-                ))}
-              </select>
-
-              {/* Camera Filter */}
-              <select
-                value={selectedCamera}
-                onChange={(e) => setSelectedCamera(e.target.value)}
-                className="px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground min-w-[150px]"
-              >
-                <option value="">{t("search", "allCameras")}</option>
-                {cameras.map((cam) => (
-                  <option key={cam} value={cam}>
-                    {cam}
-                  </option>
-                ))}
-              </select>
-
-              {/* Lens Filter */}
-              <select
-                value={selectedLens}
-                onChange={(e) => setSelectedLens(e.target.value)}
-                className="px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground min-w-[150px]"
-              >
-                <option value="">{t("search", "allLenses")}</option>
-                {lenses.map((lens) => (
-                  <option key={lens} value={lens}>
-                    {lens}
-                  </option>
-                ))}
-              </select>
-
               {/* Type Filter */}
-              <div className="flex rounded-lg overflow-hidden border border-surface-border">
+              <div className="flex rounded-lg overflow-hidden border border-surface-border shrink-0">
                 {(["all", "albums", "photos"] as FilterType[]).map((type) => (
                   <button
                     key={type}
                     onClick={() => setFilterType(type)}
-                    className={`px-4 py-3 capitalize transition-colors ${
+                    className={`px-4 py-3 capitalize transition-colors text-sm ${
                       filterType === type
                         ? "bg-primary text-black"
                         : "bg-background-dark text-foreground hover:bg-surface-border"
@@ -173,6 +131,75 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Row 2: Filters */}
+            <div className="flex flex-wrap gap-2 mt-3">
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className={`px-3 py-2 border rounded-lg text-sm transition-colors ${
+                  selectedLocation
+                    ? "bg-primary/20 border-primary text-foreground"
+                    : "bg-background-dark border-surface-border text-text-muted"
+                }`}
+              >
+                <option value="">{t("search", "allLocations")}</option>
+                {locations.map((loc) => (
+                  <option key={loc} value={loc}>
+                    {loc}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={selectedCamera}
+                onChange={(e) => setSelectedCamera(e.target.value)}
+                className={`px-3 py-2 border rounded-lg text-sm transition-colors ${
+                  selectedCamera
+                    ? "bg-primary/20 border-primary text-foreground"
+                    : "bg-background-dark border-surface-border text-text-muted"
+                }`}
+              >
+                <option value="">{t("search", "allCameras")}</option>
+                {cameras.map((cam) => (
+                  <option key={cam} value={cam}>
+                    {cam}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={selectedLens}
+                onChange={(e) => setSelectedLens(e.target.value)}
+                className={`px-3 py-2 border rounded-lg text-sm transition-colors ${
+                  selectedLens
+                    ? "bg-primary/20 border-primary text-foreground"
+                    : "bg-background-dark border-surface-border text-text-muted"
+                }`}
+              >
+                <option value="">{t("search", "allLenses")}</option>
+                {lenses.map((lens) => (
+                  <option key={lens} value={lens}>
+                    {lens}
+                  </option>
+                ))}
+              </select>
+
+              {/* Clear filters button */}
+              {(selectedLocation || selectedCamera || selectedLens) && (
+                <button
+                  onClick={() => {
+                    setSelectedLocation("");
+                    setSelectedCamera("");
+                    setSelectedLens("");
+                  }}
+                  className="px-3 py-2 text-sm text-text-muted hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-base">close</span>
+                  {t("search", "clearFilters")}
+                </button>
+              )}
             </div>
           </div>
 
