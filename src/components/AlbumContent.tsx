@@ -64,7 +64,7 @@ export default function AlbumContent({
   const textOpacity = Math.max(0, 1 - scrollY / (heroHeight * 0.6));
   const textTranslate = scrollY * 0.2; // Text moves up slightly
 
-  // Scroll position restoration
+  // Scroll position restoration (only when returning from photo detail)
   useEffect(() => {
     const storageKey = `scroll-album-${album.slug}`;
     const savedPosition = sessionStorage.getItem(storageKey);
@@ -76,6 +76,9 @@ export default function AlbumContent({
         sessionStorage.removeItem(storageKey);
       }, 100);
       return () => clearTimeout(timer);
+    } else {
+      // Fresh navigation - scroll to top
+      window.scrollTo(0, 0);
     }
   }, [album.slug]);
 
