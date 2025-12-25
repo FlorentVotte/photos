@@ -3,7 +3,13 @@
 import { useEffect, useCallback, useState, useRef } from "react";
 import Link from "next/link";
 import { useLocale } from "@/lib/LocaleContext";
-import { UI } from "@/lib/constants";
+import {
+  useBodyScrollLock,
+  useLightboxKeyboard,
+  usePinchZoom,
+  useSlideshow,
+  useSwipeNavigation,
+} from "@/hooks";
 
 interface Photo {
   id: string;
@@ -31,147 +37,16 @@ export default function Lightbox({
   isOpen,
   onClose,
   onNavigate,
-  slideshowEnabled = false,
   slideshowInterval = 4000,
 }: LightboxProps) {
   const { t } = useLocale();
-  const [isPlaying, setIsPlaying] = useState(slideshowEnabled);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Zoom state
-  const [scale, setScale] = useState(1);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
   const imageRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const currentPhoto = photos[currentIndex];
 
-  // Touch/swipe and pinch-zoom handling
-  const touchStartX = useRef<number | null>(null);
-  const touchStartY = useRef<number | null>(null);
-  const lastTapTime = useRef<number>(0);
-  const initialPinchDistance = useRef<number | null>(null);
-  const initialScale = useRef<number>(1);
-  const isPinching = useRef<boolean>(false);
-  const lastPanPosition = useRef<{ x: number; y: number } | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Calculate distance between two touch points
-  const getTouchDistance = (touches: React.TouchList): number => {
-    const dx = touches[0].clientX - touches[1].clientX;
-    const dy = touches[0].clientY - touches[1].clientY;
-    return Math.sqrt(dx * dx + dy * dy);
-  };
-
-  // Reset zoom when photo changes
-  useEffect(() => {
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
-  }, [currentIndex]);
-
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      // Pinch start
-      isPinching.current = true;
-      initialPinchDistance.current = getTouchDistance(e.touches);
-      initialScale.current = scale;
-    } else if (e.touches.length === 1) {
-      touchStartX.current = e.touches[0].clientX;
-      touchStartY.current = e.touches[0].clientY;
-
-      // Track for panning when zoomed
-      if (scale > 1) {
-        lastPanPosition.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      }
-
-      // Double-tap detection
-      const now = Date.now();
-      if (now - lastTapTime.current < UI.DOUBLE_TAP_WINDOW_MS) {
-        // Double tap - toggle zoom
-        if (scale > 1) {
-          setScale(1);
-          setPosition({ x: 0, y: 0 });
-        } else {
-          setScale(2.5);
-        }
-        lastTapTime.current = 0;
-      } else {
-        lastTapTime.current = now;
-      }
-    }
-  }, [scale]);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 2 && initialPinchDistance.current !== null) {
-      // Pinch zoom
-      e.preventDefault();
-      const currentDistance = getTouchDistance(e.touches);
-      const scaleChange = currentDistance / initialPinchDistance.current;
-      const newScale = Math.min(Math.max(initialScale.current * scaleChange, 1), UI.MAX_ZOOM_SCALE);
-      setScale(newScale);
-
-      if (newScale === 1) {
-        setPosition({ x: 0, y: 0 });
-      }
-    } else if (e.touches.length === 1 && scale > 1 && lastPanPosition.current) {
-      // Pan when zoomed
-      e.preventDefault();
-      const deltaX = e.touches[0].clientX - lastPanPosition.current.x;
-      const deltaY = e.touches[0].clientY - lastPanPosition.current.y;
-
-      setPosition(prev => ({
-        x: prev.x + deltaX,
-        y: prev.y + deltaY,
-      }));
-
-      lastPanPosition.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    }
-  }, [scale]);
-
-  const handleTouchEnd = useCallback(
-    (e: React.TouchEvent) => {
-      if (isPinching.current) {
-        isPinching.current = false;
-        initialPinchDistance.current = null;
-        return;
-      }
-
-      lastPanPosition.current = null;
-
-      // Only handle swipe if not zoomed
-      if (scale > 1) return;
-
-      if (touchStartX.current === null || touchStartY.current === null) return;
-
-      const touchEndX = e.changedTouches[0].clientX;
-      const touchEndY = e.changedTouches[0].clientY;
-      const deltaX = touchEndX - touchStartX.current;
-      const deltaY = touchEndY - touchStartY.current;
-
-      // Minimum swipe distance and ensure horizontal swipe is dominant
-      if (Math.abs(deltaX) > UI.MIN_SWIPE_DISTANCE_PX && Math.abs(deltaX) > Math.abs(deltaY)) {
-        if (deltaX > 0) {
-          // Swipe right - go to previous
-          if (currentIndex > 0) {
-            onNavigate(currentIndex - 1);
-          } else {
-            onNavigate(photos.length - 1);
-          }
-        } else {
-          // Swipe left - go to next
-          if (currentIndex < photos.length - 1) {
-            onNavigate(currentIndex + 1);
-          } else {
-            onNavigate(0);
-          }
-        }
-      }
-
-      touchStartX.current = null;
-      touchStartY.current = null;
-    },
-    [currentIndex, photos.length, onNavigate, scale]
-  );
-
+  // Navigation helpers
   const goNext = useCallback(() => {
     if (currentIndex < photos.length - 1) {
       onNavigate(currentIndex + 1);
@@ -188,70 +63,68 @@ export default function Lightbox({
     }
   }, [currentIndex, photos.length, onNavigate]);
 
-  // Keyboard navigation
-  useEffect(() => {
-    if (!isOpen) return;
+  // Custom hooks for lightbox functionality
+  useBodyScrollLock(isOpen);
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Stop other keyboard handlers (like PhotoKeyboardNav) from running
-      e.stopImmediatePropagation();
+  const { isPlaying, togglePlay } = useSlideshow({
+    isActive: isOpen,
+    interval: slideshowInterval,
+    onNext: goNext,
+  });
 
-      switch (e.key) {
-        case "ArrowRight":
-        case "ArrowDown":
-          e.preventDefault();
-          goNext();
-          break;
-        case "ArrowLeft":
-        case "ArrowUp":
-          e.preventDefault();
-          goPrev();
-          break;
-        case "Escape":
-          e.preventDefault();
-          onClose();
-          break;
-        case " ": // Space bar toggles slideshow
-          e.preventDefault();
-          setIsPlaying((p) => !p);
-          break;
-        case "i": // Info - go to photo details
-        case "I":
-          e.preventDefault();
-          window.location.href = `/photo/${photos[currentIndex].id}`;
-          break;
-      }
-    };
+  const {
+    scale,
+    position,
+    isZoomed,
+    handleTouchStart: handleZoomTouchStart,
+    handleTouchMove,
+    handleTouchEnd: handleZoomTouchEnd,
+  } = usePinchZoom({
+    resetKey: currentIndex,
+  });
 
-    // Use capture phase to intercept events before other handlers
-    window.addEventListener("keydown", handleKeyDown, true);
-    return () => window.removeEventListener("keydown", handleKeyDown, true);
-  }, [isOpen, goNext, goPrev, onClose, photos, currentIndex]);
+  const { handleSwipeStart, handleSwipeEnd } = useSwipeNavigation({
+    enabled: !isZoomed,
+    onNext: goNext,
+    onPrev: goPrev,
+  });
 
-  // Slideshow auto-advance
-  useEffect(() => {
-    if (!isOpen || !isPlaying) return;
+  const handleViewDetails = useCallback(() => {
+    if (photos[currentIndex]) {
+      window.location.href = `/photo/${photos[currentIndex].id}`;
+    }
+  }, [photos, currentIndex]);
 
-    const timer = setInterval(goNext, slideshowInterval);
-    return () => clearInterval(timer);
-  }, [isOpen, isPlaying, goNext, slideshowInterval]);
+  useLightboxKeyboard({
+    isActive: isOpen,
+    onNext: goNext,
+    onPrev: goPrev,
+    onClose,
+    onToggleSlideshow: togglePlay,
+    onViewDetails: handleViewDetails,
+  });
+
+  // Combine touch handlers
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      handleZoomTouchStart(e);
+      handleSwipeStart(e);
+    },
+    [handleZoomTouchStart, handleSwipeStart]
+  );
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      handleZoomTouchEnd(e);
+      handleSwipeEnd(e);
+    },
+    [handleZoomTouchEnd, handleSwipeEnd]
+  );
 
   // Reset loading state when photo changes
   useEffect(() => {
     setIsLoading(true);
   }, [currentIndex]);
-
-  // Prevent body scroll when lightbox is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
 
   if (!isOpen || !currentPhoto) return null;
 
@@ -291,7 +164,7 @@ export default function Lightbox({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            setIsPlaying((p) => !p);
+            togglePlay();
           }}
           className="p-2 text-white/70 hover:text-white transition-colors"
           aria-label={isPlaying ? t("lightbox", "pause") : t("lightbox", "play")}
