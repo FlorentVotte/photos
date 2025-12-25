@@ -223,8 +223,9 @@ export default function Lightbox({
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    // Use capture phase to intercept events before other handlers
+    window.addEventListener("keydown", handleKeyDown, true);
+    return () => window.removeEventListener("keydown", handleKeyDown, true);
   }, [isOpen, goNext, goPrev, onClose, photos, currentIndex]);
 
   // Slideshow auto-advance
