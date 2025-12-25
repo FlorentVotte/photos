@@ -54,9 +54,12 @@ export const translations = {
     shutter: { en: "Shutter", fr: "Vitesse" },
     iso: { en: "ISO", fr: "ISO" },
     focal: { en: "Focal", fr: "Focale" },
+    resolution: { en: "Size", fr: "Taille" },
     noGpsData: { en: "No GPS data", fr: "Pas de données GPS" },
     unknownLens: { en: "Unknown lens", fr: "Objectif inconnu" },
     camera: { en: "Camera", fr: "Appareil" },
+    share: { en: "Share", fr: "Partager" },
+    linkCopied: { en: "Link copied!", fr: "Lien copié !" },
   },
 
   // Search page

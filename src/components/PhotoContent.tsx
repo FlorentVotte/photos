@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ProtectedImage from "./ProtectedImage";
@@ -29,6 +29,37 @@ export default function PhotoContent({
 }: PhotoContentProps) {
   const { t } = useLocale();
   const router = useRouter();
+
+  // Loading state for main image
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Share functionality
+  const [showCopied, setShowCopied] = useState(false);
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const title = photo.title;
+    const text = photo.caption || `${photo.title} - ${photo.metadata.location}`;
+
+    // Try native share first (mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text, url });
+        return;
+      } catch {
+        // User cancelled or share failed, fall through to clipboard
+      }
+    }
+
+    // Fallback to clipboard
+    try {
+      await navigator.clipboard.writeText(url);
+      setShowCopied(true);
+      setTimeout(() => setShowCopied(false), 2000);
+    } catch {
+      // Clipboard failed silently
+    }
+  };
 
   // Touch/swipe handling for mobile navigation
   const touchStartX = useRef<number | null>(null);
@@ -139,11 +170,29 @@ export default function PhotoContent({
 
               {/* The Image */}
               <div className="relative w-full aspect-[4/3] md:aspect-[16/10] flex items-center justify-center bg-background-dark">
+                {/* Loading skeleton */}
+                {!imageLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-background-dark">
+                    <div className="flex flex-col items-center gap-3">
+                      <span className="material-symbols-outlined text-4xl text-primary animate-spin">
+                        progress_activity
+                      </span>
+                    </div>
+                  </div>
+                )}
                 <ProtectedImage
                   alt={photo.title}
-                  className="max-h-full max-w-full object-contain shadow-lg"
+                  className={`max-h-full max-w-full object-contain shadow-lg transition-opacity duration-300 ${
+                    imageLoaded ? "opacity-100" : "opacity-0"
+                  }`}
                   src={photo.src.full}
+                  onLoad={() => setImageLoaded(true)}
                 />
+              </div>
+
+              {/* Photo counter */}
+              <div className="absolute top-4 left-4 z-10 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-foreground text-sm font-medium">
+                {currentIndex + 1} / {albumPhotos.length}
               </div>
 
               {/* Mobile Nav Controls */}
@@ -183,10 +232,27 @@ export default function PhotoContent({
                     </p>
                   )}
                 </div>
-                <SlideshowButton
-                  photos={albumPhotos}
-                  currentIndex={currentIndex}
-                />
+                <div className="flex items-center gap-2">
+                  {/* Share button */}
+                  <button
+                    onClick={handleShare}
+                    className="relative flex items-center gap-2 px-4 py-2 bg-surface-dark border border-surface-border rounded-lg text-foreground hover:border-primary hover:text-primary transition-colors text-sm font-medium"
+                    aria-label={t("photo", "share")}
+                  >
+                    <span className="material-symbols-outlined text-lg">share</span>
+                    <span className="hidden sm:inline">{t("photo", "share")}</span>
+                    {/* Copied tooltip */}
+                    {showCopied && (
+                      <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-black text-xs font-medium rounded-full whitespace-nowrap">
+                        {t("photo", "linkCopied")}
+                      </span>
+                    )}
+                  </button>
+                  <SlideshowButton
+                    photos={albumPhotos}
+                    currentIndex={currentIndex}
+                  />
+                </div>
               </div>
 
               {/* Info Grid - Map and Metadata side by side on desktop */}
@@ -258,6 +324,14 @@ export default function PhotoContent({
                       <div className="bg-background-dark rounded-lg p-3 text-center">
                         <span className="text-text-muted text-xs block mb-1">{t("photo", "focal")}</span>
                         <span className="text-foreground text-sm font-medium">{photo.metadata.focalLength}</span>
+                      </div>
+                    )}
+                    {photo.metadata.width && photo.metadata.height && (
+                      <div className="bg-background-dark rounded-lg p-3 text-center">
+                        <span className="text-text-muted text-xs block mb-1">{t("photo", "resolution")}</span>
+                        <span className="text-foreground text-sm font-medium">
+                          {photo.metadata.width} × {photo.metadata.height}
+                        </span>
                       </div>
                     )}
                   </div>
