@@ -193,6 +193,9 @@ export default function Lightbox({
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Stop other keyboard handlers (like PhotoKeyboardNav) from running
+      e.stopImmediatePropagation();
+
       switch (e.key) {
         case "ArrowRight":
         case "ArrowDown":
@@ -222,7 +225,7 @@ export default function Lightbox({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, goNext, goPrev, onClose]);
+  }, [isOpen, goNext, goPrev, onClose, photos, currentIndex]);
 
   // Slideshow auto-advance
   useEffect(() => {
