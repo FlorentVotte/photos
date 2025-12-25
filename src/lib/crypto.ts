@@ -12,6 +12,10 @@ const SCRYPT_OPTIONS = {
   maxmem: 64 * 1024 * 1024, // 64MB max memory
 };
 
+// Constant salt for key derivation (unique to this application)
+// Using a constant salt is acceptable here since scrypt provides the computational hardness
+const KEY_DERIVATION_SALT = Buffer.from("photobook-encryption-key-salt-v1", "utf8");
+
 /**
  * Get encryption key from environment
  * Security: Requires ENCRYPTION_KEY to be set in production
@@ -27,11 +31,9 @@ function getEncryptionKey(): Buffer {
         "Generate one with: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
       );
     }
-    // Fallback for development only - derive key from admin password with unique salt
+    // Fallback for development only - derive key from admin password
     const fallback = process.env.ADMIN_PASSWORD || "default-key-change-me";
-    // Use a more unique salt derived from the password itself
-    const salt = crypto.createHash("sha256").update("photobook-" + fallback.slice(0, 4)).digest();
-    return crypto.scryptSync(fallback, salt, 32, SCRYPT_OPTIONS);
+    return crypto.scryptSync(fallback, KEY_DERIVATION_SALT, 32, SCRYPT_OPTIONS);
   }
 
   // If key is provided, ensure it's 32 bytes (256 bits)
@@ -43,13 +45,11 @@ function getEncryptionKey(): Buffer {
     if (key.length === 32) {
       return Buffer.from(key);
     }
-    // Derive 32-byte key from provided string with unique salt
-    const salt = crypto.createHash("sha256").update("photobook-key").digest();
-    return crypto.scryptSync(key, salt, 32, SCRYPT_OPTIONS);
+    // Derive 32-byte key from provided string
+    return crypto.scryptSync(key, KEY_DERIVATION_SALT, 32, SCRYPT_OPTIONS);
   } else {
     // Key too short, derive with scrypt
-    const salt = crypto.createHash("sha256").update("photobook-key").digest();
-    return crypto.scryptSync(key, salt, 32, SCRYPT_OPTIONS);
+    return crypto.scryptSync(key, KEY_DERIVATION_SALT, 32, SCRYPT_OPTIONS);
   }
 }
 

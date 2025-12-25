@@ -25,22 +25,33 @@ function isAllowedUrl(urlString: string): boolean {
  * Resolve short URLs (adobe.ly) to full Lightroom URLs
  */
 async function resolveShortUrl(url: string): Promise<string> {
-  // Validate URL is from allowed domain before making request
-  if (!isAllowedUrl(url)) {
-    console.error("URL not from allowed domain:", url);
+  // Validate and parse URL
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch {
+    console.error("Invalid URL format:", url);
+    return url;
+  }
+
+  // Only process adobe.ly short URLs
+  if (parsedUrl.hostname !== "adobe.ly") {
     return url;
   }
 
   try {
-    const parsedUrl = new URL(url);
-    if (parsedUrl.hostname === "adobe.ly") {
-      const response = await fetch(url, { method: "HEAD", redirect: "manual" });
-      const location = response.headers.get("location");
-      if (location && isAllowedUrl(location)) {
-        const locationUrl = new URL(location);
-        if (locationUrl.hostname === "lightroom.adobe.com" && locationUrl.pathname.startsWith("/shares/")) {
-          return location;
-        }
+    // Construct a safe URL from validated components (SSRF protection)
+    const safeUrl = `https://adobe.ly${parsedUrl.pathname}${parsedUrl.search}`;
+    const response = await fetch(safeUrl, { method: "HEAD", redirect: "manual" });
+    const location = response.headers.get("location");
+
+    if (location) {
+      const locationUrl = new URL(location);
+      // Strictly validate the redirect target
+      if (locationUrl.hostname === "lightroom.adobe.com" &&
+          locationUrl.pathname.startsWith("/shares/") &&
+          locationUrl.protocol === "https:") {
+        return location;
       }
     }
   } catch (error) {
