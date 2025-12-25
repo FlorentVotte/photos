@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, useEffect } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ProtectedImage from "./ProtectedImage";
@@ -29,14 +29,6 @@ export default function PhotoContent({
 }: PhotoContentProps) {
   const { t } = useLocale();
   const router = useRouter();
-
-  // Loading state for main image
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  // Reset loading state when photo changes
-  useEffect(() => {
-    setImageLoaded(false);
-  }, [photo.id]);
 
   // Share functionality
   const [showCopied, setShowCopied] = useState(false);
@@ -175,23 +167,10 @@ export default function PhotoContent({
 
               {/* The Image */}
               <div className="relative w-full aspect-[4/3] md:aspect-[16/10] flex items-center justify-center bg-background-dark">
-                {/* Loading skeleton */}
-                {!imageLoaded && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-background-dark">
-                    <div className="flex flex-col items-center gap-3">
-                      <span className="material-symbols-outlined text-4xl text-primary animate-spin">
-                        progress_activity
-                      </span>
-                    </div>
-                  </div>
-                )}
                 <ProtectedImage
                   alt={photo.title}
-                  className={`max-h-full max-w-full object-contain shadow-lg transition-opacity duration-300 ${
-                    imageLoaded ? "opacity-100" : "opacity-0"
-                  }`}
+                  className="max-h-full max-w-full object-contain shadow-lg"
                   src={photo.src.full}
-                  onLoad={() => setImageLoaded(true)}
                 />
               </div>
 
