@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useLocale } from "@/lib/LocaleContext";
 
 interface Photo {
   id: string;
@@ -48,6 +49,7 @@ const FitBoundsComponent = dynamic(
 );
 
 export default function PhotoMap({ photos }: PhotoMapProps) {
+  const { t } = useLocale();
   const [isClient, setIsClient] = useState(false);
   const [L, setL] = useState<any>(null);
 
@@ -96,7 +98,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
         <span className="material-symbols-outlined text-6xl text-text-muted/30">
           location_off
         </span>
-        <p className="text-text-muted">No photos with GPS data available</p>
+        <p className="text-text-muted">{t("map", "noGpsPhotos")}</p>
         <p className="text-sm text-text-muted/70">
           GPS coordinates are extracted from photo EXIF data during sync
         </p>
@@ -195,7 +197,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
         ))}
       </MapContainer>
       <p className="text-center text-text-muted text-sm mt-4">
-        {geoPhotos.length} photos with GPS data
+        {geoPhotos.length} {t("map", "photosWithGps")}
       </p>
     </>
   );
