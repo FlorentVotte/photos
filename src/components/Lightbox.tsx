@@ -254,11 +254,8 @@ export default function Lightbox({
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center touch-none"
+      className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
       onClick={onClose}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
       {/* Top right controls */}
       <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
@@ -274,7 +271,10 @@ export default function Lightbox({
         </Link>
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
           className="p-2 text-white/70 hover:text-white transition-colors"
           aria-label={t("lightbox", "close")}
         >
@@ -332,8 +332,11 @@ export default function Lightbox({
 
       {/* Main image */}
       <div
-        className="relative max-w-[90vw] max-h-[85vh] flex items-center justify-center"
+        className="relative max-w-[90vw] max-h-[85vh] flex items-center justify-center touch-none"
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center">
