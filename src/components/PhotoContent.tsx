@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ProtectedImage from "./ProtectedImage";
@@ -32,6 +32,11 @@ export default function PhotoContent({
 
   // Loading state for main image
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Reset loading state when photo changes
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [photo.id]);
 
   // Share functionality
   const [showCopied, setShowCopied] = useState(false);
