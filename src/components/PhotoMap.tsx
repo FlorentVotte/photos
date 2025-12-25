@@ -182,7 +182,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
                   alt={photo.title}
                   className="w-full h-32 object-cover"
                 />
-                <div className="px-3 py-2">
+                <div className="px-3 pt-1.5 pb-2">
                   <p className="font-medium text-foreground truncate text-sm">{photo.title}</p>
                   {photo.albumTitle && (
                     <p className="text-xs text-primary truncate">{photo.albumTitle}</p>
