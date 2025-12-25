@@ -92,7 +92,8 @@ export async function POST(request: NextRequest) {
       const sessionToken = generateSessionToken();
 
       // Set auth cookie (expires in 2 hours for security)
-      cookies().set("admin_auth", sessionToken, {
+      const cookieStore = await cookies();
+      cookieStore.set("admin_auth", sessionToken, {
         httpOnly: true,
         secure: true, // Always secure
         sameSite: "strict", // Stricter CSRF protection

@@ -1,4 +1,3 @@
-import fetch, { Response } from "node-fetch";
 import fs from "fs";
 import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";

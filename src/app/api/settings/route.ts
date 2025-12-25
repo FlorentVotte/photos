@@ -37,7 +37,7 @@ export async function GET() {
 
 // PATCH - Update settings (admin only)
 export async function PATCH(request: NextRequest) {
-  const authError = requireAuth();
+  const authError = await requireAuth();
   if (authError) return authError;
 
   try {

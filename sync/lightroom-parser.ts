@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import type { LightroomGalleryData, LightroomPhoto } from "./types";
 
 // Use lightroom.adobe.com for shared galleries (photos.adobe.io requires auth)

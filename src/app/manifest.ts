@@ -30,7 +30,6 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/screenshots/home.png",
         sizes: "1280x720",
         type: "image/png",
-        // @ts-expect-error form_factor is valid but not in types yet
         form_factor: "wide",
         label: "Homepage",
       },

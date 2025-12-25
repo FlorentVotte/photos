@@ -13,11 +13,12 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const photo = await getPhotoById(params.id);
+  const { id } = await params;
+  const photo = await getPhotoById(id);
   if (!photo) return { title: "Photo Not Found" };
 
   const description = photo.caption || `Photo from ${photo.metadata.location}`;
@@ -50,7 +51,8 @@ export async function generateStaticParams() {
 }
 
 export default async function PhotoPage({ params }: Props) {
-  const photo = await getPhotoById(params.id);
+  const { id } = await params;
+  const photo = await getPhotoById(id);
   if (!photo) notFound();
 
   const albums = await getAlbums();

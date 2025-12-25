@@ -1,5 +1,5 @@
 # Stage 1: Dependencies (all)
-FROM node:20-alpine AS deps
+FROM node:23-alpine AS deps
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat python3 make g++
@@ -10,7 +10,7 @@ RUN npm ci
 RUN npx prisma generate
 
 # Stage 2: Builder
-FROM node:20-alpine AS builder
+FROM node:23-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -23,7 +23,7 @@ RUN npm run build
 RUN npx tsc -p tsconfig.sync.json
 
 # Stage 3: Sync dependencies only (minimal)
-FROM node:20-alpine AS sync-deps
+FROM node:23-alpine AS sync-deps
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat python3 make g++
@@ -37,12 +37,11 @@ RUN npm init -y && \
       @prisma/adapter-better-sqlite3@latest \
       better-sqlite3@latest \
       sharp@latest \
-      exifreader@latest \
-      node-fetch@2 && \
+      exifreader@latest && \
     npx prisma generate
 
 # Stage 4: Runner (minimal)
-FROM node:20-alpine AS runner
+FROM node:23-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production

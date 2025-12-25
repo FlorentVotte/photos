@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
+import type { Chapter, Photo } from "@prisma/client";
 
 interface ChapterInput {
   id: string;
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
       orderBy: { sortOrder: "asc" },
     });
 
-    const chapters = dbChapters.map((c) => ({
+    const chapters = dbChapters.map((c: Chapter) => ({
       id: c.id,
       title: c.title,
       titleFr: c.titleFr || "",
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
       orderBy: { sortOrder: "asc" },
     });
 
-    const photos = dbPhotos.map((p) => ({
+    const photos = dbPhotos.map((p: Photo) => ({
       id: p.id,
       title: p.title || "",
       src: {
@@ -62,7 +63,7 @@ export async function GET(request: NextRequest) {
 
 // POST - Create or update chapters for an album
 export async function POST(request: NextRequest) {
-  const authError = requireAuth();
+  const authError = await requireAuth();
   if (authError) return authError;
 
   try {
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
 
 // DELETE - Remove all chapters for an album
 export async function DELETE(request: NextRequest) {
-  const authError = requireAuth();
+  const authError = await requireAuth();
   if (authError) return authError;
 
   try {

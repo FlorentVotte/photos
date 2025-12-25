@@ -17,11 +17,12 @@ export const dynamic = "force-dynamic";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const album = await getAlbumBySlug(params.slug);
+  const { slug } = await params;
+  const album = await getAlbumBySlug(slug);
   if (!album) return { title: "Album Not Found" };
 
   const description = album.description ||
@@ -64,10 +65,11 @@ export async function generateStaticParams() {
 }
 
 export default async function AlbumPage({ params }: Props) {
-  const album = await getAlbumBySlug(params.slug);
+  const { slug } = await params;
+  const album = await getAlbumBySlug(slug);
   if (!album) notFound();
 
-  const chapters = await getChaptersByAlbum(params.slug);
+  const chapters = await getChaptersByAlbum(slug);
   const photos = await getPhotosByAlbum(album.id);
   const albums = await getAlbums();
   const currentIndex = albums.findIndex((a) => a.id === album.id);

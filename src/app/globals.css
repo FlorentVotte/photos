@@ -1,6 +1,26 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* Theme configuration */
+@theme {
+  /* Custom colors via CSS variables */
+  --color-primary: var(--color-primary);
+  --color-background-light: var(--color-background);
+  --color-background-dark: var(--color-background);
+  --color-surface-dark: var(--color-surface);
+  --color-surface-border: var(--color-surface-border);
+  --color-text-muted: var(--color-text-muted);
+  --color-foreground: var(--color-text-primary);
+
+  /* Custom fonts */
+  --font-family-display: var(--font-display), "Noto Serif", serif;
+  --font-family-sans: var(--font-sans), "Noto Sans", sans-serif;
+
+  /* Custom border radius */
+  --radius-DEFAULT: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+}
 
 /* Theme CSS Variables - defaults to forest-green dark */
 :root {

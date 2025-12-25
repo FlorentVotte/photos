@@ -9,9 +9,10 @@ const PHOTOS_DIR = process.env.NODE_ENV === "production"
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
-  const filePath = path.join(PHOTOS_DIR, ...params.path);
+  const { path: pathSegments } = await params;
+  const filePath = path.join(PHOTOS_DIR, ...pathSegments);
 
   // Security: ensure path doesn't escape photos directory
   const normalizedPath = path.normalize(filePath);

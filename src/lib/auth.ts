@@ -14,8 +14,9 @@ export function isValidSessionToken(token: string | undefined): boolean {
  * Check if the current request is authenticated
  * Returns true if valid admin session exists
  */
-export function isAuthenticated(): boolean {
-  const authCookie = cookies().get("admin_auth");
+export async function isAuthenticated(): Promise<boolean> {
+  const cookieStore = await cookies();
+  const authCookie = cookieStore.get("admin_auth");
   return isValidSessionToken(authCookie?.value);
 }
 
@@ -34,8 +35,8 @@ export function unauthorizedResponse() {
  * Call at the start of mutation handlers (POST, PUT, PATCH, DELETE)
  * Returns null if authenticated, or a 401 response to return
  */
-export function requireAuth(): NextResponse | null {
-  if (!isAuthenticated()) {
+export async function requireAuth(): Promise<NextResponse | null> {
+  if (!(await isAuthenticated())) {
     return unauthorizedResponse();
   }
   return null;

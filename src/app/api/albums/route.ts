@@ -34,7 +34,7 @@ export async function GET() {
 
 // PUT - Reorder albums (batch update sortOrder)
 export async function PUT(request: NextRequest) {
-  const authError = requireAuth();
+  const authError = await requireAuth();
   if (authError) return authError;
 
   try {
@@ -77,7 +77,7 @@ const MAX_DATE_LENGTH = 100;
 
 // PATCH - Update album metadata
 export async function PATCH(request: NextRequest) {
-  const authError = requireAuth();
+  const authError = await requireAuth();
   if (authError) return authError;
 
   try {

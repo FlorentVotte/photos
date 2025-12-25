@@ -111,7 +111,7 @@ export async function GET() {
 
 // POST - Add a new gallery (public URL or private album)
 export async function POST(request: NextRequest) {
-  const authError = requireAuth();
+  const authError = await requireAuth();
   if (authError) return authError;
 
   try {
@@ -212,7 +212,7 @@ export async function POST(request: NextRequest) {
 
 // DELETE - Remove a gallery and its synced data
 export async function DELETE(request: NextRequest) {
-  const authError = requireAuth();
+  const authError = await requireAuth();
   if (authError) return authError;
 
   try {
@@ -283,7 +283,7 @@ export async function DELETE(request: NextRequest) {
 
 // PATCH - Update gallery (toggle featured)
 export async function PATCH(request: NextRequest) {
-  const authError = requireAuth();
+  const authError = await requireAuth();
   if (authError) return authError;
 
   try {

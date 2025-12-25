@@ -1,5 +1,4 @@
 import sharp from "sharp";
-import fetch from "node-fetch";
 import fs from "fs/promises";
 import path from "path";
 import { config } from "./config";
