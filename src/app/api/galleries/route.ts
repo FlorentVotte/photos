@@ -21,6 +21,9 @@ function isAllowedUrl(urlString: string): boolean {
   }
 }
 
+// Pattern for valid adobe.ly short code (alphanumeric only, 4-20 chars)
+const ADOBE_SHORT_CODE_PATTERN = /^\/[a-zA-Z0-9]{4,20}$/;
+
 /**
  * Resolve short URLs (adobe.ly) to full Lightroom URLs
  */
@@ -34,14 +37,21 @@ async function resolveShortUrl(url: string): Promise<string> {
     return url;
   }
 
-  // Only process adobe.ly short URLs
-  if (parsedUrl.hostname !== "adobe.ly") {
+  // Only process adobe.ly short URLs with valid protocol
+  if (parsedUrl.hostname !== "adobe.ly" || parsedUrl.protocol !== "https:") {
+    return url;
+  }
+
+  // Strictly validate pathname format (SSRF protection)
+  // Adobe.ly short codes are alphanumeric only, like /3xYz123
+  if (!ADOBE_SHORT_CODE_PATTERN.test(parsedUrl.pathname)) {
+    console.error("Invalid adobe.ly short code format:", parsedUrl.pathname);
     return url;
   }
 
   try {
-    // Construct a safe URL from validated components (SSRF protection)
-    const safeUrl = `https://adobe.ly${parsedUrl.pathname}${parsedUrl.search}`;
+    // Construct URL using only the validated short code (no query params)
+    const safeUrl = `https://adobe.ly${parsedUrl.pathname}`;
     const response = await fetch(safeUrl, { method: "HEAD", redirect: "manual" });
     const location = response.headers.get("location");
 
