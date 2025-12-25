@@ -151,8 +151,11 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
           background: #1a2e22;
         }
         .leaflet-popup-content {
-          margin: 0;
-          width: 200px !important;
+          margin: 0 !important;
+          width: 180px !important;
+        }
+        .leaflet-popup-content p {
+          margin: 0 !important;
         }
       `}</style>
       <MapContainer
@@ -179,17 +182,14 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
                   alt={photo.title}
                   className="w-full h-32 object-cover"
                 />
-                <div className="p-3">
-                  <p className="font-medium text-foreground truncate">{photo.title}</p>
+                <div className="px-3 py-2">
+                  <p className="font-medium text-foreground truncate text-sm">{photo.title}</p>
                   {photo.albumTitle && (
-                    <p className="text-xs text-primary mt-1 truncate">{photo.albumTitle}</p>
+                    <p className="text-xs text-primary truncate">{photo.albumTitle}</p>
                   )}
-                  {photo.metadata.date && (
-                    <p className="text-xs text-text-muted mt-1">{photo.metadata.date}</p>
-                  )}
-                  {photo.metadata.location && (
-                    <p className="text-xs text-text-muted">{photo.metadata.location}</p>
-                  )}
+                  <p className="text-xs text-text-muted">
+                    {[photo.metadata.date, photo.metadata.location].filter(Boolean).join(" • ")}
+                  </p>
                 </div>
               </Link>
             </Popup>
