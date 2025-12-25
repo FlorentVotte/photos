@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import PhotoGrid from "./PhotoGrid";
@@ -39,6 +39,30 @@ export default function AlbumContent({
   nextAlbum,
 }: AlbumContentProps) {
   const { t, locale } = useLocale();
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [scrollY, setScrollY] = useState(0);
+
+  // Parallax scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (heroRef.current) {
+        const rect = heroRef.current.getBoundingClientRect();
+        // Only update when hero is in view
+        if (rect.bottom > 0) {
+          setScrollY(window.scrollY);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Calculate parallax values
+  const heroHeight = heroRef.current?.offsetHeight || 600;
+  const parallaxOffset = scrollY * 0.4; // Background moves at 40% of scroll speed
+  const textOpacity = Math.max(0, 1 - scrollY / (heroHeight * 0.6));
+  const textTranslate = scrollY * 0.2; // Text moves up slightly
 
   // Scroll position restoration
   useEffect(() => {
@@ -94,15 +118,27 @@ export default function AlbumContent({
 
   return (
     <main className="flex-1 flex flex-col items-center w-full">
-      {/* Cinematic Hero Header */}
-      <div className="w-full relative h-[70vh] md:h-[85vh] min-h-[400px] md:min-h-[600px] flex items-center justify-center overflow-hidden">
+      {/* Cinematic Hero Header with Parallax */}
+      <div
+        ref={heroRef}
+        className="w-full relative h-[70vh] md:h-[85vh] min-h-[400px] md:min-h-[600px] flex items-center justify-center overflow-hidden"
+      >
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
-          style={{ backgroundImage: `url("${album.coverImage}")` }}
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
+          style={{
+            backgroundImage: `url("${album.coverImage}")`,
+            transform: `translateY(${parallaxOffset}px) scale(1.1)`,
+          }}
         />
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-black/20 to-background-dark" />
 
-        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto flex flex-col items-center gap-6">
+        <div
+          className="relative z-20 text-center px-4 max-w-4xl mx-auto flex flex-col items-center gap-6 will-change-transform"
+          style={{
+            opacity: textOpacity,
+            transform: `translateY(${textTranslate}px)`,
+          }}
+        >
           <span className="inline-block py-1 px-3 rounded-full border border-white/30 bg-black/20 text-xs font-sans tracking-widest uppercase text-foreground backdrop-blur-sm">
             {t("album", "travelDiary")}
           </span>
