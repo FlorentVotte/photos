@@ -1,5 +1,6 @@
 import prisma from "./db";
 import type { Gallery, Album, Photo, Chapter, AdobeToken } from "@prisma/client";
+import { PAGINATION } from "./constants";
 
 // ==================== GALLERY OPERATIONS ====================
 
@@ -284,6 +285,6 @@ export async function searchPhotos(query: string) {
     },
     include: { album: { select: { id: true, slug: true, title: true } } },
     orderBy: { sortOrder: "asc" },
-    take: 50,
+    take: PAGINATION.SEARCH_LIMIT,
   });
 }

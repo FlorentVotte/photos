@@ -1,41 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { execFile } from "child_process";
 import { promisify } from "util";
-import crypto from "crypto";
 import prisma from "@/lib/db";
 import { isAuthenticated } from "@/lib/auth";
+import { secureCompare, SimpleRateLimiter } from "@/lib/security";
+import { RATE_LIMITS, SYNC } from "@/lib/constants";
 
 const execFileAsync = promisify(execFile);
 const WEBHOOK_SECRET = process.env.SYNC_WEBHOOK_SECRET;
 
-// Rate limiting for sync endpoint
-const syncAttempts = new Map<string, number>();
-const SYNC_RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-
-function isSyncRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const lastAttempt = syncAttempts.get(ip);
-
-  if (!lastAttempt) return false;
-  if (now - lastAttempt > SYNC_RATE_LIMIT_WINDOW) {
-    syncAttempts.delete(ip);
-    return false;
-  }
-
-  return true;
-}
-
-// Timing-safe comparison for webhook secret
-function secureCompare(a: string, b: string): boolean {
-  if (!a || !b) return false;
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  if (bufA.length !== bufB.length) {
-    crypto.timingSafeEqual(bufA, bufA);
-    return false;
-  }
-  return crypto.timingSafeEqual(bufA, bufB);
-}
+// Rate limiting: 1 sync per minute
+const syncRateLimiter = new SimpleRateLimiter(RATE_LIMITS.SYNC_WINDOW_MS);
 
 // GET - Get sync status
 export async function GET() {
@@ -54,7 +29,8 @@ export async function GET() {
       albumCount,
       photoCount,
     });
-  } catch {
+  } catch (error) {
+    console.error("Error fetching sync status:", error);
     return NextResponse.json({
       lastUpdated: null,
       albumCount: 0,
@@ -70,7 +46,7 @@ export async function POST(request: NextRequest) {
              "unknown";
 
   // Rate limit sync requests
-  if (isSyncRateLimited(ip)) {
+  if (syncRateLimiter.isLimited(ip)) {
     return NextResponse.json(
       { error: "Please wait before triggering another sync." },
       { status: 429 }
@@ -80,8 +56,9 @@ export async function POST(request: NextRequest) {
   // Check authentication (session cookie or webhook secret)
   const webhookSecret = request.headers.get("x-webhook-secret");
   const isWebhookValid = WEBHOOK_SECRET && webhookSecret && secureCompare(webhookSecret, WEBHOOK_SECRET);
+  const isUserAuthenticated = await isAuthenticated();
 
-  if (!isAuthenticated() && !isWebhookValid) {
+  if (!isUserAuthenticated && !isWebhookValid) {
     return NextResponse.json(
       { error: "Unauthorized" },
       { status: 401 }
@@ -89,7 +66,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Record sync attempt for rate limiting
-  syncAttempts.set(ip, Date.now());
+  syncRateLimiter.recordAttempt(ip);
 
   try {
     // Check for galleryId in request body
@@ -116,7 +93,7 @@ export async function POST(request: NextRequest) {
     // Run the sync script using execFile (prevents command injection)
     const { stdout, stderr } = await execFileAsync("npm", args, {
       cwd: process.cwd(),
-      timeout: 300000, // 5 minute timeout
+      timeout: SYNC.PROCESS_TIMEOUT_MS,
     });
 
     if (stderr) console.log("Sync stderr:", stderr);

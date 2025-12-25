@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useLocale } from "@/lib/LocaleContext";
+import type * as LeafletTypes from "leaflet";
 
 interface Photo {
   id: string;
@@ -51,29 +52,20 @@ const FitBoundsComponent = dynamic(
 export default function PhotoMap({ photos }: PhotoMapProps) {
   const { t } = useLocale();
   const [isClient, setIsClient] = useState(false);
-  const [L, setL] = useState<any>(null);
+  const [L, setL] = useState<typeof LeafletTypes | null>(null);
 
   // Filter photos with GPS data
   const geoPhotos = photos.filter(
     (p) => p.metadata?.latitude && p.metadata?.longitude
   );
 
-  // Debug: log in browser console
-  useEffect(() => {
-    console.log("PhotoMap received photos:", photos.length);
-    console.log("Photos with GPS:", geoPhotos.length);
-    if (photos.length > 0) {
-      console.log("Sample photo metadata:", photos[0].metadata);
-    }
-  }, [photos, geoPhotos.length]);
-
   useEffect(() => {
     setIsClient(true);
     // Import Leaflet on client side
     import("leaflet").then((leaflet) => {
       setL(leaflet.default);
-      // Fix marker icons
-      delete (leaflet.default.Icon.Default.prototype as any)._getIconUrl;
+      // Clear webpack-bundled icon URLs to use custom ones
+      delete (leaflet.default.Icon.Default.prototype as LeafletTypes.Icon.Default & { _getIconUrl?: unknown })._getIconUrl;
       leaflet.default.Icon.Default.mergeOptions({
         iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
         iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",

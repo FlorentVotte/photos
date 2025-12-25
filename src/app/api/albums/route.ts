@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
+import { VALIDATION } from "@/lib/constants";
 
 // GET - List all synced albums
 export async function GET() {
@@ -68,13 +69,6 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// Input validation limits
-const MAX_TITLE_LENGTH = 200;
-const MAX_SUBTITLE_LENGTH = 500;
-const MAX_DESCRIPTION_LENGTH = 5000;
-const MAX_LOCATION_LENGTH = 200;
-const MAX_DATE_LENGTH = 100;
-
 // PATCH - Update album metadata
 export async function PATCH(request: NextRequest) {
   const authError = await requireAuth();
@@ -92,7 +86,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Validate ID format
-    if (typeof id !== "string" || id.length > 100) {
+    if (typeof id !== "string" || id.length > VALIDATION.MAX_ID_LENGTH) {
       return NextResponse.json(
         { error: "Invalid album ID" },
         { status: 400 }
@@ -100,33 +94,33 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Validate string lengths
-    if (title && (typeof title !== "string" || title.length > MAX_TITLE_LENGTH)) {
+    if (title && (typeof title !== "string" || title.length > VALIDATION.MAX_TITLE_LENGTH)) {
       return NextResponse.json(
-        { error: `Title must be less than ${MAX_TITLE_LENGTH} characters` },
+        { error: `Title must be less than ${VALIDATION.MAX_TITLE_LENGTH} characters` },
         { status: 400 }
       );
     }
-    if (subtitle && (typeof subtitle !== "string" || subtitle.length > MAX_SUBTITLE_LENGTH)) {
+    if (subtitle && (typeof subtitle !== "string" || subtitle.length > VALIDATION.MAX_SUBTITLE_LENGTH)) {
       return NextResponse.json(
-        { error: `Subtitle must be less than ${MAX_SUBTITLE_LENGTH} characters` },
+        { error: `Subtitle must be less than ${VALIDATION.MAX_SUBTITLE_LENGTH} characters` },
         { status: 400 }
       );
     }
-    if (description && (typeof description !== "string" || description.length > MAX_DESCRIPTION_LENGTH)) {
+    if (description && (typeof description !== "string" || description.length > VALIDATION.MAX_DESCRIPTION_LENGTH)) {
       return NextResponse.json(
-        { error: `Description must be less than ${MAX_DESCRIPTION_LENGTH} characters` },
+        { error: `Description must be less than ${VALIDATION.MAX_DESCRIPTION_LENGTH} characters` },
         { status: 400 }
       );
     }
-    if (location && (typeof location !== "string" || location.length > MAX_LOCATION_LENGTH)) {
+    if (location && (typeof location !== "string" || location.length > VALIDATION.MAX_LOCATION_LENGTH)) {
       return NextResponse.json(
-        { error: `Location must be less than ${MAX_LOCATION_LENGTH} characters` },
+        { error: `Location must be less than ${VALIDATION.MAX_LOCATION_LENGTH} characters` },
         { status: 400 }
       );
     }
-    if (date && (typeof date !== "string" || date.length > MAX_DATE_LENGTH)) {
+    if (date && (typeof date !== "string" || date.length > VALIDATION.MAX_DATE_LENGTH)) {
       return NextResponse.json(
-        { error: `Date must be less than ${MAX_DATE_LENGTH} characters` },
+        { error: `Date must be less than ${VALIDATION.MAX_DATE_LENGTH} characters` },
         { status: 400 }
       );
     }

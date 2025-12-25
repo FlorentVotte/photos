@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import type * as LeafletTypes from "leaflet";
 
 interface PhotoLocationMapProps {
   latitude: number;
@@ -24,13 +25,14 @@ const Marker = dynamic(
 
 export default function PhotoLocationMap({ latitude, longitude, title }: PhotoLocationMapProps) {
   const [isClient, setIsClient] = useState(false);
-  const [L, setL] = useState<any>(null);
+  const [L, setL] = useState<typeof LeafletTypes | null>(null);
 
   useEffect(() => {
     setIsClient(true);
     import("leaflet").then((leaflet) => {
       setL(leaflet.default);
-      delete (leaflet.default.Icon.Default.prototype as any)._getIconUrl;
+      // Clear webpack-bundled icon URLs to use custom ones
+      delete (leaflet.default.Icon.Default.prototype as LeafletTypes.Icon.Default & { _getIconUrl?: unknown })._getIconUrl;
       leaflet.default.Icon.Default.mergeOptions({
         iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
         iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",

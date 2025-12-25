@@ -72,6 +72,28 @@ interface TokenData {
   expires_at: number;
 }
 
+// API response interfaces
+interface CatalogResponse {
+  id: string;
+  [key: string]: unknown;
+}
+
+interface AlbumsResponse {
+  resources?: Array<{
+    id: string;
+    payload?: {
+      name?: string;
+    };
+    [key: string]: unknown;
+  }>;
+  [key: string]: unknown;
+}
+
+interface AssetsResponse {
+  resources?: LightroomAsset[];
+  [key: string]: unknown;
+}
+
 interface LightroomAsset {
   id: string; // Album-asset relationship ID
   asset?: {
@@ -113,7 +135,7 @@ interface LightroomAsset {
         ISOSpeedRatings?: number;
         FocalLength?: number | number[];
       };
-      [key: string]: any;
+      [key: string]: unknown;
     };
     location?: {
       latitude?: number;
@@ -122,7 +144,7 @@ interface LightroomAsset {
       country?: string;
       name?: string;
     };
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -147,11 +169,11 @@ async function loadTokens(): Promise<TokenData | null> {
 /**
  * Parse Adobe API response (strips anti-XSSI prefix)
  */
-async function parseAdobeResponse(response: Response): Promise<any> {
+async function parseAdobeResponse<T = unknown>(response: Response): Promise<T> {
   const text = await response.text();
   // Adobe API returns "while (1) {}" prefix as anti-XSSI protection
   const jsonStr = text.replace(/^while\s*\(\s*1\s*\)\s*\{\s*\}\s*/, "");
-  return JSON.parse(jsonStr);
+  return JSON.parse(jsonStr) as T;
 }
 
 /**
@@ -165,7 +187,7 @@ export async function isAuthenticatedApiAvailable(): Promise<boolean> {
 /**
  * Fetch user's Lightroom catalog using authenticated API
  */
-export async function fetchAuthenticatedCatalog() {
+export async function fetchAuthenticatedCatalog(): Promise<CatalogResponse> {
   const tokens = await loadTokens();
   if (!tokens || !ADOBE_CLIENT_ID) {
     throw new Error("Not authenticated with Adobe");
@@ -182,13 +204,13 @@ export async function fetchAuthenticatedCatalog() {
     throw new Error(`Failed to fetch catalog: ${response.status}`);
   }
 
-  return parseAdobeResponse(response);
+  return parseAdobeResponse<CatalogResponse>(response);
 }
 
 /**
  * Fetch albums from user's catalog
  */
-export async function fetchAuthenticatedAlbums(catalogId: string) {
+export async function fetchAuthenticatedAlbums(catalogId: string): Promise<AlbumsResponse> {
   const tokens = await loadTokens();
   if (!tokens || !ADOBE_CLIENT_ID) {
     throw new Error("Not authenticated with Adobe");
@@ -208,7 +230,7 @@ export async function fetchAuthenticatedAlbums(catalogId: string) {
     throw new Error(`Failed to fetch albums: ${response.status}`);
   }
 
-  return parseAdobeResponse(response);
+  return parseAdobeResponse<AlbumsResponse>(response);
 }
 
 /**
@@ -241,7 +263,7 @@ export async function fetchAuthenticatedAlbumAssets(
     throw new Error(`Failed to fetch album assets: ${response.status}`);
   }
 
-  const data = await parseAdobeResponse(response);
+  const data = await parseAdobeResponse<AssetsResponse>(response);
   console.log(`    Resources count: ${data.resources?.length || 0}`);
   return data.resources || [];
 }
@@ -272,7 +294,7 @@ export async function fetchAuthenticatedAsset(
     return null;
   }
 
-  return parseAdobeResponse(response);
+  return parseAdobeResponse<LightroomAsset>(response);
 }
 
 /**
@@ -304,7 +326,7 @@ export async function testAuthenticatedApi() {
       const albums = await fetchAuthenticatedAlbums(catalog.id);
       console.log("\nAlbums:", JSON.stringify(albums, null, 2));
 
-      if (albums.resources?.length > 0) {
+      if (albums.resources && albums.resources.length > 0) {
         const firstAlbum = albums.resources[0];
         console.log(`\nFetching assets from album: ${firstAlbum.payload?.name}`);
 

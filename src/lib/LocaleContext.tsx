@@ -14,7 +14,8 @@ const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
 function detectBrowserLocale(): Locale {
   if (typeof window === "undefined") return "en";
 
-  const browserLang = navigator.language || (navigator as any).userLanguage;
+  // userLanguage is non-standard but exists in older IE
+  const browserLang = navigator.language || (navigator as Navigator & { userLanguage?: string }).userLanguage;
   if (browserLang?.startsWith("fr")) {
     return "fr";
   }

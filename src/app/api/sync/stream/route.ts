@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
-import crypto from "crypto";
 import { isAuthenticated } from "@/lib/auth";
+import { secureCompare, SimpleRateLimiter } from "@/lib/security";
+import { RATE_LIMITS } from "@/lib/constants";
 import type { SyncProgress } from "@/lib/sync-progress";
 
 const WEBHOOK_SECRET = process.env.SYNC_WEBHOOK_SECRET;
@@ -8,34 +9,8 @@ const WEBHOOK_SECRET = process.env.SYNC_WEBHOOK_SECRET;
 // Track active syncs to prevent concurrent runs
 let activeSyncAbortController: AbortController | null = null;
 
-// Rate limiting
-const syncAttempts = new Map<string, number>();
-const SYNC_RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-
-function isSyncRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const lastAttempt = syncAttempts.get(ip);
-
-  if (!lastAttempt) return false;
-  if (now - lastAttempt > SYNC_RATE_LIMIT_WINDOW) {
-    syncAttempts.delete(ip);
-    return false;
-  }
-
-  return true;
-}
-
-// Timing-safe comparison for webhook secret
-function secureCompare(a: string, b: string): boolean {
-  if (!a || !b) return false;
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  if (bufA.length !== bufB.length) {
-    crypto.timingSafeEqual(bufA, bufA);
-    return false;
-  }
-  return crypto.timingSafeEqual(bufA, bufB);
-}
+// Rate limiting: 1 sync per minute
+const syncStreamRateLimiter = new SimpleRateLimiter(RATE_LIMITS.SYNC_WINDOW_MS);
 
 export async function POST(request: NextRequest) {
   const ip =
@@ -44,7 +19,7 @@ export async function POST(request: NextRequest) {
     "unknown";
 
   // Rate limit sync requests
-  if (isSyncRateLimited(ip)) {
+  if (syncStreamRateLimiter.isLimited(ip)) {
     return new Response(
       JSON.stringify({ error: "Please wait before triggering another sync." }),
       { status: 429, headers: { "Content-Type": "application/json" } }
@@ -57,8 +32,9 @@ export async function POST(request: NextRequest) {
     WEBHOOK_SECRET &&
     webhookSecret &&
     secureCompare(webhookSecret, WEBHOOK_SECRET);
+  const isUserAuthenticated = await isAuthenticated();
 
-  if (!isAuthenticated() && !isWebhookValid) {
+  if (!isUserAuthenticated && !isWebhookValid) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
@@ -66,7 +42,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Record sync attempt for rate limiting
-  syncAttempts.set(ip, Date.now());
+  syncStreamRateLimiter.recordAttempt(ip);
 
   // Check for galleryId in request body
   let galleryId: string | undefined;
@@ -179,7 +155,8 @@ export async function POST(request: NextRequest) {
 
 // GET endpoint to check if sync is in progress (authenticated)
 export async function GET() {
-  if (!isAuthenticated()) {
+  const isUserAuthenticated = await isAuthenticated();
+  if (!isUserAuthenticated) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },

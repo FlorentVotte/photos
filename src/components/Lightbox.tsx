@@ -3,6 +3,7 @@
 import { useEffect, useCallback, useState, useRef } from "react";
 import Link from "next/link";
 import { useLocale } from "@/lib/LocaleContext";
+import { UI } from "@/lib/constants";
 
 interface Photo {
   id: string;
@@ -84,7 +85,7 @@ export default function Lightbox({
 
       // Double-tap detection
       const now = Date.now();
-      if (now - lastTapTime.current < 300) {
+      if (now - lastTapTime.current < UI.DOUBLE_TAP_WINDOW_MS) {
         // Double tap - toggle zoom
         if (scale > 1) {
           setScale(1);
@@ -105,7 +106,7 @@ export default function Lightbox({
       e.preventDefault();
       const currentDistance = getTouchDistance(e.touches);
       const scaleChange = currentDistance / initialPinchDistance.current;
-      const newScale = Math.min(Math.max(initialScale.current * scaleChange, 1), 4);
+      const newScale = Math.min(Math.max(initialScale.current * scaleChange, 1), UI.MAX_ZOOM_SCALE);
       setScale(newScale);
 
       if (newScale === 1) {
@@ -146,9 +147,8 @@ export default function Lightbox({
       const deltaX = touchEndX - touchStartX.current;
       const deltaY = touchEndY - touchStartY.current;
 
-      // Minimum swipe distance (50px) and ensure horizontal swipe is dominant
-      const minSwipeDistance = 50;
-      if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaX) > Math.abs(deltaY)) {
+      // Minimum swipe distance and ensure horizontal swipe is dominant
+      if (Math.abs(deltaX) > UI.MIN_SWIPE_DISTANCE_PX && Math.abs(deltaX) > Math.abs(deltaY)) {
         if (deltaX > 0) {
           // Swipe right - go to previous
           if (currentIndex > 0) {

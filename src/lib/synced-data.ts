@@ -3,6 +3,7 @@
 
 import prisma from "./db";
 import type { Album, Photo, Chapter } from "./types";
+import { PAGINATION } from "./constants";
 
 // Get all albums
 export async function getAlbums(): Promise<Album[]> {
@@ -263,7 +264,7 @@ export async function searchPhotos(query: string): Promise<Photo[]> {
       ],
     },
     orderBy: { sortOrder: "asc" },
-    take: 50,
+    take: PAGINATION.SEARCH_LIMIT,
   });
 
   return photos.map((p) => ({

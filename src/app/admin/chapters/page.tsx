@@ -47,7 +47,7 @@ function ChaptersEditorContent() {
     fetch("/api/albums")
       .then((res) => res.json())
       .then((data) => {
-        const albumList = (data.albums || []).map((a: any) => ({
+        const albumList = (data.albums || []).map((a: { id: string; slug: string; title?: string }) => ({
           id: a.id,
           slug: a.slug,
           title: a.title || "Untitled",

@@ -1,60 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import crypto from "crypto";
+import { secureCompare, generateSecureToken, RateLimiter } from "@/lib/security";
+import { RATE_LIMITS, AUTH } from "@/lib/constants";
 
-// Rate limiting: track failed attempts in memory (simple implementation)
-const failedAttempts = new Map<string, { count: number; lastAttempt: number }>();
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
-const MAX_ATTEMPTS = 5;
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const record = failedAttempts.get(ip);
-
-  if (!record) return false;
-
-  // Reset if window has passed
-  if (now - record.lastAttempt > RATE_LIMIT_WINDOW) {
-    failedAttempts.delete(ip);
-    return false;
-  }
-
-  return record.count >= MAX_ATTEMPTS;
-}
-
-function recordFailedAttempt(ip: string): void {
-  const now = Date.now();
-  const record = failedAttempts.get(ip);
-
-  if (!record || now - record.lastAttempt > RATE_LIMIT_WINDOW) {
-    failedAttempts.set(ip, { count: 1, lastAttempt: now });
-  } else {
-    record.count++;
-    record.lastAttempt = now;
-  }
-}
-
-function clearFailedAttempts(ip: string): void {
-  failedAttempts.delete(ip);
-}
-
-// Timing-safe password comparison
-function secureCompare(a: string, b: string): boolean {
-  if (!a || !b) return false;
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  if (bufA.length !== bufB.length) {
-    // Compare anyway to maintain constant time
-    crypto.timingSafeEqual(bufA, bufA);
-    return false;
-  }
-  return crypto.timingSafeEqual(bufA, bufB);
-}
-
-// Generate secure session token
-function generateSessionToken(): string {
-  return crypto.randomBytes(32).toString("hex");
-}
+// Rate limiting: 5 attempts per 15 minutes
+const loginRateLimiter = new RateLimiter(
+  RATE_LIMITS.LOGIN_WINDOW_MS,
+  RATE_LIMITS.LOGIN_MAX_ATTEMPTS
+);
 
 export async function POST(request: NextRequest) {
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -71,7 +24,7 @@ export async function POST(request: NextRequest) {
              "unknown";
 
   // Check rate limit
-  if (isRateLimited(ip)) {
+  if (loginRateLimiter.isLimited(ip)) {
     return NextResponse.json(
       { error: "Too many failed attempts. Please try again later." },
       { status: 429 }
@@ -86,10 +39,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (secureCompare(password, ADMIN_PASSWORD)) {
-      clearFailedAttempts(ip);
+      loginRateLimiter.clearAttempts(ip);
 
       // Generate secure session token
-      const sessionToken = generateSessionToken();
+      const sessionToken = generateSecureToken();
 
       // Set auth cookie (expires in 2 hours for security)
       const cookieStore = await cookies();
@@ -97,14 +50,14 @@ export async function POST(request: NextRequest) {
         httpOnly: true,
         secure: true, // Always secure
         sameSite: "strict", // Stricter CSRF protection
-        maxAge: 60 * 60 * 2, // 2 hours
+        maxAge: AUTH.SESSION_EXPIRY_SECONDS,
         path: "/",
       });
 
       return NextResponse.json({ success: true });
     }
 
-    recordFailedAttempt(ip);
+    loginRateLimiter.recordAttempt(ip);
     return NextResponse.json({ error: "Invalid password" }, { status: 401 });
   } catch {
     return NextResponse.json({ error: "Login failed" }, { status: 500 });

@@ -8,6 +8,8 @@ export const translations = {
     search: { en: "Search", fr: "Recherche" },
     map: { en: "Map", fr: "Carte" },
     about: { en: "About", fr: "À propos" },
+    openMenu: { en: "Open menu", fr: "Ouvrir le menu" },
+    closeMenu: { en: "Close menu", fr: "Fermer le menu" },
   },
 
   // Homepage

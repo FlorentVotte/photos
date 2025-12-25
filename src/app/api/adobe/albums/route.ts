@@ -5,6 +5,23 @@ import { decrypt, isEncrypted } from "@/lib/crypto";
 // Force dynamic to prevent caching
 export const dynamic = "force-dynamic";
 
+interface AdobeAlbum {
+  id: string;
+  created: string;
+  updated: string;
+  payload?: {
+    name?: string;
+  };
+}
+
+interface AlbumWithCount {
+  id: string;
+  name: string;
+  created: string;
+  updated: string;
+  assetCount: number;
+}
+
 const LIGHTROOM_API = "https://lr.adobe.io/v2";
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
 
@@ -81,13 +98,13 @@ export async function GET() {
     const albumsRaw = albumsResponse?.resources || [];
 
     // Fetch asset counts for each album in parallel (batch of 5 to avoid rate limits)
-    const albumsWithCounts = [];
+    const albumsWithCounts: AlbumWithCount[] = [];
     const batchSize = 5;
 
     for (let i = 0; i < albumsRaw.length; i += batchSize) {
-      const batch = albumsRaw.slice(i, i + batchSize);
+      const batch = albumsRaw.slice(i, i + batchSize) as AdobeAlbum[];
       const batchResults = await Promise.all(
-        batch.map(async (album: any) => {
+        batch.map(async (album: AdobeAlbum) => {
           let assetCount = 0;
           try {
             // Fetch all assets to count them (Adobe API doesn't provide count directly)
@@ -113,7 +130,7 @@ export async function GET() {
     }
 
     // Sort by updated date (most recent first)
-    albumsWithCounts.sort((a: any, b: any) =>
+    albumsWithCounts.sort((a, b) =>
       new Date(b.updated).getTime() - new Date(a.updated).getTime()
     );
 

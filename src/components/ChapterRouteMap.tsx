@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { Photo } from "@/lib/types";
+import type * as LeafletTypes from "leaflet";
 
 interface ChapterRouteMapProps {
   photos: Photo[];
@@ -46,7 +47,7 @@ export default function ChapterRouteMap({
   interactive = true,
 }: ChapterRouteMapProps) {
   const [isClient, setIsClient] = useState(false);
-  const [L, setL] = useState<any>(null);
+  const [L, setL] = useState<typeof LeafletTypes | null>(null);
 
   // Filter and sort photos with GPS data by date
   const geoPhotos = photos
@@ -61,8 +62,8 @@ export default function ChapterRouteMap({
     setIsClient(true);
     import("leaflet").then((leaflet) => {
       setL(leaflet.default);
-      // Fix marker icons
-      delete (leaflet.default.Icon.Default.prototype as any)._getIconUrl;
+      // Clear webpack-bundled icon URLs to use custom ones
+      delete (leaflet.default.Icon.Default.prototype as LeafletTypes.Icon.Default & { _getIconUrl?: unknown })._getIconUrl;
       leaflet.default.Icon.Default.mergeOptions({
         iconRetinaUrl:
           "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",

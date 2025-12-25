@@ -69,6 +69,7 @@ export default function Header({ transparent = false }: HeaderProps) {
             onClick={toggleLocale}
             className="text-sm font-medium leading-normal hover:text-primary transition-colors uppercase"
             title={locale === "en" ? "Switch to French" : "Passer en anglais"}
+            aria-label={locale === "en" ? "Switch to French" : "Passer en anglais"}
           >
             {locale === "en" ? "FR" : "EN"}
           </button>
@@ -78,6 +79,8 @@ export default function Header({ transparent = false }: HeaderProps) {
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="md:hidden flex items-center justify-center size-10 text-foreground hover:text-primary transition-colors"
+          aria-label={mobileMenuOpen ? t("nav", "closeMenu") : t("nav", "openMenu")}
+          aria-expanded={mobileMenuOpen}
         >
           <span className="material-symbols-outlined">
             {mobileMenuOpen ? "close" : "menu"}

@@ -5,6 +5,51 @@ const LIGHTROOM_SHARES_API = "https://lightroom.adobe.com/v2";
 const ADOBE_PHOTOS_API = "https://photos.adobe.io/v2";
 const API_KEY = "LightroomMobileWeb1";
 
+// Types for Adobe Lightroom API responses
+interface LightroomAssetPayload {
+  title?: string;
+  name?: string;
+  caption?: string;
+  captureDate?: string;
+  importSource?: {
+    fileName?: string;
+    originalWidth?: number;
+    originalHeight?: number;
+    cameraModel?: string;
+  };
+  develop?: {
+    croppedWidth?: number;
+    croppedHeight?: number;
+  };
+  xmp?: {
+    tiff?: { Model?: string };
+    aux?: { Lens?: string };
+    exifEX?: { LensModel?: string };
+    exif?: {
+      FNumber?: number | number[];
+      ExposureTime?: number | number[];
+      ISOSpeedRatings?: number;
+      FocalLength?: number | number[];
+    };
+    photoshop?: { DateCreated?: string };
+  };
+  location?: {
+    name?: string;
+    city?: string;
+    country?: string;
+    latitude?: number;
+    longitude?: number;
+  };
+}
+
+interface LightroomAsset {
+  id: string;
+  links?: Record<string, { href?: string }>;
+  payload?: LightroomAssetPayload;
+}
+
+type RecursiveObject = { [key: string]: RecursiveObject | unknown } | unknown[];
+
 /**
  * Parses a public Lightroom gallery URL and extracts photo data.
  * Uses Adobe's Photos API to fetch the actual photo data.
@@ -193,7 +238,7 @@ async function fetchAssetDetails(
  * Extract photo data from an asset with embedded renditions
  */
 function extractPhotoFromAsset(
-  asset: any,
+  asset: LightroomAsset,
   baseUrl: string
 ): LightroomPhoto | null {
   try {
@@ -240,7 +285,7 @@ function extractPhotoFromAsset(
       aperture: formatAperture(xmp.exif?.FNumber),
       shutterSpeed: formatShutterSpeed(xmp.exif?.ExposureTime),
       iso: xmp.exif?.ISOSpeedRatings?.toString(),
-      focalLength: xmp.exif?.FocalLength,
+      focalLength: formatFocalLength(xmp.exif?.FocalLength),
     };
 
     // Extract location
@@ -329,13 +374,29 @@ function parseAlternativeFormat(
   return null;
 }
 
-function findPhotosInObject(obj: any, depth = 0): LightroomPhoto[] {
+interface PhotoLikeObject {
+  id?: string;
+  assetId?: string;
+  url?: string;
+  href?: string;
+  asset?: unknown;
+  thumbnailUrl?: string;
+  width?: number;
+  height?: number;
+  title?: string;
+  name?: string;
+  caption?: string;
+  description?: string;
+}
+
+function findPhotosInObject(obj: RecursiveObject, depth = 0): LightroomPhoto[] {
   if (depth > 5) return [];
 
   if (Array.isArray(obj)) {
     // Check if this looks like a photos array
-    if (obj.length > 0 && obj[0] && (obj[0].url || obj[0].href || obj[0].asset)) {
-      return obj.map((item, i) => ({
+    const first = obj[0] as PhotoLikeObject | undefined;
+    if (obj.length > 0 && first && (first.url || first.href || first.asset)) {
+      return (obj as PhotoLikeObject[]).map((item, i) => ({
         id: item.id || item.assetId || `photo-${i}`,
         url: item.url || item.href || "",
         thumbnailUrl: item.thumbnailUrl || item.url || "",
@@ -348,21 +409,22 @@ function findPhotosInObject(obj: any, depth = 0): LightroomPhoto[] {
 
     // Recursively search arrays
     for (const item of obj) {
-      const found = findPhotosInObject(item, depth + 1);
+      const found = findPhotosInObject(item as RecursiveObject, depth + 1);
       if (found.length > 0) return found;
     }
   } else if (obj && typeof obj === "object") {
+    const record = obj as Record<string, unknown>;
     // Check common keys
     for (const key of ["photos", "assets", "images", "resources", "items"]) {
-      if (obj[key]) {
-        const found = findPhotosInObject(obj[key], depth + 1);
+      if (record[key]) {
+        const found = findPhotosInObject(record[key] as RecursiveObject, depth + 1);
         if (found.length > 0) return found;
       }
     }
 
     // Recursively search object values
-    for (const value of Object.values(obj)) {
-      const found = findPhotosInObject(value, depth + 1);
+    for (const value of Object.values(record)) {
+      const found = findPhotosInObject(value as RecursiveObject, depth + 1);
       if (found.length > 0) return found;
     }
   }
@@ -370,16 +432,24 @@ function findPhotosInObject(obj: any, depth = 0): LightroomPhoto[] {
   return [];
 }
 
-function findTitleInObject(obj: any, depth = 0): string | null {
+interface TitleLikeObject {
+  title?: string;
+  name?: string;
+  albumTitle?: string;
+  [key: string]: unknown;
+}
+
+function findTitleInObject(obj: RecursiveObject, depth = 0): string | null {
   if (depth > 3) return null;
 
-  if (obj && typeof obj === "object") {
-    if (obj.title && typeof obj.title === "string") return obj.title;
-    if (obj.name && typeof obj.name === "string") return obj.name;
-    if (obj.albumTitle && typeof obj.albumTitle === "string") return obj.albumTitle;
+  if (obj && typeof obj === "object" && !Array.isArray(obj)) {
+    const record = obj as TitleLikeObject;
+    if (record.title && typeof record.title === "string") return record.title;
+    if (record.name && typeof record.name === "string") return record.name;
+    if (record.albumTitle && typeof record.albumTitle === "string") return record.albumTitle;
 
-    for (const value of Object.values(obj)) {
-      const found = findTitleInObject(value, depth + 1);
+    for (const value of Object.values(record)) {
+      const found = findTitleInObject(value as RecursiveObject, depth + 1);
       if (found) return found;
     }
   }
@@ -392,7 +462,7 @@ function extractSpaceIdFromUrl(url: string): string | null {
   return match ? match[1] : null;
 }
 
-function formatAperture(fNumber: any): string | undefined {
+function formatAperture(fNumber: number | number[] | undefined): string | undefined {
   if (!fNumber) return undefined;
   try {
     // Handle arrays (some EXIF data comes as arrays)
@@ -406,7 +476,7 @@ function formatAperture(fNumber: any): string | undefined {
   }
 }
 
-function formatShutterSpeed(exposureTime: any): string | undefined {
+function formatShutterSpeed(exposureTime: number | number[] | undefined): string | undefined {
   if (!exposureTime) return undefined;
   try {
     // Handle arrays (some EXIF data comes as arrays)
@@ -420,6 +490,20 @@ function formatShutterSpeed(exposureTime: any): string | undefined {
     } else {
       return `1/${Math.round(1 / time)}s`;
     }
+  } catch {
+    return undefined;
+  }
+}
+
+function formatFocalLength(focalLength: number | number[] | undefined): string | undefined {
+  if (!focalLength) return undefined;
+  try {
+    // Handle arrays (some EXIF data comes as arrays)
+    const value = Array.isArray(focalLength) ? focalLength[0] : focalLength;
+    if (!value) return undefined;
+    const mm = typeof value === "number" ? value : parseFloat(String(value));
+    if (isNaN(mm)) return undefined;
+    return `${Math.round(mm)}mm`;
   } catch {
     return undefined;
   }
