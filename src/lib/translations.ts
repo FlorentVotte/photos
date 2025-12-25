@@ -66,10 +66,12 @@ export const translations = {
   search: {
     title: { en: "Search", fr: "Recherche" },
     placeholder: {
-      en: "Search albums, photos, locations...",
-      fr: "Rechercher albums, photos, lieux...",
+      en: "Search albums, photos, locations, cameras...",
+      fr: "Rechercher albums, photos, lieux, appareils...",
     },
     allLocations: { en: "All Locations", fr: "Tous les lieux" },
+    allCameras: { en: "All Cameras", fr: "Tous les boîtiers" },
+    allLenses: { en: "All Lenses", fr: "Tous les objectifs" },
     all: { en: "all", fr: "tout" },
     albums: { en: "albums", fr: "albums" },
     photos: { en: "photos", fr: "photos" },

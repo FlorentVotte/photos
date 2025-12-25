@@ -19,6 +19,8 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
   const [query, setQuery] = useState("");
   const [filterType, setFilterType] = useState<FilterType>("all");
   const [selectedLocation, setSelectedLocation] = useState<string>("");
+  const [selectedCamera, setSelectedCamera] = useState<string>("");
+  const [selectedLens, setSelectedLens] = useState<string>("");
 
   // Get unique locations
   const locations = useMemo(() => {
@@ -27,6 +29,20 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
     photos.forEach((p) => p.metadata.location && p.metadata.location !== "Unknown" && locs.add(p.metadata.location));
     return Array.from(locs).sort();
   }, [albums, photos]);
+
+  // Get unique cameras
+  const cameras = useMemo(() => {
+    const cams = new Set<string>();
+    photos.forEach((p) => p.metadata.camera && cams.add(p.metadata.camera));
+    return Array.from(cams).sort();
+  }, [photos]);
+
+  // Get unique lenses
+  const lenses = useMemo(() => {
+    const lens = new Set<string>();
+    photos.forEach((p) => p.metadata.lens && lens.add(p.metadata.lens));
+    return Array.from(lens).sort();
+  }, [photos]);
 
   // Filter results
   const filteredAlbums = useMemo(() => {
@@ -50,18 +66,27 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
     if (filterType === "albums") return [];
 
     return photos.filter((photo) => {
+      const queryLower = query.toLowerCase();
       const matchesQuery =
         !query ||
-        photo.title.toLowerCase().includes(query.toLowerCase()) ||
-        photo.metadata.location?.toLowerCase().includes(query.toLowerCase()) ||
-        photo.metadata.date?.toLowerCase().includes(query.toLowerCase());
+        photo.title.toLowerCase().includes(queryLower) ||
+        photo.metadata.location?.toLowerCase().includes(queryLower) ||
+        photo.metadata.date?.toLowerCase().includes(queryLower) ||
+        photo.metadata.camera?.toLowerCase().includes(queryLower) ||
+        photo.metadata.lens?.toLowerCase().includes(queryLower);
 
       const matchesLocation =
         !selectedLocation || photo.metadata.location === selectedLocation;
 
-      return matchesQuery && matchesLocation;
+      const matchesCamera =
+        !selectedCamera || photo.metadata.camera === selectedCamera;
+
+      const matchesLens =
+        !selectedLens || photo.metadata.lens === selectedLens;
+
+      return matchesQuery && matchesLocation && matchesCamera && matchesLens;
     });
-  }, [photos, query, filterType, selectedLocation]);
+  }, [photos, query, filterType, selectedLocation, selectedCamera, selectedLens]);
 
   const totalResults = filteredAlbums.length + filteredPhotos.length;
 
@@ -94,12 +119,40 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
               <select
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
-                className="px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground min-w-[180px]"
+                className="px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground min-w-[150px]"
               >
                 <option value="">{t("search", "allLocations")}</option>
                 {locations.map((loc) => (
                   <option key={loc} value={loc}>
                     {loc}
+                  </option>
+                ))}
+              </select>
+
+              {/* Camera Filter */}
+              <select
+                value={selectedCamera}
+                onChange={(e) => setSelectedCamera(e.target.value)}
+                className="px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground min-w-[150px]"
+              >
+                <option value="">{t("search", "allCameras")}</option>
+                {cameras.map((cam) => (
+                  <option key={cam} value={cam}>
+                    {cam}
+                  </option>
+                ))}
+              </select>
+
+              {/* Lens Filter */}
+              <select
+                value={selectedLens}
+                onChange={(e) => setSelectedLens(e.target.value)}
+                className="px-4 py-3 bg-background-dark border border-surface-border rounded-lg text-foreground min-w-[150px]"
+              >
+                <option value="">{t("search", "allLenses")}</option>
+                {lenses.map((lens) => (
+                  <option key={lens} value={lens}>
+                    {lens}
                   </option>
                 ))}
               </select>
