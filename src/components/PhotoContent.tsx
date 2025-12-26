@@ -356,38 +356,43 @@ export default function PhotoContent({
                     </div>
                   </div>
 
-                  {/* EXIF Inline */}
-                  <div className="flex flex-wrap items-center gap-4 text-sm">
+                  {/* EXIF Grid */}
+                  <div className="grid grid-cols-3 gap-3">
                     {photo.metadata.aperture && (
-                      <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-lg text-text-muted">camera</span>
-                        <span className="text-foreground font-medium">{photo.metadata.aperture}</span>
+                      <div className="flex flex-col items-center gap-2 p-4 bg-background-dark rounded-lg">
+                        <span className="material-symbols-outlined text-2xl text-primary">camera</span>
+                        <span className="text-foreground font-semibold">{photo.metadata.aperture}</span>
+                        <span className="text-text-muted text-xs uppercase tracking-wide">{t("photo", "aperture")}</span>
                       </div>
                     )}
                     {photo.metadata.shutterSpeed && (
-                      <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-lg text-text-muted">timer</span>
-                        <span className="text-foreground font-medium">{photo.metadata.shutterSpeed}</span>
+                      <div className="flex flex-col items-center gap-2 p-4 bg-background-dark rounded-lg">
+                        <span className="material-symbols-outlined text-2xl text-primary">timer</span>
+                        <span className="text-foreground font-semibold">{photo.metadata.shutterSpeed}</span>
+                        <span className="text-text-muted text-xs uppercase tracking-wide">{t("photo", "shutter")}</span>
                       </div>
                     )}
                     {photo.metadata.iso && (
-                      <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-lg text-text-muted">iso</span>
-                        <span className="text-foreground font-medium">{photo.metadata.iso}</span>
+                      <div className="flex flex-col items-center gap-2 p-4 bg-background-dark rounded-lg">
+                        <span className="material-symbols-outlined text-2xl text-primary">iso</span>
+                        <span className="text-foreground font-semibold">{photo.metadata.iso}</span>
+                        <span className="text-text-muted text-xs uppercase tracking-wide">{t("photo", "iso")}</span>
                       </div>
                     )}
                     {photo.metadata.focalLength && (
-                      <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-lg text-text-muted">straighten</span>
-                        <span className="text-foreground font-medium">{photo.metadata.focalLength}</span>
+                      <div className="flex flex-col items-center gap-2 p-4 bg-background-dark rounded-lg">
+                        <span className="material-symbols-outlined text-2xl text-primary">straighten</span>
+                        <span className="text-foreground font-semibold">{photo.metadata.focalLength}</span>
+                        <span className="text-text-muted text-xs uppercase tracking-wide">{t("photo", "focal")}</span>
                       </div>
                     )}
                     {photo.metadata.width && photo.metadata.height && (
-                      <div className="flex items-center gap-1.5">
-                        <span className="material-symbols-outlined text-lg text-text-muted">aspect_ratio</span>
-                        <span className="text-foreground font-medium">
+                      <div className="flex flex-col items-center gap-2 p-4 bg-background-dark rounded-lg">
+                        <span className="material-symbols-outlined text-2xl text-primary">aspect_ratio</span>
+                        <span className="text-foreground font-semibold">
                           {photo.metadata.width} × {photo.metadata.height}
                         </span>
+                        <span className="text-text-muted text-xs uppercase tracking-wide">{t("photo", "resolution")}</span>
                       </div>
                     )}
                   </div>
