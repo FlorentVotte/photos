@@ -165,8 +165,8 @@ export default function PhotoContent({
                 </Link>
               )}
 
-              {/* The Image */}
-              <div className="relative w-full aspect-[4/3] md:aspect-[16/10] flex items-center justify-center bg-background-dark">
+              {/* The Image - Flickr-style: viewport height based for all aspect ratios */}
+              <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[75vh] lg:h-[80vh] flex items-center justify-center bg-background-dark">
                 <ProtectedImage
                   alt={photo.title}
                   className="max-h-full max-w-full object-contain shadow-lg"
