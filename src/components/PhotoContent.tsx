@@ -44,12 +44,21 @@ export default function PhotoContent({
 
   const handleLightboxNavigate = useCallback((newIndex: number) => {
     setLightboxIndex(newIndex);
-    // Update URL to match the current photo in lightbox
+    // Update URL without triggering navigation (preserves lightbox state)
     const newPhoto = albumPhotos[newIndex];
     if (newPhoto) {
-      router.push(`/photo/${newPhoto.id}`, { scroll: false });
+      window.history.replaceState(null, "", `/photo/${newPhoto.id}`);
     }
-  }, [albumPhotos, router]);
+  }, [albumPhotos]);
+
+  const handleLightboxClose = useCallback(() => {
+    setLightboxOpen(false);
+    // If we navigated to a different photo in the lightbox, load that page
+    const currentPhoto = albumPhotos[lightboxIndex];
+    if (currentPhoto && currentPhoto.id !== photo.id) {
+      router.push(`/photo/${currentPhoto.id}`, { scroll: false });
+    }
+  }, [albumPhotos, lightboxIndex, photo.id, router]);
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -373,7 +382,7 @@ export default function PhotoContent({
         photos={albumPhotos}
         currentIndex={lightboxIndex}
         isOpen={lightboxOpen}
-        onClose={() => setLightboxOpen(false)}
+        onClose={handleLightboxClose}
         onNavigate={handleLightboxNavigate}
       />
     </>
