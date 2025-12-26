@@ -32,6 +32,7 @@ export default function PhotoContent({
 
   // Share functionality
   const [showCopied, setShowCopied] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Lightbox state
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -82,6 +83,28 @@ export default function PhotoContent({
       setTimeout(() => setShowCopied(false), 2000);
     } catch {
       // Clipboard failed silently
+    }
+  };
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      const response = await fetch(photo.src.full);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      // Extract extension from src or default to jpg
+      const extension = photo.src.full.split(".").pop()?.split("?")[0] || "jpg";
+      link.download = `${photo.title}.${extension}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch {
+      // Download failed silently
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -251,6 +274,18 @@ export default function PhotoContent({
                   )}
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Download button */}
+                  <button
+                    onClick={handleDownload}
+                    disabled={isDownloading}
+                    className="flex items-center gap-2 px-4 py-2 bg-surface-dark border border-surface-border rounded-lg text-foreground hover:border-primary hover:text-primary transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label={t("photo", "download")}
+                  >
+                    <span className={`material-symbols-outlined text-lg ${isDownloading ? "animate-spin" : ""}`}>
+                      {isDownloading ? "progress_activity" : "download"}
+                    </span>
+                    <span className="hidden sm:inline">{t("photo", "download")}</span>
+                  </button>
                   {/* Share button */}
                   <button
                     onClick={handleShare}

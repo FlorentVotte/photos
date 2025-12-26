@@ -60,6 +60,7 @@ export const translations = {
     noGpsData: { en: "No GPS data", fr: "Pas de données GPS" },
     unknownLens: { en: "Unknown lens", fr: "Objectif inconnu" },
     camera: { en: "Camera", fr: "Appareil" },
+    download: { en: "Download", fr: "Télécharger" },
     share: { en: "Share", fr: "Partager" },
     linkCopied: { en: "Link copied!", fr: "Lien copié !" },
   },
