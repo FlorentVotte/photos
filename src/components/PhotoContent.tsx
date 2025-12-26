@@ -42,6 +42,15 @@ export default function PhotoContent({
     setLightboxOpen(true);
   }, [currentIndex]);
 
+  const handleLightboxNavigate = useCallback((newIndex: number) => {
+    setLightboxIndex(newIndex);
+    // Update URL to match the current photo in lightbox
+    const newPhoto = albumPhotos[newIndex];
+    if (newPhoto) {
+      router.push(`/photo/${newPhoto.id}`, { scroll: false });
+    }
+  }, [albumPhotos, router]);
+
   const handleShare = async () => {
     const url = window.location.href;
     const title = photo.title;
@@ -365,7 +374,7 @@ export default function PhotoContent({
         currentIndex={lightboxIndex}
         isOpen={lightboxOpen}
         onClose={() => setLightboxOpen(false)}
-        onNavigate={setLightboxIndex}
+        onNavigate={handleLightboxNavigate}
       />
     </>
   );
