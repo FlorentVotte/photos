@@ -61,24 +61,25 @@ export default function AdobeConnectionCard({
             </p>
           )}
         </div>
-        <a
-          href="/api/auth/adobe"
-          className={`px-6 py-3 font-semibold rounded-lg transition-colors flex items-center gap-2 ${
-            status?.connected
-              ? "bg-surface-border text-foreground hover:bg-surface-border/80"
-              : "bg-[#FF0000] text-foreground hover:bg-[#CC0000]"
-          }`}
-          aria-label={
-            status?.connected
-              ? "Reconnect Adobe account"
-              : "Connect Adobe account"
-          }
-        >
-          <span className="material-symbols-outlined">
-            {status?.connected ? "refresh" : "link"}
-          </span>
-          {status?.connected ? "Reconnect" : "Connect Adobe"}
-        </a>
+        {status?.connected ? (
+          <a
+            href="/api/auth/adobe"
+            className="p-2 text-text-muted hover:text-primary transition-colors rounded-lg hover:bg-surface-border"
+            aria-label="Reconnect Adobe account"
+            title="Reconnect Adobe account"
+          >
+            <span className="material-symbols-outlined">refresh</span>
+          </a>
+        ) : (
+          <a
+            href="/api/auth/adobe"
+            className="px-6 py-3 font-semibold rounded-lg transition-colors flex items-center gap-2 bg-[#FF0000] text-foreground hover:bg-[#CC0000]"
+            aria-label="Connect Adobe account"
+          >
+            <span className="material-symbols-outlined">link</span>
+            Connect Adobe
+          </a>
+        )}
       </div>
 
       {/* Configuration hint */}
