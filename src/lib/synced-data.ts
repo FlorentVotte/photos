@@ -4,6 +4,13 @@
 import prisma from "./db";
 import type { Album, Photo, Chapter } from "./types";
 import { PAGINATION } from "./constants";
+import {
+  transformAlbum,
+  transformAlbums,
+  transformPhoto,
+  transformPhotos,
+  transformPhotosWithAlbum,
+} from "./transformers";
 
 // Get all albums
 export async function getAlbums(): Promise<Album[]> {
@@ -11,21 +18,7 @@ export async function getAlbums(): Promise<Album[]> {
     orderBy: [{ sortOrder: "asc" }, { lastSynced: "desc" }],
   });
 
-  return albums.map((a) => ({
-    id: a.id,
-    slug: a.slug,
-    title: a.title,
-    subtitle: a.subtitle || undefined,
-    description: a.description || undefined,
-    location: a.location || "Unknown",
-    date: a.date || "",
-    coverImage: a.coverImage || "",
-    photoCount: a.photoCount,
-    sortOrder: a.sortOrder,
-    featured: a.featured,
-    galleryUrl: a.galleryUrl || "",
-    lastSynced: a.lastSynced?.toISOString() || "",
-  }));
+  return transformAlbums(albums);
 }
 
 // Get album by slug
@@ -36,20 +29,7 @@ export async function getAlbumBySlug(slug: string): Promise<Album | undefined> {
 
   if (!album) return undefined;
 
-  return {
-    id: album.id,
-    slug: album.slug,
-    title: album.title,
-    subtitle: album.subtitle || undefined,
-    description: album.description || undefined,
-    location: album.location || "Unknown",
-    date: album.date || "",
-    coverImage: album.coverImage || "",
-    photoCount: album.photoCount,
-    featured: album.featured,
-    galleryUrl: album.galleryUrl || "",
-    lastSynced: album.lastSynced?.toISOString() || "",
-  };
+  return transformAlbum(album);
 }
 
 // Get photos for an album
@@ -59,72 +39,18 @@ export async function getPhotosByAlbum(albumId: string): Promise<Photo[]> {
     orderBy: { sortOrder: "asc" },
   });
 
-  return photos.map((p) => ({
-    id: p.id,
-    title: p.title || "",
-    caption: p.caption || undefined,
-    src: {
-      thumb: p.thumbPath || "",
-      medium: p.mediumPath || "",
-      full: p.fullPath || "",
-      original: p.originalUrl || "",
-    },
-    metadata: {
-      date: p.date || "",
-      location: p.location || "Unknown",
-      city: p.city || undefined,
-      width: p.width || 0,
-      height: p.height || 0,
-      camera: p.camera || undefined,
-      lens: p.lens || undefined,
-      aperture: p.aperture || undefined,
-      shutterSpeed: p.shutterSpeed || undefined,
-      iso: p.iso || undefined,
-      focalLength: p.focalLength || undefined,
-      latitude: p.latitude || undefined,
-      longitude: p.longitude || undefined,
-    },
-    albumId: p.albumId,
-    sortOrder: p.sortOrder,
-  }));
+  return transformPhotos(photos);
 }
 
 // Get photo by ID
 export async function getPhotoById(id: string): Promise<Photo | undefined> {
-  const p = await prisma.photo.findUnique({
+  const photo = await prisma.photo.findUnique({
     where: { id },
   });
 
-  if (!p) return undefined;
+  if (!photo) return undefined;
 
-  return {
-    id: p.id,
-    title: p.title || "",
-    caption: p.caption || undefined,
-    src: {
-      thumb: p.thumbPath || "",
-      medium: p.mediumPath || "",
-      full: p.fullPath || "",
-      original: p.originalUrl || "",
-    },
-    metadata: {
-      date: p.date || "",
-      location: p.location || "Unknown",
-      city: p.city || undefined,
-      width: p.width || 0,
-      height: p.height || 0,
-      camera: p.camera || undefined,
-      lens: p.lens || undefined,
-      aperture: p.aperture || undefined,
-      shutterSpeed: p.shutterSpeed || undefined,
-      iso: p.iso || undefined,
-      focalLength: p.focalLength || undefined,
-      latitude: p.latitude || undefined,
-      longitude: p.longitude || undefined,
-    },
-    albumId: p.albumId,
-    sortOrder: p.sortOrder,
-  };
+  return transformPhoto(photo);
 }
 
 // Get chapters for an album
@@ -176,31 +102,19 @@ export async function getFeaturedAlbum(): Promise<Album | undefined> {
   });
 
   if (album) {
+    const transformed = transformAlbum(album);
+
     // If no cover image, get first photo's medium thumbnail as fallback
-    let coverImage = album.coverImage || "";
-    if (!coverImage) {
+    if (!transformed.coverImage) {
       const firstPhoto = await prisma.photo.findFirst({
         where: { albumId: album.id },
         orderBy: { sortOrder: "asc" },
         select: { mediumPath: true },
       });
-      coverImage = firstPhoto?.mediumPath || "";
+      transformed.coverImage = firstPhoto?.mediumPath || "";
     }
 
-    return {
-      id: album.id,
-      slug: album.slug,
-      title: album.title,
-      subtitle: album.subtitle || undefined,
-      description: album.description || undefined,
-      location: album.location || "Unknown",
-      date: album.date || "",
-      coverImage,
-      photoCount: album.photoCount,
-      featured: album.featured,
-      galleryUrl: album.galleryUrl || "",
-      lastSynced: album.lastSynced?.toISOString() || "",
-    };
+    return transformed;
   }
 
   // Fallback to first album
@@ -219,36 +133,7 @@ export async function getAllPhotos(): Promise<Photo[]> {
     orderBy: [{ albumId: "asc" }, { sortOrder: "asc" }],
   });
 
-  return photos.map((p) => ({
-    id: p.id,
-    title: p.title || "",
-    caption: p.caption || undefined,
-    src: {
-      thumb: p.thumbPath || "",
-      medium: p.mediumPath || "",
-      full: p.fullPath || "",
-      original: p.originalUrl || "",
-    },
-    metadata: {
-      date: p.date || "",
-      location: p.location || "Unknown",
-      city: p.city || undefined,
-      width: p.width || 0,
-      height: p.height || 0,
-      camera: p.camera || undefined,
-      lens: p.lens || undefined,
-      aperture: p.aperture || undefined,
-      shutterSpeed: p.shutterSpeed || undefined,
-      iso: p.iso || undefined,
-      focalLength: p.focalLength || undefined,
-      latitude: p.latitude || undefined,
-      longitude: p.longitude || undefined,
-    },
-    albumId: p.albumId,
-    albumTitle: p.album?.title || undefined,
-    albumSlug: p.album?.slug || undefined,
-    sortOrder: p.sortOrder,
-  }));
+  return transformPhotosWithAlbum(photos);
 }
 
 // Search photos
@@ -267,34 +152,7 @@ export async function searchPhotos(query: string): Promise<Photo[]> {
     take: PAGINATION.SEARCH_LIMIT,
   });
 
-  return photos.map((p) => ({
-    id: p.id,
-    title: p.title || "",
-    caption: p.caption || undefined,
-    src: {
-      thumb: p.thumbPath || "",
-      medium: p.mediumPath || "",
-      full: p.fullPath || "",
-      original: p.originalUrl || "",
-    },
-    metadata: {
-      date: p.date || "",
-      location: p.location || "Unknown",
-      city: p.city || undefined,
-      width: p.width || 0,
-      height: p.height || 0,
-      camera: p.camera || undefined,
-      lens: p.lens || undefined,
-      aperture: p.aperture || undefined,
-      shutterSpeed: p.shutterSpeed || undefined,
-      iso: p.iso || undefined,
-      focalLength: p.focalLength || undefined,
-      latitude: p.latitude || undefined,
-      longitude: p.longitude || undefined,
-    },
-    albumId: p.albumId,
-    sortOrder: p.sortOrder,
-  }));
+  return transformPhotos(photos);
 }
 
 // Get journey statistics (countries, cities, photos, date range)

@@ -1,6 +1,7 @@
 import prisma from "./db";
 import type { Gallery, Album, Photo, Chapter, AdobeToken } from "@prisma/client";
 import { PAGINATION } from "./constants";
+import { transformAlbums, transformPhotos } from "./transformers";
 
 // ==================== GALLERY OPERATIONS ====================
 
@@ -218,61 +219,24 @@ export async function deleteAdobeToken() {
 
 // Get manifest-like data for compatibility with existing code
 export async function getManifestData() {
-  const albums = await prisma.album.findMany({
-    orderBy: { lastSynced: "desc" },
-  });
-
-  const photos = await prisma.photo.findMany({
-    orderBy: [{ albumId: "asc" }, { sortOrder: "asc" }],
-  });
+  const [albums, photos] = await Promise.all([
+    prisma.album.findMany({
+      orderBy: { lastSynced: "desc" },
+    }),
+    prisma.photo.findMany({
+      orderBy: [{ albumId: "asc" }, { sortOrder: "asc" }],
+    }),
+  ]);
 
   return {
     lastUpdated: new Date().toISOString(),
-    albums: albums.map((a) => ({
-      id: a.id,
-      slug: a.slug,
-      title: a.title,
-      location: a.location || "Unknown",
-      date: a.date || "",
-      coverImage: a.coverImage || "",
-      photoCount: a.photoCount,
-      featured: a.featured,
-      galleryUrl: a.galleryUrl || "",
-      lastSynced: a.lastSynced?.toISOString() || "",
-    })),
-    photos: photos.map((p) => ({
-      id: p.id,
-      title: p.title || "",
-      caption: p.caption,
-      src: {
-        thumb: p.thumbPath || "",
-        medium: p.mediumPath || "",
-        full: p.fullPath || "",
-        original: p.originalUrl || "",
-      },
-      metadata: {
-        date: p.date || "",
-        location: p.location || "Unknown",
-        width: p.width || 0,
-        height: p.height || 0,
-        camera: p.camera,
-        lens: p.lens,
-        aperture: p.aperture,
-        shutterSpeed: p.shutterSpeed,
-        iso: p.iso,
-        focalLength: p.focalLength,
-        latitude: p.latitude,
-        longitude: p.longitude,
-      },
-      albumId: p.albumId,
-      sortOrder: p.sortOrder,
-    })),
+    albums: transformAlbums(albums),
+    photos: transformPhotos(photos),
   };
 }
 
 // Search photos by text
 export async function searchPhotos(query: string) {
-  const lowerQuery = `%${query.toLowerCase()}%`;
   return prisma.photo.findMany({
     where: {
       OR: [

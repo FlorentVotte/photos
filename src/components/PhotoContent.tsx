@@ -6,7 +6,7 @@ import Link from "next/link";
 import ProtectedImage from "./ProtectedImage";
 import PhotoLocationMap from "./PhotoLocationMap";
 import PhotoKeyboardNav from "./PhotoKeyboardNav";
-import SlideshowButton from "./SlideshowButton";
+import Lightbox from "./Lightbox";
 import { useLocale } from "@/lib/LocaleContext";
 import type { Photo, Album } from "@/lib/types";
 
@@ -32,6 +32,15 @@ export default function PhotoContent({
 
   // Share functionality
   const [showCopied, setShowCopied] = useState(false);
+
+  // Lightbox state
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(currentIndex);
+
+  const openLightbox = useCallback(() => {
+    setLightboxIndex(currentIndex);
+    setLightboxOpen(true);
+  }, [currentIndex]);
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -168,10 +177,13 @@ export default function PhotoContent({
               )}
 
               {/* The Image - Flickr-style: viewport height based for all aspect ratios */}
-              <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[75vh] lg:h-[80vh] flex items-center justify-center bg-background-dark">
+              <div
+                className="relative w-full h-[60vh] sm:h-[70vh] md:h-[75vh] lg:h-[80vh] flex items-center justify-center bg-background-dark cursor-pointer"
+                onClick={openLightbox}
+              >
                 <ProtectedImage
                   alt={photo.title}
-                  className="max-h-full max-w-full object-contain shadow-lg"
+                  className="max-h-full max-w-full object-contain shadow-lg pointer-events-none"
                   src={photo.src.full}
                 />
               </div>
@@ -236,10 +248,13 @@ export default function PhotoContent({
                       </span>
                     )}
                   </button>
-                  <SlideshowButton
-                    photos={albumPhotos}
-                    currentIndex={currentIndex}
-                  />
+                  <button
+                    onClick={openLightbox}
+                    className="flex items-center gap-2 px-4 py-2 bg-surface-dark border border-surface-border rounded-lg text-foreground hover:border-primary hover:text-primary transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-xl">slideshow</span>
+                    <span className="text-sm font-medium">{t("photo", "slideshow")}</span>
+                  </button>
                 </div>
               </div>
 
@@ -344,6 +359,14 @@ export default function PhotoContent({
           </div>
         </div>
       </div>
+
+      <Lightbox
+        photos={albumPhotos}
+        currentIndex={lightboxIndex}
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        onNavigate={setLightboxIndex}
+      />
     </>
   );
 }
