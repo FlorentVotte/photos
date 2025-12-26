@@ -301,9 +301,14 @@ function extractPhotoFromAsset(
     const width = develop.croppedWidth || importSource.originalWidth || 0;
     const height = develop.croppedHeight || importSource.originalHeight || 0;
 
+    // Strip extension from filename if using it as fallback title
+    const fallbackTitle = importSource.fileName
+      ? importSource.fileName.replace(/\.[^/.]+$/, "")
+      : undefined;
+
     return {
       id,
-      title: payload.title || payload.name || importSource.fileName,
+      title: payload.title || payload.name || fallbackTitle,
       caption: payload.caption,
       url: imageUrl,
       thumbnailUrl,
