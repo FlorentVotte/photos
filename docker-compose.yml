@@ -12,6 +12,7 @@ services:
       - SYNC_WEBHOOK_SECRET=${SYNC_WEBHOOK_SECRET:-}
       - ADOBE_CLIENT_ID=${ADOBE_CLIENT_ID:-}
       - ADOBE_CLIENT_SECRET=${ADOBE_CLIENT_SECRET:-}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-}
     volumes:
       - ./data:/app/data
       - ./data/photos:/app/public/photos
