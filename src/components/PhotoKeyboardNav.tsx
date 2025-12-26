@@ -25,9 +25,9 @@ export default function PhotoKeyboardNav({
       }
 
       if (e.key === "ArrowLeft" && prevPhotoId) {
-        router.push(`/photo/${prevPhotoId}`);
+        router.push(`/photo/${prevPhotoId}`, { scroll: false });
       } else if (e.key === "ArrowRight" && nextPhotoId) {
-        router.push(`/photo/${nextPhotoId}`);
+        router.push(`/photo/${nextPhotoId}`, { scroll: false });
       }
     }
 

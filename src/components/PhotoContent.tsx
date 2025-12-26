@@ -81,10 +81,10 @@ export default function PhotoContent({
       if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaX) > Math.abs(deltaY)) {
         if (deltaX > 0 && prevPhoto) {
           // Swipe right - go to previous
-          router.push(`/photo/${prevPhoto.id}`);
+          router.push(`/photo/${prevPhoto.id}`, { scroll: false });
         } else if (deltaX < 0 && nextPhoto) {
           // Swipe left - go to next
-          router.push(`/photo/${nextPhoto.id}`);
+          router.push(`/photo/${nextPhoto.id}`, { scroll: false });
         }
       }
 
@@ -143,6 +143,7 @@ export default function PhotoContent({
               {prevPhoto && (
                 <Link
                   href={`/photo/${prevPhoto.id}`}
+                  scroll={false}
                   className="absolute inset-y-0 left-0 w-16 md:w-24 bg-gradient-to-r from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10"
                 >
                   <div className="size-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-primary hover:text-black transition-colors">
@@ -155,6 +156,7 @@ export default function PhotoContent({
               {nextPhoto && (
                 <Link
                   href={`/photo/${nextPhoto.id}`}
+                  scroll={false}
                   className="absolute inset-y-0 right-0 w-16 md:w-24 bg-gradient-to-l from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10"
                 >
                   <div className="size-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-primary hover:text-black transition-colors">
@@ -184,6 +186,7 @@ export default function PhotoContent({
                 {prevPhoto && (
                   <Link
                     href={`/photo/${prevPhoto.id}`}
+                    scroll={false}
                     className="size-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-foreground border border-white/10"
                   >
                     <span className="material-symbols-outlined">arrow_back</span>
@@ -192,6 +195,7 @@ export default function PhotoContent({
                 {nextPhoto && (
                   <Link
                     href={`/photo/${nextPhoto.id}`}
+                    scroll={false}
                     className="size-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-foreground border border-white/10"
                   >
                     <span className="material-symbols-outlined">
