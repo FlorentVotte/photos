@@ -356,36 +356,36 @@ export default function PhotoContent({
                     </div>
                   </div>
 
-                  {/* EXIF Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {/* EXIF Inline */}
+                  <div className="flex flex-wrap items-center gap-4 text-sm">
                     {photo.metadata.aperture && (
-                      <div className="bg-background-dark rounded-lg p-3 text-center">
-                        <span className="text-text-muted text-xs block mb-1">{t("photo", "aperture")}</span>
-                        <span className="text-foreground text-sm font-medium">{photo.metadata.aperture}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-lg text-text-muted">camera</span>
+                        <span className="text-foreground font-medium">{photo.metadata.aperture}</span>
                       </div>
                     )}
                     {photo.metadata.shutterSpeed && (
-                      <div className="bg-background-dark rounded-lg p-3 text-center">
-                        <span className="text-text-muted text-xs block mb-1">{t("photo", "shutter")}</span>
-                        <span className="text-foreground text-sm font-medium">{photo.metadata.shutterSpeed}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-lg text-text-muted">timer</span>
+                        <span className="text-foreground font-medium">{photo.metadata.shutterSpeed}</span>
                       </div>
                     )}
                     {photo.metadata.iso && (
-                      <div className="bg-background-dark rounded-lg p-3 text-center">
-                        <span className="text-text-muted text-xs block mb-1">{t("photo", "iso")}</span>
-                        <span className="text-foreground text-sm font-medium">{photo.metadata.iso}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-lg text-text-muted">iso</span>
+                        <span className="text-foreground font-medium">{photo.metadata.iso}</span>
                       </div>
                     )}
                     {photo.metadata.focalLength && (
-                      <div className="bg-background-dark rounded-lg p-3 text-center">
-                        <span className="text-text-muted text-xs block mb-1">{t("photo", "focal")}</span>
-                        <span className="text-foreground text-sm font-medium">{photo.metadata.focalLength}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-lg text-text-muted">straighten</span>
+                        <span className="text-foreground font-medium">{photo.metadata.focalLength}</span>
                       </div>
                     )}
                     {photo.metadata.width && photo.metadata.height && (
-                      <div className="bg-background-dark rounded-lg p-3 text-center">
-                        <span className="text-text-muted text-xs block mb-1">{t("photo", "resolution")}</span>
-                        <span className="text-foreground text-sm font-medium">
+                      <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-lg text-text-muted">aspect_ratio</span>
+                        <span className="text-foreground font-medium">
                           {photo.metadata.width} × {photo.metadata.height}
                         </span>
                       </div>
