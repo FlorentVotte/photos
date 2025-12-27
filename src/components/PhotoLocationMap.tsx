@@ -43,7 +43,7 @@ export default function PhotoLocationMap({ latitude, longitude, title }: PhotoLo
 
   if (!isClient || !L) {
     return (
-      <div className="w-full h-[200px] bg-surface-dark rounded-lg flex items-center justify-center">
+      <div className="w-full min-h-[200px] flex-1 bg-surface-dark rounded-lg flex items-center justify-center">
         <span className="material-symbols-outlined text-2xl text-primary animate-spin">
           progress_activity
         </span>
@@ -61,7 +61,7 @@ export default function PhotoLocationMap({ latitude, longitude, title }: PhotoLo
   });
 
   return (
-    <>
+    <div className="flex flex-col flex-1 min-h-[200px]">
       <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -77,7 +77,7 @@ export default function PhotoLocationMap({ latitude, longitude, title }: PhotoLo
       <MapContainer
         center={[latitude, longitude]}
         zoom={14}
-        className="w-full h-[200px] rounded-lg overflow-hidden z-0"
+        className="w-full flex-1 min-h-[200px] rounded-lg overflow-hidden z-0"
         scrollWheelZoom={false}
         dragging={false}
         zoomControl={false}
@@ -95,6 +95,6 @@ export default function PhotoLocationMap({ latitude, longitude, title }: PhotoLo
       <p className="text-xs text-text-muted mt-2 text-center">
         {latitude.toFixed(5)}, {longitude.toFixed(5)}
       </p>
-    </>
+    </div>
   );
 }

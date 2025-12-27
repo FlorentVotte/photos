@@ -314,7 +314,7 @@ export default function PhotoContent({
               {/* Info Grid - Map and Metadata side by side on desktop */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left: Location Map or Location Info */}
-                <div className="bg-surface-dark rounded-xl p-5 border border-surface-border">
+                <div className="bg-surface-dark rounded-xl p-5 border border-surface-border flex flex-col">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="size-9 rounded-full bg-surface-border flex items-center justify-center text-primary">
                       <span className="material-symbols-outlined text-xl">location_on</span>
@@ -336,7 +336,7 @@ export default function PhotoContent({
                       title={photo.title}
                     />
                   ) : (
-                    <div className="h-[200px] bg-background-dark rounded-lg flex items-center justify-center">
+                    <div className="flex-1 min-h-[200px] bg-background-dark rounded-lg flex items-center justify-center">
                       <span className="text-text-muted text-sm">{t("photo", "noGpsData")}</span>
                     </div>
                   )}
