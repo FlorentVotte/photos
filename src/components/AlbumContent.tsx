@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import PhotoGrid from "./PhotoGrid";
 import ChapterStats from "./ChapterStats";
 import ChapterLocationSummary from "./ChapterLocationSummary";
 import ProtectedImage from "./ProtectedImage";
+import { ViewToggle, MagazineView, FullScreenSlideshow, ViewMode } from "./magazine";
 import { useLocale } from "@/lib/LocaleContext";
 import { extractLocations, computeChapterStats } from "@/lib/geo-utils";
+import { organizeMagazineContent } from "@/lib/magazine-utils";
 import type {
   Photo,
   Album,
@@ -41,6 +44,49 @@ export default function AlbumContent({
   const { t, locale } = useLocale();
   const heroRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(0);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // View mode state (grid/magazine/slideshow)
+  const viewParam = searchParams.get("view") as ViewMode | null;
+  const [viewMode, setViewMode] = useState<ViewMode>(viewParam === "magazine" ? "magazine" : "grid");
+
+  // Slideshow state
+  const [slideshowOpen, setSlideshowOpen] = useState(false);
+  const [slideshowStartIndex, setSlideshowStartIndex] = useState(0);
+
+  // Organize content for magazine view
+  const magazineContent = organizeMagazineContent(chapters, photos);
+
+  // Handle view change with URL update
+  const handleViewChange = useCallback((newView: ViewMode) => {
+    if (newView === "slideshow") {
+      // For slideshow, open the slideshow overlay
+      setSlideshowStartIndex(0);
+      setSlideshowOpen(true);
+    } else {
+      setViewMode(newView);
+      // Update URL without navigation
+      const url = new URL(window.location.href);
+      if (newView === "magazine") {
+        url.searchParams.set("view", "magazine");
+      } else {
+        url.searchParams.delete("view");
+      }
+      router.replace(url.pathname + url.search, { scroll: false });
+    }
+  }, [router]);
+
+  // Handle entering slideshow from magazine view
+  const handleEnterSlideshow = useCallback((startIndex: number) => {
+    setSlideshowStartIndex(startIndex);
+    setSlideshowOpen(true);
+  }, []);
+
+  // Handle closing slideshow
+  const handleCloseSlideshow = useCallback(() => {
+    setSlideshowOpen(false);
+  }, []);
 
   // Parallax scroll effect
   useEffect(() => {
@@ -163,19 +209,38 @@ export default function AlbumContent({
         </div>
       </div>
 
-      {/* Content Container */}
-      <div className="w-full max-w-screen-xl px-4 md:px-8 lg:px-12 py-16 md:py-24 flex flex-col gap-24">
-        {/* Intro Narrative */}
-        {album.description && (
-          <article className="max-w-2xl mx-auto text-center flex flex-col gap-6">
-            <span className="material-symbols-outlined text-primary/50 text-4xl mb-2">
-              format_quote
-            </span>
-            <p className="text-xl md:text-2xl text-gray-200 leading-relaxed font-light">
-              {album.description}
-            </p>
-          </article>
-        )}
+      {/* View Toggle */}
+      <div className="w-full max-w-screen-xl px-4 md:px-8 lg:px-12 pt-8 flex justify-end">
+        <ViewToggle
+          currentView={viewMode}
+          onViewChange={handleViewChange}
+        />
+      </div>
+
+      {/* Magazine View */}
+      {viewMode === "magazine" ? (
+        <MagazineView
+          album={album}
+          chapters={chapters}
+          photos={photos}
+          onEnterSlideshow={handleEnterSlideshow}
+        />
+      ) : (
+        /* Grid View (existing content) */
+        <>
+          {/* Content Container */}
+          <div className="w-full max-w-screen-xl px-4 md:px-8 lg:px-12 py-16 md:py-24 flex flex-col gap-24">
+            {/* Intro Narrative */}
+            {album.description && (
+              <article className="max-w-2xl mx-auto text-center flex flex-col gap-6">
+                <span className="material-symbols-outlined text-primary/50 text-4xl mb-2">
+                  format_quote
+                </span>
+                <p className="text-xl md:text-2xl text-gray-200 leading-relaxed font-light">
+                  {album.description}
+                </p>
+              </article>
+            )}
 
         {/* Chapters with Photos */}
         {chapters.map((chapter, chapterIndex) => {
@@ -266,48 +331,58 @@ export default function AlbumContent({
           </section>
         )}
 
-        {/* Next Journey */}
-        {nextAlbum && nextAlbum.id !== album.id && (
-          <footer className="mt-12 w-full">
-            <div className="relative overflow-hidden rounded-2xl bg-surface-dark border border-surface-border">
-              <div className="grid md:grid-cols-2">
-                <div className="p-10 md:p-16 flex flex-col justify-center items-start gap-6 z-10 bg-background-dark/95 backdrop-blur-sm">
-                  <p className="text-primary font-bold tracking-widest uppercase text-sm font-sans">
-                    {t("album", "nextJourney")}
-                  </p>
-                  <h3 className="text-4xl md:text-5xl text-foreground font-bold leading-tight">
-                    {nextAlbum.title}
-                  </h3>
-                  <p className="text-gray-400 max-w-md">
-                    {nextAlbum.description ||
-                      `${t("home", "viewAlbum")} ${nextAlbum.location}`}
-                  </p>
-                  <Link
-                    href={`/album/${nextAlbum.slug}`}
-                    className="mt-4 flex items-center gap-2 text-foreground hover:text-primary transition-colors group"
-                  >
-                    <span className="font-bold underline decoration-primary underline-offset-4">
-                      {t("home", "viewAlbum")}
-                    </span>
-                    <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">
-                      arrow_forward
-                    </span>
-                  </Link>
+            {/* Next Journey */}
+            {nextAlbum && nextAlbum.id !== album.id && (
+              <footer className="mt-12 w-full">
+                <div className="relative overflow-hidden rounded-2xl bg-surface-dark border border-surface-border">
+                  <div className="grid md:grid-cols-2">
+                    <div className="p-10 md:p-16 flex flex-col justify-center items-start gap-6 z-10 bg-background-dark/95 backdrop-blur-sm">
+                      <p className="text-primary font-bold tracking-widest uppercase text-sm font-sans">
+                        {t("album", "nextJourney")}
+                      </p>
+                      <h3 className="text-4xl md:text-5xl text-foreground font-bold leading-tight">
+                        {nextAlbum.title}
+                      </h3>
+                      <p className="text-gray-400 max-w-md">
+                        {nextAlbum.description ||
+                          `${t("home", "viewAlbum")} ${nextAlbum.location}`}
+                      </p>
+                      <Link
+                        href={`/album/${nextAlbum.slug}`}
+                        className="mt-4 flex items-center gap-2 text-foreground hover:text-primary transition-colors group"
+                      >
+                        <span className="font-bold underline decoration-primary underline-offset-4">
+                          {t("home", "viewAlbum")}
+                        </span>
+                        <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">
+                          arrow_forward
+                        </span>
+                      </Link>
+                    </div>
+                    <div className="relative h-64 md:h-auto min-h-[300px]">
+                      <div
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{
+                          backgroundImage: `url("${nextAlbum.coverImage}")`,
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-r from-background-dark/95 to-transparent md:w-1/3" />
+                    </div>
+                  </div>
                 </div>
-                <div className="relative h-64 md:h-auto min-h-[300px]">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{
-                      backgroundImage: `url("${nextAlbum.coverImage}")`,
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-background-dark/95 to-transparent md:w-1/3" />
-                </div>
-              </div>
-            </div>
-          </footer>
-        )}
-      </div>
+              </footer>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Full Screen Slideshow */}
+      <FullScreenSlideshow
+        photos={magazineContent.allPhotos}
+        startIndex={slideshowStartIndex}
+        isOpen={slideshowOpen}
+        onClose={handleCloseSlideshow}
+      />
     </main>
   );
 }
