@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isValidSessionToken } from "./auth";
+import { isValidSessionToken, unauthorizedResponse } from "./auth";
 
 describe("auth", () => {
   describe("isValidSessionToken", () => {
@@ -56,6 +56,24 @@ describe("auth", () => {
       const crypto = require("crypto");
       const token = crypto.randomBytes(32).toString("hex");
       expect(isValidSessionToken(token)).toBe(true);
+    });
+  });
+
+  describe("unauthorizedResponse", () => {
+    it("should return 401 status", async () => {
+      const response = unauthorizedResponse();
+      expect(response.status).toBe(401);
+    });
+
+    it("should return JSON body with error message", async () => {
+      const response = unauthorizedResponse();
+      const body = await response.json();
+      expect(body.error).toBe("Unauthorized");
+    });
+
+    it("should have application/json content type", () => {
+      const response = unauthorizedResponse();
+      expect(response.headers.get("content-type")).toContain("application/json");
     });
   });
 });
