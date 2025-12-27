@@ -170,21 +170,6 @@ export const translations = {
     showing: { en: "Showing", fr: "Affichage de" },
     of: { en: "of", fr: "sur" },
   },
-
-  // Magazine view
-  magazine: {
-    gridView: { en: "Grid View", fr: "Vue grille" },
-    magazineView: { en: "Magazine View", fr: "Vue magazine" },
-    slideshowView: { en: "Slideshow", fr: "Diaporama" },
-    day: { en: "Day", fr: "Jour" },
-    photoOf: { en: "Photo", fr: "Photo" },
-    enterSlideshow: { en: "Enter slideshow", fr: "Lancer le diaporama" },
-    exitSlideshow: { en: "Exit slideshow", fr: "Quitter le diaporama" },
-    autoPlay: { en: "Auto-play", fr: "Lecture auto" },
-    pause: { en: "Pause", fr: "Pause" },
-    showInfo: { en: "Show info", fr: "Afficher les infos" },
-    hideInfo: { en: "Hide info", fr: "Masquer les infos" },
-  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
