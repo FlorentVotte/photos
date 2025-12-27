@@ -4,21 +4,22 @@ A self-hosted photo gallery web application that syncs with Adobe Lightroom gall
 
 ## Features
 
-- **Lightroom Integration**: Automatically sync photos from public Lightroom galleries
+- **Lightroom Integration**: Sync photos from public galleries or private albums via Adobe API
 - **Album Organization**: Organize photos into albums with customizable chapters
 - **Photo Map**: View photos on an interactive map based on GPS metadata
 - **Search**: Full-text search across photo titles and captions
-- **Admin Panel**: Manage galleries, albums, and sync settings
-- **Dark Theme**: Multiple dark theme presets
+- **Admin Panel**: Manage galleries, albums, covers, and sync settings
+- **Dark Theme**: Multiple dark theme presets (forest green, ocean blue, sunset orange, etc.)
 - **PWA Support**: Installable as a Progressive Web App with offline support
 - **Docker Ready**: Easy deployment with Docker Compose
+- **CI/CD**: Automated testing and deployment with GitHub Actions
 
 ## Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn
+- Node.js 22+
+- npm
 
 ### Installation
 
@@ -60,9 +61,12 @@ Copy `.env.example` to `.env.local` and configure:
 |----------|----------|-------------|
 | `ADMIN_PASSWORD` | Yes | Password for the admin panel |
 | `NEXT_PUBLIC_SITE_URL` | Yes | Your site's public URL |
+| `ENCRYPTION_KEY` | Yes* | Key for encrypting Adobe tokens (generate with `openssl rand -hex 32`) |
 | `SYNC_WEBHOOK_SECRET` | No | Secret for webhook-triggered syncs |
-| `ADOBE_CLIENT_ID` | No | Adobe API client ID (for titles/captions) |
+| `ADOBE_CLIENT_ID` | No | Adobe API client ID (for private albums) |
 | `ADOBE_CLIENT_SECRET` | No | Adobe API client secret |
+
+\* Required if using Adobe API integration
 
 ## Usage
 
@@ -88,12 +92,12 @@ npm run sync:add
 
 ### Adobe Lightroom API (Optional)
 
-To sync photo titles and captions from Lightroom:
+To sync private albums and get photo titles/captions from Lightroom:
 
 1. Create credentials at [Adobe Developer Console](https://developer.adobe.com/console)
 2. Add the Lightroom API to your project
-3. Configure OAuth with callback URL: `{SITE_URL}/api/adobe/callback`
-4. Add credentials to `.env.local`
+3. Configure OAuth with callback URL: `{SITE_URL}/api/auth/adobe/callback`
+4. Add `ADOBE_CLIENT_ID`, `ADOBE_CLIENT_SECRET`, and `ENCRYPTION_KEY` to your environment
 5. Authenticate via the admin panel
 
 ## Docker Deployment
@@ -134,10 +138,11 @@ The project includes a GitHub Actions workflow that automatically builds and dep
 
 ### How it works
 
-1. Push to `main` triggers the workflow
-2. Docker image is built and pushed to `ghcr.io`
-3. GitHub Actions SSHs into your server
-4. Runs `docker compose pull && docker compose up -d`
+1. Push to `main` or open a PR triggers the workflow
+2. Tests run first (blocks deployment on failure)
+3. Docker image is built and pushed to `ghcr.io`
+4. GitHub Actions SSHs into your server
+5. Runs `docker compose pull && docker compose up -d`
 
 ## Project Structure
 
@@ -159,6 +164,9 @@ photobook/
 | `npm run dev` | Start development server |
 | `npm run build` | Build for production |
 | `npm run start` | Start production server |
+| `npm run test` | Run test suite |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:coverage` | Run tests with coverage report |
 | `npm run sync` | Sync photos from Lightroom |
 | `npm run sync:watch` | Continuous sync mode |
 
