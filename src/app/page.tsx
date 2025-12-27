@@ -3,8 +3,15 @@ import HomeContent from "@/components/HomeContent";
 import Footer from "@/components/Footer";
 import { WebsiteStructuredData } from "@/components/StructuredData";
 import { getAlbums, getFeaturedAlbum } from "@/lib/data";
+import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: SITE_URL,
+  },
+};
 
 // Force dynamic to always fetch fresh data
 export const dynamic = "force-dynamic";

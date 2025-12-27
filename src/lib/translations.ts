@@ -170,6 +170,20 @@ export const translations = {
     showing: { en: "Showing", fr: "Affichage de" },
     of: { en: "of", fr: "sur" },
   },
+
+  // Share
+  share: {
+    shareOn: { en: "Share on", fr: "Partager sur" },
+    twitter: { en: "X (Twitter)", fr: "X (Twitter)" },
+    facebook: { en: "Facebook", fr: "Facebook" },
+    linkedin: { en: "LinkedIn", fr: "LinkedIn" },
+    pinterest: { en: "Pinterest", fr: "Pinterest" },
+    whatsapp: { en: "WhatsApp", fr: "WhatsApp" },
+    copyLink: { en: "Copy link", fr: "Copier le lien" },
+    linkCopied: { en: "Link copied!", fr: "Lien copié !" },
+    shareThis: { en: "Share this", fr: "Partager" },
+    nativeShare: { en: "Share", fr: "Partager" },
+  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
