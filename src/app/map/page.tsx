@@ -13,9 +13,6 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Photo Map - Regards Perdus",
   description: "Explore photos on an interactive map",
-  alternates: {
-    canonical: `${SITE_URL}/map`,
-  },
 };
 
 export default async function MapPage() {

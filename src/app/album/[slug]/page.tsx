@@ -28,27 +28,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = album.description ||
     `${album.title} - ${album.photoCount} photos from ${album.location}. ${album.date}.`;
 
-  const canonicalUrl = `${SITE_URL}/album/${slug}`;
-  const ogImageUrl = `${SITE_URL}/api/og/album/${slug}`;
-
   return {
     title: `${album.title} | ${album.location} - Regards Perdus`,
     description,
     keywords: [album.title, album.location, "photography", "travel", "photo album"].filter(Boolean),
-    alternates: {
-      canonical: canonicalUrl,
-    },
     openGraph: {
       title: `${album.title} | ${album.location}`,
       description,
       type: "article",
-      url: canonicalUrl,
-      images: [{
-        url: ogImageUrl,
+      images: album.coverImage ? [{
+        url: album.coverImage,
         width: 1200,
         height: 630,
         alt: album.title,
-      }],
+      }] : [],
       publishedTime: album.date,
       siteName: "Regards Perdus",
     },
@@ -56,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title: album.title,
       description,
-      images: [ogImageUrl],
+      images: album.coverImage ? [album.coverImage] : [],
     },
   };
 }

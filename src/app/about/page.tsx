@@ -5,17 +5,12 @@ import { siteConfig } from "@/lib/data";
 import { getGearStats, getJourneyStats } from "@/lib/synced-data";
 import type { Metadata } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
-
 // Force dynamic to always fetch fresh data
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: `About - ${siteConfig.siteName}`,
   description: `Learn more about ${siteConfig.photographerName} and their photography journey.`,
-  alternates: {
-    canonical: `${SITE_URL}/about`,
-  },
 };
 
 export default async function AboutPage() {

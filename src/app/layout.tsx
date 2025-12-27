@@ -58,18 +58,11 @@ export const metadata: Metadata = {
     description: "Capturing the fleeting moments between departures and arrivals.",
     type: "website",
     siteName: "Regards Perdus",
-    images: [{
-      url: "/api/og",
-      width: 1200,
-      height: 630,
-      alt: "Regards Perdus - Photo Portfolio",
-    }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Regards Perdus - Photo Portfolio",
     description: "Capturing the fleeting moments between departures and arrivals.",
-    images: ["/api/og"],
   },
 };
 

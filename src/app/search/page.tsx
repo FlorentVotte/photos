@@ -8,9 +8,6 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 export const metadata: Metadata = {
   title: "Search | Regards Perdus",
   description: "Search through photos and albums from around the world.",
-  alternates: {
-    canonical: `${SITE_URL}/search`,
-  },
 };
 
 // Force dynamic to always fetch fresh data

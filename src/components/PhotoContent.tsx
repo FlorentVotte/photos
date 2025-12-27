@@ -7,11 +7,8 @@ import ProtectedImage from "./ProtectedImage";
 import PhotoLocationMap from "./PhotoLocationMap";
 import PhotoKeyboardNav from "./PhotoKeyboardNav";
 import Lightbox from "./Lightbox";
-import { ShareButtons } from "./share";
 import { useLocale } from "@/lib/LocaleContext";
 import type { Photo, Album } from "@/lib/types";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 
 interface PhotoContentProps {
   photo: Photo;
@@ -33,7 +30,8 @@ export default function PhotoContent({
   const { t } = useLocale();
   const router = useRouter();
 
-  // Download functionality
+  // Share functionality
+  const [showCopied, setShowCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
   // Lightbox state
@@ -62,6 +60,31 @@ export default function PhotoContent({
       router.push(`/photo/${currentPhoto.id}`, { scroll: false });
     }
   }, [albumPhotos, lightboxIndex, photo.id, router]);
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const title = photo.title;
+    const text = photo.caption || `${photo.title} - ${photo.metadata.location}`;
+
+    // Try native share first (mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text, url });
+        return;
+      } catch {
+        // User cancelled or share failed, fall through to clipboard
+      }
+    }
+
+    // Fallback to clipboard
+    try {
+      await navigator.clipboard.writeText(url);
+      setShowCopied(true);
+      setTimeout(() => setShowCopied(false), 2000);
+    } catch {
+      // Clipboard failed silently
+    }
+  };
 
   const handleDownload = async () => {
     setIsDownloading(true);
@@ -263,13 +286,21 @@ export default function PhotoContent({
                     </span>
                     <span className="hidden sm:inline">{t("photo", "download")}</span>
                   </button>
-                  {/* Share buttons */}
-                  <ShareButtons
-                    url={`${SITE_URL}/photo/${photo.id}`}
-                    title={photo.title}
-                    description={photo.caption || photo.description}
-                    imageUrl={`${SITE_URL}${photo.src.full}`}
-                  />
+                  {/* Share button */}
+                  <button
+                    onClick={handleShare}
+                    className="relative flex items-center gap-2 px-4 py-2 bg-surface-dark border border-surface-border rounded-lg text-foreground hover:border-primary hover:text-primary transition-colors text-sm font-medium"
+                    aria-label={t("photo", "share")}
+                  >
+                    <span className="material-symbols-outlined text-lg">share</span>
+                    <span className="hidden sm:inline">{t("photo", "share")}</span>
+                    {/* Copied tooltip */}
+                    {showCopied && (
+                      <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-black text-xs font-medium rounded-full whitespace-nowrap">
+                        {t("photo", "linkCopied")}
+                      </span>
+                    )}
+                  </button>
                   <button
                     onClick={openLightbox}
                     className="flex items-center gap-2 px-4 py-2 bg-surface-dark border border-surface-border rounded-lg text-foreground hover:border-primary hover:text-primary transition-colors"
