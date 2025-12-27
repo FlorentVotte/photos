@@ -45,6 +45,7 @@ inspiration/
 
 # Testing
 coverage/
+test-results/
 
 /src/generated/prisma
 *.db
