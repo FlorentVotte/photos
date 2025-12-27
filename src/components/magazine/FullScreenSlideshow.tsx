@@ -237,9 +237,9 @@ export default function FullScreenSlideshow({
                   `, ${currentPhoto.metadata.location}`}
               </div>
             )}
-            {(currentPhoto.caption || currentPhoto.title) && (
+            {(currentPhoto.caption || currentPhoto.description || currentPhoto.title) && (
               <p className="text-lg italic">
-                &ldquo;{currentPhoto.caption || currentPhoto.title}&rdquo;
+                &ldquo;{currentPhoto.caption || currentPhoto.description || currentPhoto.title}&rdquo;
               </p>
             )}
           </div>

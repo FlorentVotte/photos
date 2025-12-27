@@ -46,8 +46,8 @@ export default function MagazineSection({
   }, []);
 
   const displayDate = formatMagazineDate(photo.metadata.date, locale);
-  const hasCaption = photo.caption || photo.description;
-  const captionText = photo.caption || photo.description;
+  // Use caption, description, or title (in that order of preference)
+  const captionText = photo.caption || photo.description || photo.title;
 
   // Metadata component
   const PhotoMetadata = ({ className = "" }: { className?: string }) => (
