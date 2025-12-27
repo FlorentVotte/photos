@@ -18,7 +18,21 @@ export async function getAlbums(): Promise<Album[]> {
     orderBy: [{ sortOrder: "asc" }, { lastSynced: "desc" }],
   });
 
-  return transformAlbums(albums);
+  const transformed = transformAlbums(albums);
+
+  // For albums without cover images, get first photo's medium thumbnail as fallback
+  for (const album of transformed) {
+    if (!album.coverImage) {
+      const firstPhoto = await prisma.photo.findFirst({
+        where: { albumId: album.id },
+        orderBy: { sortOrder: "asc" },
+        select: { mediumPath: true },
+      });
+      album.coverImage = firstPhoto?.mediumPath || "";
+    }
+  }
+
+  return transformed;
 }
 
 // Get album by slug
