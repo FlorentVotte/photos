@@ -13,10 +13,18 @@ interface Album {
   description?: string;
   location?: string;
   date?: string;
+  coverImage?: string;
   photoCount: number;
   sortOrder?: number;
   featured: boolean;
   lastSynced?: string;
+}
+
+interface AlbumPhoto {
+  id: string;
+  title: string;
+  mediumPath: string;
+  thumbPath: string;
 }
 
 export default function AlbumsEditorPage() {
@@ -27,6 +35,9 @@ export default function AlbumsEditorPage() {
   const [reorderMode, setReorderMode] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [hasOrderChanges, setHasOrderChanges] = useState(false);
+  const [coverPickerAlbum, setCoverPickerAlbum] = useState<Album | null>(null);
+  const [albumPhotos, setAlbumPhotos] = useState<AlbumPhoto[]>([]);
+  const [loadingPhotos, setLoadingPhotos] = useState(false);
 
   useEffect(() => {
     fetchAlbums();
@@ -41,6 +52,53 @@ export default function AlbumsEditorPage() {
       console.error("Failed to fetch albums:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openCoverPicker = async (album: Album) => {
+    setCoverPickerAlbum(album);
+    setLoadingPhotos(true);
+    try {
+      const res = await fetch(`/api/albums/${album.id}/photos`);
+      const data = await res.json();
+      setAlbumPhotos(data.photos || []);
+    } catch (error) {
+      console.error("Failed to fetch album photos:", error);
+    } finally {
+      setLoadingPhotos(false);
+    }
+  };
+
+  const selectCover = async (photoPath: string) => {
+    if (!coverPickerAlbum) return;
+
+    setSaving(true);
+    try {
+      const res = await fetch("/api/albums", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: coverPickerAlbum.id,
+          coverImage: photoPath,
+        }),
+      });
+
+      if (res.ok) {
+        // Update local state
+        setAlbums(albums.map((a) =>
+          a.id === coverPickerAlbum.id ? { ...a, coverImage: photoPath } : a
+        ));
+        setCoverPickerAlbum(null);
+        setAlbumPhotos([]);
+      } else {
+        const error = await res.json();
+        alert(error.error || "Failed to update cover");
+      }
+    } catch (error) {
+      console.error("Failed to update cover:", error);
+      alert("Failed to update cover");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -310,9 +368,9 @@ export default function AlbumsEditorPage() {
                     </div>
                   ) : (
                     // View mode
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-4">
                       {reorderMode && (
-                        <div className="flex flex-col items-center mr-4 gap-1">
+                        <div className="flex flex-col items-center gap-1">
                           <button
                             onClick={() => moveAlbum(index, index - 1)}
                             disabled={index === 0}
@@ -334,7 +392,31 @@ export default function AlbumsEditorPage() {
                           </button>
                         </div>
                       )}
-                      <div className="flex-1">
+                      {/* Cover thumbnail */}
+                      <button
+                        onClick={() => !reorderMode && openCoverPicker(album)}
+                        disabled={reorderMode}
+                        className="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-surface-border group"
+                        title="Change cover"
+                      >
+                        {album.coverImage ? (
+                          <img
+                            src={album.coverImage}
+                            alt={`${album.title} cover`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="material-symbols-outlined text-2xl text-text-muted">image</span>
+                          </div>
+                        )}
+                        {!reorderMode && (
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="material-symbols-outlined text-foreground">photo_camera</span>
+                          </div>
+                        )}
+                      </button>
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-xl font-bold text-foreground">{album.title}</h3>
                           {album.featured && (
@@ -392,6 +474,87 @@ export default function AlbumsEditorPage() {
           )}
         </div>
       </main>
+
+      {/* Cover Picker Modal */}
+      {coverPickerAlbum && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80">
+          <div className="bg-surface-dark rounded-xl border border-surface-border w-full max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-surface-border">
+              <div>
+                <h2 className="text-xl font-bold text-foreground">
+                  Select Cover Photo
+                </h2>
+                <p className="text-sm text-text-muted mt-1">
+                  Choose a cover for &quot;{coverPickerAlbum.title}&quot;
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setCoverPickerAlbum(null);
+                  setAlbumPhotos([]);
+                }}
+                className="p-2 text-text-muted hover:text-foreground transition-colors"
+                aria-label="Close modal"
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6">
+              {loadingPhotos ? (
+                <div className="flex items-center justify-center py-12">
+                  <span className="material-symbols-outlined text-4xl text-text-muted animate-spin">
+                    sync
+                  </span>
+                </div>
+              ) : albumPhotos.length === 0 ? (
+                <div className="text-center py-12 text-text-muted">
+                  No photos found in this album
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+                  {albumPhotos.map((photo) => {
+                    const isCurrentCover = coverPickerAlbum.coverImage === photo.mediumPath;
+                    return (
+                      <button
+                        key={photo.id}
+                        onClick={() => selectCover(photo.mediumPath)}
+                        disabled={saving}
+                        className={`relative aspect-square rounded-lg overflow-hidden group transition-all ${
+                          isCurrentCover
+                            ? "ring-2 ring-primary ring-offset-2 ring-offset-surface-dark"
+                            : "hover:ring-2 hover:ring-white/50"
+                        }`}
+                        title={photo.title || "Select as cover"}
+                      >
+                        <img
+                          src={photo.thumbPath || photo.mediumPath}
+                          alt={photo.title}
+                          className="w-full h-full object-cover"
+                        />
+                        {isCurrentCover && (
+                          <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-primary text-2xl">
+                              check_circle
+                            </span>
+                          </div>
+                        )}
+                        {!isCurrentCover && (
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span className="material-symbols-outlined text-foreground">
+                              check
+                            </span>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

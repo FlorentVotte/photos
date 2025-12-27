@@ -51,6 +51,7 @@ export const VALIDATION = {
   MAX_LOCATION_LENGTH: 200,
   MAX_DATE_LENGTH: 100,
   MAX_ID_LENGTH: 100,
+  MAX_PATH_LENGTH: 500,
 } as const;
 
 // UI/Animation

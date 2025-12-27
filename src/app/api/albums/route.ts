@@ -16,6 +16,7 @@ export async function GET() {
         description: true,
         location: true,
         date: true,
+        coverImage: true,
         photoCount: true,
         sortOrder: true,
         featured: true,
@@ -76,7 +77,7 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { id, title, subtitle, description, location, date } = body;
+    const { id, title, subtitle, description, location, date, coverImage } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -124,6 +125,12 @@ export async function PATCH(request: NextRequest) {
         { status: 400 }
       );
     }
+    if (coverImage && (typeof coverImage !== "string" || coverImage.length > VALIDATION.MAX_PATH_LENGTH)) {
+      return NextResponse.json(
+        { error: "Invalid cover image path" },
+        { status: 400 }
+      );
+    }
 
     // Build update data object with only provided fields
     const updateData: Record<string, string | null> = {};
@@ -132,6 +139,7 @@ export async function PATCH(request: NextRequest) {
     if (description !== undefined) updateData.description = description || null;
     if (location !== undefined) updateData.location = location || null;
     if (date !== undefined) updateData.date = date || null;
+    if (coverImage !== undefined) updateData.coverImage = coverImage || null;
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json(
