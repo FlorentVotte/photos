@@ -222,10 +222,13 @@ async function syncPrivateAlbum(
 
       const title = xmp.dc?.title;
       const caption = xmp.dc?.description;
+      // Strip extension from filename if using it as fallback title
+      const fallbackTitle = payload.importSource?.fileName
+        ? payload.importSource.fileName.replace(/\.[^/.]+$/, "")
+        : `Photo ${i + 1}`;
       const photoTitle =
         (typeof title === "string" ? title : title?.[0]) ||
-        payload.importSource?.fileName ||
-        `Photo ${i + 1}`;
+        fallbackTitle;
       const photoCaption = typeof caption === "string" ? caption : caption?.[0];
 
       if (location.country && i === 0) {
