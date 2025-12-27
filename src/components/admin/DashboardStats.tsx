@@ -129,12 +129,31 @@ export default function DashboardStats({
         value={formatLastSync()}
         status="neutral"
       />
-      <StatCard
-        icon="cloud"
-        label="Adobe API"
-        value={adobeInfo.text}
-        status={adobeInfo.status}
-      />
+      {/* Adobe API card with reconnect button */}
+      <div className="bg-surface-dark rounded-xl p-4 border border-surface-border">
+        <div className="flex items-center gap-3">
+          <span className={`material-symbols-outlined text-2xl ${
+            adobeInfo.status === "success" ? "text-green-400" :
+            adobeInfo.status === "warning" ? "text-yellow-400" :
+            adobeInfo.status === "error" ? "text-red-400" : "text-primary"
+          }`}>
+            cloud
+          </span>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-text-muted uppercase tracking-wider">Adobe API</p>
+            <p className="text-xl font-bold text-foreground">{adobeInfo.text}</p>
+          </div>
+          <a
+            href="/api/auth/adobe"
+            className="p-2 text-text-muted hover:text-primary transition-colors rounded-lg hover:bg-surface-border"
+            title={adobeStatus?.connected ? "Reconnect" : "Connect"}
+          >
+            <span className="material-symbols-outlined text-xl">
+              {adobeStatus?.connected ? "refresh" : "link"}
+            </span>
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
