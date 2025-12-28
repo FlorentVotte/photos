@@ -14,6 +14,12 @@ interface Props {
 
 export async function GET(request: Request, { params }: Props) {
   const { slug } = await params;
+
+  // Validate slug to prevent abuse
+  if (!slug || slug.length > 100 || !/^[a-z0-9-]+$/.test(slug)) {
+    return Response.redirect(new URL("/api/og", SITE_URL));
+  }
+
   const album = await getAlbumBySlug(slug);
 
   if (!album) {
@@ -133,6 +139,9 @@ export async function GET(request: Request, { params }: Props) {
     {
       width: 1200,
       height: 630,
+      headers: {
+        "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+      },
     }
   );
 }
