@@ -3,8 +3,8 @@ import { getFeaturedAlbum } from "@/lib/data";
 
 export const runtime = "nodejs";
 
-// Cache for 1 hour
-export const revalidate = 3600;
+// Force dynamic to prevent pre-rendering during build (database may not exist)
+export const dynamic = "force-dynamic";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 
