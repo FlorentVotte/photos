@@ -309,18 +309,6 @@ export const translations = {
     creditsPhoto: { en: "Photography:", fr: "Photographie :" },
   },
 
-  // Story Mode
-  story: {
-    storyMode: { en: "Story Mode", fr: "Mode histoire" },
-    galleryMode: { en: "Gallery View", fr: "Vue galerie" },
-    switchToStory: { en: "View as Story", fr: "Voir en histoire" },
-    switchToGallery: { en: "View as Gallery", fr: "Voir en galerie" },
-    scrollToExplore: { en: "Scroll to explore", fr: "Faites défiler pour explorer" },
-    viewAllPhotos: { en: "View all photos", fr: "Voir toutes les photos" },
-    morePhotos: { en: "more photos", fr: "photos de plus" },
-    noLocationData: { en: "No location data", fr: "Pas de données de localisation" },
-    chapter: { en: "Chapter", fr: "Chapitre" },
-  },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
