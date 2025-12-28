@@ -28,6 +28,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = album.description ||
     `${album.title} - ${album.photoCount} photos from ${album.location}. ${album.date}.`;
 
+  const ogImageUrl = `${SITE_URL}/api/og/album/${slug}`;
+
   return {
     title: `${album.title} | ${album.location} - Regards Perdus`,
     description,
@@ -36,12 +38,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${album.title} | ${album.location}`,
       description,
       type: "article",
-      images: album.coverImage ? [{
-        url: album.coverImage,
+      url: `${SITE_URL}/album/${slug}`,
+      images: [{
+        url: ogImageUrl,
         width: 1200,
         height: 630,
         alt: album.title,
-      }] : [],
+      }],
       publishedTime: album.date,
       siteName: "Regards Perdus",
     },
@@ -49,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title: album.title,
       description,
-      images: album.coverImage ? [album.coverImage] : [],
+      images: [ogImageUrl],
     },
   };
 }
