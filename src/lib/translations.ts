@@ -36,8 +36,8 @@ export const translations = {
   albums: {
     title: { en: "All Albums", fr: "Tous les albums" },
     subtitle: {
-      en: "Browse all photo albums and travel stories from around the world.",
-      fr: "Parcourez tous les albums photos et récits de voyage du monde entier.",
+      en: "Photo albums documenting travels and visual stories from around the world.",
+      fr: "Albums photos documentant voyages et récits visuels à travers le monde.",
     },
     albumCount: { en: "albums", fr: "albums" },
     photoCount: { en: "photos", fr: "photos" },
