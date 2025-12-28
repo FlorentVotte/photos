@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Photo Map - Regards Perdus",
-  description: "Explore photos on an interactive map",
+  description: "Explore the geography of the archive on an interactive world map.",
 };
 
 export default async function MapPage() {

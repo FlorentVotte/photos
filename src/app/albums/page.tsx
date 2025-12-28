@@ -9,10 +9,10 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 
 export const metadata: Metadata = {
   title: "Albums | Regards Perdus",
-  description: "Browse all photo albums and travel stories from around the world.",
+  description: "Photo albums documenting travels and visual stories from around the world.",
   openGraph: {
     title: "Albums | Regards Perdus",
-    description: "Browse all photo albums and travel stories from around the world.",
+    description: "Photo albums documenting travels and visual stories from around the world.",
   },
 };
 

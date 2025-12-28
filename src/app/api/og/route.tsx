@@ -89,7 +89,7 @@ export async function GET() {
                 lineHeight: 1.1,
               }}
             >
-              Photo Portfolio
+              Travel Photography
             </div>
 
             {/* Tagline */}
@@ -197,7 +197,7 @@ export async function GET() {
               lineHeight: 1.1,
             }}
           >
-            Photo Portfolio
+            Travel Photography
           </div>
 
           {/* Tagline */}

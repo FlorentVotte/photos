@@ -17,8 +17,12 @@ export const translations = {
     featuredStory: { en: "Featured Story", fr: "À la une" },
     viewAlbum: { en: "View Album", fr: "Voir l'album" },
     quote: {
-      en: "The world is a book and those who do not travel read only one page.",
-      fr: "Le monde est un livre et ceux qui ne voyagent pas n'en lisent qu'une page.",
+      en: "To photograph is to hold one's breath when all faculties converge.",
+      fr: "Photographier, c'est retenir son souffle quand toutes nos facultés convergent.",
+    },
+    quoteAuthor: {
+      en: "— Henri Cartier-Bresson",
+      fr: "— Henri Cartier-Bresson",
     },
     recentAlbums: { en: "Recent Albums", fr: "Albums récents" },
     viewArchive: { en: "View Archive", fr: "Voir les archives" },
@@ -37,7 +41,7 @@ export const translations = {
     },
     albumCount: { en: "albums", fr: "albums" },
     photoCount: { en: "photos", fr: "photos" },
-    noAlbums: { en: "No albums yet", fr: "Aucun album pour le moment" },
+    noAlbums: { en: "No albums available", fr: "Aucun album disponible" },
   },
 
   // Album page
@@ -95,8 +99,8 @@ export const translations = {
   map: {
     title: { en: "Photo Map", fr: "Carte des photos" },
     subtitle: {
-      en: "Explore photos from around the world",
-      fr: "Explorez les photos du monde entier",
+      en: "A geographical view of the archive",
+      fr: "Une vue géographique des archives",
     },
     noPhotos: {
       en: "No photos with GPS data available",
@@ -120,12 +124,12 @@ export const translations = {
     wantToKnowMore: { en: "Want to know more?", fr: "Envie d'en savoir plus ?" },
     visitSite: { en: "Visit votte.eu", fr: "Visiter votte.eu" },
     bio: {
-      en: "Photography has always been my way of preserving memories and sharing the beauty I discover during my travels. Each image tells a story - a moment frozen in time that speaks of the places I've been and the experiences that shaped my journey.",
-      fr: "La photographie a toujours été ma façon de préserver les souvenirs et de partager la beauté que je découvre lors de mes voyages. Chaque image raconte une histoire - un moment figé dans le temps qui parle des lieux que j'ai visités et des expériences qui ont façonné mon parcours.",
+      en: "I photograph the spaces between destinations—the quiet corners, the fleeting light, the faces that linger in memory. My work is less about where I've been and more about how it felt to be there.",
+      fr: "Je photographie les espaces entre les destinations—les recoins silencieux, la lumière fugace, les visages qui persistent en mémoire. Mon travail parle moins des lieux visités que de ce qu'on y ressent.",
     },
     shortBio: {
-      en: "I travel the world documenting landscapes, cultures, and the quiet moments in between. Join me as I explore the intersection of nature and humanity.",
-      fr: "Je parcours le monde pour capturer les paysages, les cultures et les moments de calme qui s'y cachent. Rejoignez-moi dans mon exploration de la rencontre entre nature et humanité.",
+      en: "Documentary and landscape photography from journeys across the globe. Exploring the interplay of light, place, and human presence.",
+      fr: "Photographie documentaire et paysagère au fil de voyages à travers le monde. Explorer l'interaction entre lumière, lieu et présence humaine.",
     },
     // Journey stats
     myJourney: { en: "My Journey", fr: "Mon parcours" },

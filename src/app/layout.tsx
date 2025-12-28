@@ -45,7 +45,7 @@ export async function generateViewport(): Promise<Viewport> {
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu"),
-  title: "Regards Perdus - Photo Portfolio",
+  title: "Regards Perdus - Travel Photography",
   description: "Capturing the fleeting moments between departures and arrivals. A visual journey through the world.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     title: "Regards Perdus",
   },
   openGraph: {
-    title: "Regards Perdus - Photo Portfolio",
+    title: "Regards Perdus - Travel Photography",
     description: "Capturing the fleeting moments between departures and arrivals.",
     type: "website",
     siteName: "Regards Perdus",
@@ -62,12 +62,12 @@ export const metadata: Metadata = {
       url: "/api/og",
       width: 1200,
       height: 630,
-      alt: "Regards Perdus - Photo Portfolio",
+      alt: "Regards Perdus - Travel Photography",
     }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Regards Perdus - Photo Portfolio",
+    title: "Regards Perdus - Travel Photography",
     description: "Capturing the fleeting moments between departures and arrivals.",
     images: ["/api/og"],
   },

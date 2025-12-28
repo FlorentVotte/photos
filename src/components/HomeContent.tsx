@@ -53,6 +53,7 @@ export default function HomeContent({
         <h2 className="text-2xl md:text-4xl font-bold leading-tight tracking-tight max-w-3xl mx-auto italic">
           &ldquo;{t("home", "quote")}&rdquo;
         </h2>
+        <p className="mt-2 text-sm text-text-muted font-sans">{t("home", "quoteAuthor")}</p>
         <p className="mt-4 text-gray-500 font-sans">{t("home", "tagline")}</p>
       </div>
 
