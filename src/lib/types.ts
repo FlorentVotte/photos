@@ -62,6 +62,7 @@ export interface Chapter {
   photos: Photo[];
   coverPhotoId?: string;
   coverPhoto?: Photo;
+  featuredPhotoIds?: string[];
 }
 
 export interface ChapterStats {

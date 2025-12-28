@@ -104,6 +104,9 @@ export async function getChaptersByAlbum(albumSlug: string): Promise<Chapter[]> 
       photos: chapterPhotos,
       coverPhotoId: c.coverPhotoId || undefined,
       coverPhoto,
+      featuredPhotoIds: c.featuredPhotoIds
+        ? (JSON.parse(c.featuredPhotoIds) as string[])
+        : undefined,
     };
   });
 }

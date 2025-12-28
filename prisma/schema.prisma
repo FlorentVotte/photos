@@ -103,8 +103,9 @@ model Chapter {
   content      String?  // English narrative
   contentFr    String?  // French narrative
   sortOrder    Int      @default(0)
-  photoIds     String   // JSON array of photo IDs
-  coverPhotoId String?  // ID of the cover photo for this chapter
+  photoIds         String   // JSON array of photo IDs
+  coverPhotoId     String?  // ID of the cover photo for this chapter
+  featuredPhotoIds String?  // JSON array of photo IDs to display larger
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

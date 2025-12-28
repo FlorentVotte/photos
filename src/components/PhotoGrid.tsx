@@ -27,6 +27,7 @@ interface PhotoGridProps {
   enableInfiniteScroll?: boolean;
   initialCount?: number;
   incrementCount?: number;
+  featuredPhotoIds?: string[];
 }
 
 export default function PhotoGrid({
@@ -35,6 +36,7 @@ export default function PhotoGrid({
   enableInfiniteScroll = true,
   initialCount = 12,
   incrementCount = 12,
+  featuredPhotoIds,
 }: PhotoGridProps) {
   const [displayCount, setDisplayCount] = useState(
     enableInfiniteScroll ? Math.min(initialCount, photos.length) : photos.length
@@ -63,6 +65,26 @@ export default function PhotoGrid({
 
   const displayedPhotos = photos.slice(0, displayCount);
 
+  // Compute featured photo classes with alternating left/right positioning
+  const getFeaturedClass = (photo: Photo, index: number): string => {
+    if (variant !== "chapter" || photos.length <= 2) return "";
+
+    // If featuredPhotoIds is provided, use it; otherwise fall back to first photo
+    if (featuredPhotoIds && featuredPhotoIds.length > 0) {
+      const featuredIndex = featuredPhotoIds.indexOf(photo.id);
+      if (featuredIndex === -1) return "";
+
+      // Alternate: even index = left, odd index = right
+      const isLeft = featuredIndex % 2 === 0;
+      return isLeft
+        ? "md:col-span-2 md:row-span-2 lg:col-start-1"
+        : "md:col-span-2 md:row-span-2 lg:col-start-2";
+    }
+
+    // Fallback: first photo is featured (legacy behavior)
+    return index === 0 ? "md:col-span-2 md:row-span-2" : "";
+  };
+
   return (
     <>
       <div
@@ -77,9 +99,7 @@ export default function PhotoGrid({
             key={photo.id}
             href={`/photo/${photo.id}`}
             className={`group relative overflow-hidden rounded-lg bg-surface-dark cursor-pointer ${
-              variant === "chapter" && index === 0 && photos.length > 2
-                ? "md:col-span-2 md:row-span-2"
-                : ""
+              getFeaturedClass(photo, index)
             }`}
             onContextMenu={(e) => e.preventDefault()}
           >

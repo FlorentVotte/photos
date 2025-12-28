@@ -241,6 +241,7 @@ export default function AlbumContent({
                 photos={chapter.photos}
                 variant="chapter"
                 enableInfiniteScroll={false}
+                featuredPhotoIds={chapter.featuredPhotoIds}
               />
             </section>
           );
