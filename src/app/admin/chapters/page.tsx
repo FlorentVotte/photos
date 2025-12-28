@@ -21,6 +21,7 @@ interface Chapter {
   narrativeFr?: string;
   photoIds: string[];
   coverPhotoId?: string;
+  featuredPhotoIds?: string[];
 }
 
 interface Album {
@@ -84,8 +85,18 @@ function ChaptersEditorContent() {
       narrativeFr: "",
       photoIds: [],
       coverPhotoId: undefined,
+      featuredPhotoIds: [],
     };
     setChapters([...chapters, newChapter]);
+  };
+
+  const toggleFeaturedPhoto = (chapterIndex: number, photoId: string) => {
+    const chapter = chapters[chapterIndex];
+    const featuredPhotoIds = chapter.featuredPhotoIds || [];
+    const newFeaturedIds = featuredPhotoIds.includes(photoId)
+      ? featuredPhotoIds.filter((id) => id !== photoId)
+      : [...featuredPhotoIds, photoId];
+    updateChapter(chapterIndex, { featuredPhotoIds: newFeaturedIds });
   };
 
   const updateChapter = (index: number, updates: Partial<Chapter>) => {
@@ -420,6 +431,57 @@ function ChaptersEditorContent() {
                           ? "Click again to remove cover photo"
                           : "Click a photo to set it as the chapter cover"}
                       </p>
+                    </div>
+                  )}
+
+                  {/* Featured Photos Selector */}
+                  {chapter.photoIds.length > 0 && (
+                    <div className="mt-6 pt-4 border-t border-surface-border">
+                      <h4 className="text-sm text-text-muted mb-3 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-base">star</span>
+                        Featured Photos (Large Display)
+                        {(chapter.featuredPhotoIds?.length || 0) > 0 && (
+                          <span className="text-primary">({chapter.featuredPhotoIds?.length} selected)</span>
+                        )}
+                      </h4>
+                      <p className="text-xs text-text-muted/70 mb-3">
+                        Select photos to display larger in the grid. They will alternate left/right positioning.
+                      </p>
+                      <div className="flex gap-2 overflow-x-auto pb-2">
+                        {chapter.photoIds.map((photoId) => {
+                          const photo = photos.find((p) => p.id === photoId);
+                          if (!photo) return null;
+                          const featuredIndex = (chapter.featuredPhotoIds || []).indexOf(photoId);
+                          const isFeatured = featuredIndex !== -1;
+                          return (
+                            <button
+                              key={photoId}
+                              onClick={() => toggleFeaturedPhoto(index, photoId)}
+                              className={`relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
+                                isFeatured
+                                  ? "border-yellow-500 ring-2 ring-yellow-500/30"
+                                  : "border-transparent opacity-60 hover:opacity-100"
+                              }`}
+                            >
+                              <img
+                                src={photo.src.thumb}
+                                alt={photo.title}
+                                className="w-full h-full object-cover"
+                              />
+                              {isFeatured && (
+                                <div className="absolute inset-0 bg-yellow-500/20 flex items-center justify-center">
+                                  <span className="absolute top-1 left-1 bg-yellow-500 text-black text-xs font-bold px-1.5 py-0.5 rounded">
+                                    {featuredIndex + 1}
+                                  </span>
+                                  <span className="material-symbols-outlined text-yellow-400 text-lg drop-shadow-md">
+                                    star
+                                  </span>
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>

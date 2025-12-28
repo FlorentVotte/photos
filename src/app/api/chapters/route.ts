@@ -11,6 +11,7 @@ interface ChapterInput {
   narrativeFr?: string;
   photoIds: string[];
   coverPhotoId?: string;
+  featuredPhotoIds?: string[];
 }
 
 // GET - Get chapters and photos for an album
@@ -36,6 +37,9 @@ export async function GET(request: NextRequest) {
       narrativeFr: c.contentFr || "",
       photoIds: JSON.parse(c.photoIds) as string[],
       coverPhotoId: c.coverPhotoId || undefined,
+      featuredPhotoIds: c.featuredPhotoIds
+        ? (JSON.parse(c.featuredPhotoIds) as string[])
+        : [],
     }));
 
     // Get photos from database
@@ -92,6 +96,9 @@ export async function POST(request: NextRequest) {
           contentFr: chapter.narrativeFr || null,
           photoIds: JSON.stringify(chapter.photoIds),
           coverPhotoId: chapter.coverPhotoId || null,
+          featuredPhotoIds: chapter.featuredPhotoIds?.length
+            ? JSON.stringify(chapter.featuredPhotoIds)
+            : null,
           sortOrder: i,
         },
       });
