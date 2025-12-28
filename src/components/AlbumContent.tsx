@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import PhotoGrid from "./PhotoGrid";
 import ChapterStats from "./ChapterStats";
 import ChapterLocationSummary from "./ChapterLocationSummary";
 import ProtectedImage from "./ProtectedImage";
 import { useLocale } from "@/lib/LocaleContext";
+import { t as translate } from "@/lib/translations";
 import { extractLocations, computeChapterStats } from "@/lib/geo-utils";
 import type {
   Photo,
@@ -25,12 +27,29 @@ const ChapterRouteMap = dynamic(() => import("./ChapterRouteMap"), {
   ssr: false,
 });
 
+// Lazy load StoryModeContainer for story mode view
+const StoryModeContainer = dynamic(
+  () => import("./story/StoryModeContainer").then((mod) => mod.default),
+  {
+    loading: () => (
+      <div className="min-h-screen flex items-center justify-center bg-background-dark">
+        <span className="material-symbols-outlined text-4xl text-primary animate-spin">
+          progress_activity
+        </span>
+      </div>
+    ),
+    ssr: false,
+  }
+);
+
 interface AlbumContentProps {
   album: Album;
   chapters: Chapter[];
   photos: Photo[];
   nextAlbum?: Album;
 }
+
+type ViewMode = "gallery" | "story";
 
 export default function AlbumContent({
   album,
@@ -39,8 +58,46 @@ export default function AlbumContent({
   nextAlbum,
 }: AlbumContentProps) {
   const { t, locale } = useLocale();
+  const searchParams = useSearchParams();
   const heroRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(0);
+
+  // View mode state - read from URL on mount
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    // Will be updated on client-side
+    return "gallery";
+  });
+
+  // Sync view mode with URL params on mount and changes
+  useEffect(() => {
+    const viewParam = searchParams.get("view");
+    if (viewParam === "story" && chapters.length > 0) {
+      setViewMode("story");
+    } else {
+      setViewMode("gallery");
+    }
+  }, [searchParams, chapters.length]);
+
+  // Toggle view mode and update URL
+  const toggleViewMode = useCallback(() => {
+    const newMode = viewMode === "gallery" ? "story" : "gallery";
+    setViewMode(newMode);
+
+    // Update URL without navigation
+    const url = new URL(window.location.href);
+    if (newMode === "story") {
+      url.searchParams.set("view", "story");
+    } else {
+      url.searchParams.delete("view");
+    }
+    window.history.replaceState({}, "", url.toString());
+  }, [viewMode]);
+
+  // Check if album has chapters with GPS data (for story mode availability)
+  const hasChaptersWithGps = chapters.some((chapter) =>
+    chapter.photos.some((p) => p.metadata.latitude && p.metadata.longitude)
+  );
+  const canShowStoryMode = chapters.length > 0;
 
   // Parallax scroll effect
   useEffect(() => {
@@ -119,8 +176,32 @@ export default function AlbumContent({
     return chapter.narrative;
   };
 
+  // Render story mode if active
+  if (viewMode === "story" && canShowStoryMode) {
+    return (
+      <StoryModeContainer
+        album={album}
+        chapters={chapters}
+        onExitStoryMode={() => toggleViewMode()}
+      />
+    );
+  }
+
+  // Gallery view (default)
   return (
     <main className="flex-1 flex flex-col items-center w-full">
+      {/* Story Mode Toggle Button */}
+      {canShowStoryMode && (
+        <button
+          onClick={toggleViewMode}
+          className="fixed top-20 right-4 z-40 bg-surface-dark/80 backdrop-blur-sm border border-surface-border rounded-full px-4 py-2 flex items-center gap-2 text-sm text-foreground hover:bg-surface-dark hover:border-primary/50 transition-all shadow-lg"
+          title={translate("story", "switchToStory", locale)}
+        >
+          <span className="material-symbols-outlined text-base text-primary">auto_stories</span>
+          <span className="hidden sm:inline">{translate("story", "storyMode", locale)}</span>
+        </button>
+      )}
+
       {/* Cinematic Hero Header with Parallax */}
       <div
         ref={heroRef}
