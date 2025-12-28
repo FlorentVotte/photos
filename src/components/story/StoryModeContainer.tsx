@@ -55,19 +55,6 @@ export default function StoryModeContainer({
     [chapters]
   );
 
-  // Handle "View All Photos" - open lightbox at first photo
-  const handleViewAllPhotos = useCallback(
-    (chapterIndex: number) => {
-      const chapter = chapters[chapterIndex];
-      setLightboxState({
-        isOpen: true,
-        photos: chapter.photos,
-        currentIndex: 0,
-      });
-    },
-    [chapters]
-  );
-
   // Handle lightbox close
   const handleLightboxClose = useCallback(() => {
     setLightboxState((prev) => ({ ...prev, isOpen: false }));
@@ -193,7 +180,6 @@ export default function StoryModeContainer({
             index={index}
             totalChapters={chapters.length}
             onPhotoClick={handlePhotoClick}
-            onViewAllPhotos={handleViewAllPhotos}
           />
         ))}
       </div>

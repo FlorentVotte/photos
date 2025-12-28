@@ -11,11 +11,10 @@ interface StoryChapterProps {
   index: number;
   totalChapters: number;
   onPhotoClick: (chapterIndex: number, photoIndex: number) => void;
-  onViewAllPhotos: (chapterIndex: number) => void;
 }
 
 const StoryChapter = forwardRef<HTMLDivElement, StoryChapterProps>(
-  ({ chapter, index, totalChapters, onPhotoClick, onViewAllPhotos }, ref) => {
+  ({ chapter, index, totalChapters, onPhotoClick }, ref) => {
     const { locale } = useLocale();
 
     // Get localized content
@@ -31,8 +30,8 @@ const StoryChapter = forwardRef<HTMLDivElement, StoryChapterProps>(
 
     // Select photos for the magazine layout
     const coverPhoto = chapter.coverPhoto || chapter.photos[0];
-    const featuredPhotos = chapter.photos.slice(0, 5); // Show up to 5 photos in magazine layout
-    const remainingCount = Math.max(0, chapter.photos.length - 5);
+    // Show ALL photos (excluding the cover which is shown separately)
+    const remainingPhotos = chapter.photos.slice(1);
 
     return (
       <article ref={ref} className="w-full">
@@ -76,9 +75,9 @@ const StoryChapter = forwardRef<HTMLDivElement, StoryChapterProps>(
           </div>
         )}
 
-        {/* Photo Gallery - Magazine Style */}
+        {/* Photo Gallery - Magazine Style (ALL photos) */}
         <div className="space-y-1">
-          {featuredPhotos.slice(1).map((photo, photoIndex) => (
+          {remainingPhotos.map((photo, photoIndex) => (
             <div
               key={photo.id}
               className="relative w-full cursor-pointer group"
@@ -131,25 +130,6 @@ const StoryChapter = forwardRef<HTMLDivElement, StoryChapterProps>(
             </div>
           ))}
         </div>
-
-        {/* View All Photos Button */}
-        {chapter.photos.length > 1 && (
-          <div className="flex justify-center py-12">
-            <button
-              onClick={() => onViewAllPhotos(index)}
-              className="flex items-center gap-3 px-6 py-3 bg-surface-dark border border-surface-border rounded-full text-foreground hover:border-primary/50 hover:bg-surface-dark/80 transition-all group"
-            >
-              <span className="material-symbols-outlined text-primary">photo_library</span>
-              <span>
-                {t("story", "viewAllPhotos", locale)}
-                <span className="text-text-muted ml-2">({chapter.photos.length})</span>
-              </span>
-              <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
-                arrow_forward
-              </span>
-            </button>
-          </div>
-        )}
 
         {/* Chapter Divider */}
         {index < totalChapters - 1 && (
