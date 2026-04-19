@@ -60,6 +60,10 @@ COPY --from=builder /app/public ./public
 # Copy pre-compiled sync scripts
 COPY --from=builder /app/dist/sync ./dist/sync
 COPY --from=builder /app/prisma ./prisma
+# prisma.config.ts is required by Prisma 7 CLI (migrate deploy / migrate
+# resolve) to resolve the datasource URL. Without it the entrypoint
+# crashes with "datasource.url property is required".
+COPY --from=builder /app/prisma.config.ts ./
 
 # Pinned production node_modules (for the sync CLI).
 COPY --from=runtime-deps /app/node_modules ./node_modules
