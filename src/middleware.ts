@@ -1,25 +1,17 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { verifySignedSessionToken } from "@/lib/session";
 
-/**
- * Validate session token format (64-char hex string only)
- * Security: No longer accepts legacy "authenticated" token
- */
-function isValidSessionToken(token: string | undefined): boolean {
-  if (!token) return false;
-  return /^[a-f0-9]{64}$/.test(token);
-}
-
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // Only protect /admin routes
   if (!request.nextUrl.pathname.startsWith("/admin")) {
     return NextResponse.next();
   }
 
-  // Check for auth cookie
+  // Check for a valid, signed auth cookie
   const authCookie = request.cookies.get("admin_auth");
 
-  if (isValidSessionToken(authCookie?.value)) {
+  if (await verifySignedSessionToken(authCookie?.value)) {
     return NextResponse.next();
   }
 

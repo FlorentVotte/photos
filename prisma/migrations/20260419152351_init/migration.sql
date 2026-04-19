@@ -16,10 +16,13 @@ CREATE TABLE "Album" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "slug" TEXT NOT NULL,
     "title" TEXT NOT NULL,
+    "subtitle" TEXT,
+    "description" TEXT,
     "location" TEXT,
     "date" TEXT,
     "coverImage" TEXT,
     "photoCount" INTEGER NOT NULL DEFAULT 0,
+    "sortOrder" INTEGER NOT NULL DEFAULT 0,
     "featured" BOOLEAN NOT NULL DEFAULT false,
     "galleryUrl" TEXT,
     "lastSynced" DATETIME,
@@ -41,6 +44,7 @@ CREATE TABLE "Photo" (
     "originalUrl" TEXT,
     "date" TEXT,
     "location" TEXT,
+    "city" TEXT,
     "width" INTEGER,
     "height" INTEGER,
     "camera" TEXT,
@@ -61,9 +65,13 @@ CREATE TABLE "Photo" (
 CREATE TABLE "Chapter" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "title" TEXT NOT NULL,
+    "titleFr" TEXT,
     "content" TEXT,
+    "contentFr" TEXT,
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
     "photoIds" TEXT NOT NULL,
+    "coverPhotoId" TEXT,
+    "featuredPhotoIds" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "albumId" TEXT NOT NULL,
@@ -85,6 +93,7 @@ CREATE TABLE "Settings" (
     "siteTitle" TEXT NOT NULL DEFAULT 'Photo Portfolio',
     "siteDescription" TEXT,
     "aboutText" TEXT,
+    "theme" TEXT NOT NULL DEFAULT 'forest-green',
     "updatedAt" DATETIME NOT NULL
 );
 
