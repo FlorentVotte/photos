@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { secureCompare, generateSecureToken, RateLimiter } from "@/lib/security";
+import { signSessionToken } from "@/lib/session";
 import { RATE_LIMITS, AUTH } from "@/lib/constants";
 
 // Rate limiting: 5 attempts per 15 minutes
@@ -41,12 +42,14 @@ export async function POST(request: NextRequest) {
     if (secureCompare(password, ADMIN_PASSWORD)) {
       loginRateLimiter.clearAttempts(ip);
 
-      // Generate secure session token
-      const sessionToken = generateSecureToken();
+      // Generate a random token and sign it so the server can later verify
+      // this cookie was issued by us (prevents forged cookies from passing
+      // the format-only check in middleware).
+      const signedToken = await signSessionToken(generateSecureToken());
 
       // Set auth cookie (expires in 2 hours for security)
       const cookieStore = await cookies();
-      cookieStore.set("admin_auth", sessionToken, {
+      cookieStore.set("admin_auth", signedToken, {
         httpOnly: true,
         secure: true, // Always secure
         sameSite: "strict", // Stricter CSRF protection
