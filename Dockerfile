@@ -1,5 +1,5 @@
 # Stage 1: Dependencies (all) — used by the Next.js build
-FROM node:25-alpine AS deps
+FROM node:26-alpine AS deps
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat python3 make g++
@@ -12,7 +12,7 @@ RUN npm ci
 RUN npx prisma generate
 
 # Stage 2: Builder
-FROM node:25-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -28,7 +28,7 @@ RUN npx tsc -p tsconfig.sync.json
 # Stage 3: Runtime dependencies — reproducible, pinned via package-lock.json.
 # Installs only production deps (omits dev/optional), so the image stays
 # reasonably small while guaranteeing the exact same versions as CI tests.
-FROM node:25-alpine AS runtime-deps
+FROM node:26-alpine AS runtime-deps
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat python3 make g++
@@ -41,7 +41,7 @@ RUN npm ci --omit=dev --omit=optional
 RUN npx prisma generate
 
 # Stage 4: Runner (minimal)
-FROM node:25-alpine AS runner
+FROM node:26-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
