@@ -1,5 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Serif, Noto_Sans } from "next/font/google";
+import {
+  Noto_Serif,
+  Noto_Sans,
+  EB_Garamond,
+  Hanken_Grotesk,
+  Anton,
+  Inter,
+  Newsreader,
+  DM_Sans,
+  Bodoni_Moda,
+} from "next/font/google";
 import { LocaleProvider } from "@/lib/LocaleContext";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
@@ -8,17 +18,66 @@ import { DEFAULT_THEME, ThemePresetKey } from "@/lib/themes";
 import { generateThemeCSSVars, getThemeMetaColor } from "@/lib/theme-utils";
 import "./globals.css";
 
+// Each theme picks two of these. We load them all so the user can
+// switch in /admin/settings without a code change.
 const notoSerif = Noto_Serif({
-  variable: "--font-display",
+  variable: "--font-noto-serif",
+  subsets: ["latin"],
+  display: "swap",
+});
+const notoSans = Noto_Sans({
+  variable: "--font-noto-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+const ebGaramond = EB_Garamond({
+  variable: "--font-eb-garamond",
+  subsets: ["latin"],
+  display: "swap",
+});
+const hankenGrotesk = Hanken_Grotesk({
+  variable: "--font-hanken-grotesk",
+  subsets: ["latin"],
+  display: "swap",
+});
+const anton = Anton({
+  variable: "--font-anton",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  display: "swap",
+});
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+const bodoniModa = Bodoni_Moda({
+  variable: "--font-bodoni-moda",
   subsets: ["latin"],
   display: "swap",
 });
 
-const notoSans = Noto_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
+const fontVariableClasses = [
+  notoSerif.variable,
+  notoSans.variable,
+  ebGaramond.variable,
+  hankenGrotesk.variable,
+  anton.variable,
+  inter.variable,
+  newsreader.variable,
+  dmSans.variable,
+  bodoniModa.variable,
+].join(" ");
 
 // Fetch theme from database
 async function getTheme(): Promise<ThemePresetKey> {
@@ -101,7 +160,7 @@ export default async function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body
-        className={`${notoSerif.variable} ${notoSans.variable} bg-background-dark text-foreground font-display antialiased overflow-x-hidden`}
+        className={`${fontVariableClasses} bg-background-dark text-foreground font-display antialiased overflow-x-hidden`}
       >
         <ThemeProvider initialTheme={theme}>
           <LocaleProvider>{children}</LocaleProvider>

@@ -5,7 +5,7 @@ import { THEME_PRESETS, ThemePresetKey, DEFAULT_THEME } from "./themes";
  */
 export function generateThemeCSSVars(theme: ThemePresetKey): string {
   const preset = THEME_PRESETS[theme] || THEME_PRESETS[DEFAULT_THEME];
-  const colors = preset.colors;
+  const { colors, fonts } = preset;
 
   return `
     --color-primary: ${colors.primary};
@@ -14,6 +14,8 @@ export function generateThemeCSSVars(theme: ThemePresetKey): string {
     --color-surface-border: ${colors.surfaceBorder};
     --color-text-primary: ${colors.textPrimary};
     --color-text-muted: ${colors.textMuted};
+    --font-display: ${fonts.display};
+    --font-sans: ${fonts.sans};
   `.trim();
 }
 

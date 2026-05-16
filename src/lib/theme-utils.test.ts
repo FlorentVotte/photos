@@ -61,7 +61,7 @@ describe("theme-utils", () => {
       expect(css).not.toMatch(/\s$/);
     });
 
-    it("should include all 6 CSS variables", () => {
+    it("should include all 8 CSS variables (6 colours + 2 fonts)", () => {
       const css = generateThemeCSSVars("forest-green");
 
       const variables = [
@@ -71,6 +71,8 @@ describe("theme-utils", () => {
         "--color-surface-border",
         "--color-text-primary",
         "--color-text-muted",
+        "--font-display",
+        "--font-sans",
       ];
 
       variables.forEach((variable) => {
@@ -87,7 +89,33 @@ describe("theme-utils", () => {
 
         expect(css).toContain(`--color-primary: ${preset.colors.primary}`);
         expect(css).toContain(`--color-background: ${preset.colors.background}`);
+        expect(css).toContain(`--font-display: ${preset.fonts.display}`);
+        expect(css).toContain(`--font-sans: ${preset.fonts.sans}`);
       });
+    });
+
+    it("should emit the EB Garamond + Hanken Grotesk pair for editorial-monograph", () => {
+      const css = generateThemeCSSVars("editorial-monograph");
+      expect(css).toContain("--font-display: var(--font-eb-garamond)");
+      expect(css).toContain("--font-sans: var(--font-hanken-grotesk)");
+    });
+
+    it("should emit the Anton + Inter pair for brutalist-photojournalist", () => {
+      const css = generateThemeCSSVars("brutalist-photojournalist");
+      expect(css).toContain("--font-display: var(--font-anton)");
+      expect(css).toContain("--font-sans: var(--font-inter)");
+    });
+
+    it("should emit the Newsreader + DM Sans pair for warm-print-catalogue", () => {
+      const css = generateThemeCSSVars("warm-print-catalogue");
+      expect(css).toContain("--font-display: var(--font-newsreader)");
+      expect(css).toContain("--font-sans: var(--font-dm-sans)");
+    });
+
+    it("should emit the Bodoni Moda + DM Sans pair for modernist-tonal", () => {
+      const css = generateThemeCSSVars("modernist-tonal");
+      expect(css).toContain("--font-display: var(--font-bodoni-moda)");
+      expect(css).toContain("--font-sans: var(--font-dm-sans)");
     });
   });
 
@@ -176,20 +204,25 @@ describe("theme-utils", () => {
       });
     });
 
-    it("should return dark background colors (low luminance)", () => {
+    it("should return appropriate background luminance for the theme's declared mode", () => {
       const themeKeys = Object.keys(THEME_PRESETS) as ThemePresetKey[];
 
       themeKeys.forEach((theme) => {
         const color = getThemeBackgroundColor(theme);
-        // Extract RGB values
+        const preset = THEME_PRESETS[theme];
         const r = parseInt(color.slice(1, 3), 16);
         const g = parseInt(color.slice(3, 5), 16);
         const b = parseInt(color.slice(5, 7), 16);
 
-        // All backgrounds should be dark (low RGB values)
-        expect(r).toBeLessThan(80);
-        expect(g).toBeLessThan(80);
-        expect(b).toBeLessThan(80);
+        if (preset.mode === "dark") {
+          expect(r).toBeLessThan(80);
+          expect(g).toBeLessThan(80);
+          expect(b).toBeLessThan(80);
+        } else {
+          // Light themes should have a bright background (>= 200 on at least two channels)
+          const channelsAboveThreshold = [r, g, b].filter((c) => c >= 200).length;
+          expect(channelsAboveThreshold).toBeGreaterThanOrEqual(2);
+        }
       });
     });
   });

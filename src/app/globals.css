@@ -11,9 +11,10 @@
   --color-text-muted: var(--color-text-muted);
   --color-foreground: var(--color-text-primary);
 
-  /* Custom fonts */
-  --font-family-display: var(--font-display), "Noto Serif", serif;
-  --font-family-sans: var(--font-sans), "Noto Sans", sans-serif;
+  /* Active fonts — the theme injects --font-display / --font-sans at :root,
+     which alias one of the next/font/google variables loaded on <body>. */
+  --font-family-display: var(--font-display);
+  --font-family-sans: var(--font-sans);
 
   /* Custom border radius */
   --radius-DEFAULT: 0.25rem;
@@ -22,7 +23,8 @@
   --radius-full: 9999px;
 }
 
-/* Theme CSS Variables - defaults to forest-green dark */
+/* Theme CSS Variables — defaults to forest-sage (Noto Serif + Noto Sans).
+   Overridden at runtime by the SSR <style> injection in layout.tsx. */
 :root {
   --color-primary: #7ba88e;
   --color-background: #0f1c14;
@@ -30,6 +32,8 @@
   --color-surface-border: #22372e;
   --color-text-primary: #f4f4f3;
   --color-text-muted: #9aae9f;
+  --font-display: var(--font-noto-serif), "Noto Serif", serif;
+  --font-sans: var(--font-noto-sans), "Noto Sans", sans-serif;
 }
 
 /* Custom scrollbar using theme colors */
