@@ -1,6 +1,10 @@
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { encrypt } from "@/lib/crypto";
+import { requireAuth } from "@/lib/auth";
+import { secureCompare } from "@/lib/security";
+import { ADOBE_OAUTH_STATE_COOKIE } from "@/lib/adobe-oauth";
 
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
 const ADOBE_CLIENT_SECRET = process.env.ADOBE_CLIENT_SECRET;
@@ -10,8 +14,17 @@ const REDIRECT_URI = process.env.NEXT_PUBLIC_SITE_URL
   : "http://localhost:3000/api/auth/adobe/callback";
 
 export async function GET(request: NextRequest) {
+  const authError = await requireAuth();
+  if (authError) return authError;
+
   const code = request.nextUrl.searchParams.get("code");
   const error = request.nextUrl.searchParams.get("error");
+  const state = request.nextUrl.searchParams.get("state");
+
+  const cookieStore = await cookies();
+  const expectedState = cookieStore.get(ADOBE_OAUTH_STATE_COOKIE)?.value;
+  // Always clear the state cookie — single-use, regardless of outcome.
+  cookieStore.delete(ADOBE_OAUTH_STATE_COOKIE);
 
   if (error) {
     console.error("Adobe OAuth error:", error);
@@ -20,6 +33,13 @@ export async function GET(request: NextRequest) {
 
   if (!code) {
     return NextResponse.json({ error: "No authorization code" }, { status: 400 });
+  }
+
+  if (!state || !expectedState || !secureCompare(state, expectedState)) {
+    return NextResponse.json(
+      { error: "Invalid OAuth state" },
+      { status: 400 }
+    );
   }
 
   if (!ADOBE_CLIENT_ID || !ADOBE_CLIENT_SECRET) {

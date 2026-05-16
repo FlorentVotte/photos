@@ -1,4 +1,11 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
+import { generateSecureToken } from "@/lib/security";
+import {
+  ADOBE_OAUTH_STATE_COOKIE,
+  ADOBE_OAUTH_STATE_MAX_AGE_SECONDS,
+} from "@/lib/adobe-oauth";
 
 // Adobe OAuth configuration
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
@@ -16,6 +23,9 @@ const SCOPES = [
 
 // GET - Redirect to Adobe OAuth
 export async function GET() {
+  const authError = await requireAuth();
+  if (authError) return authError;
+
   if (!ADOBE_CLIENT_ID) {
     return NextResponse.json(
       { error: "ADOBE_CLIENT_ID not configured" },
@@ -23,11 +33,23 @@ export async function GET() {
     );
   }
 
+  const state = generateSecureToken(32);
+
   const authUrl = new URL(ADOBE_AUTH_URL);
   authUrl.searchParams.set("client_id", ADOBE_CLIENT_ID);
   authUrl.searchParams.set("redirect_uri", REDIRECT_URI);
   authUrl.searchParams.set("scope", SCOPES);
   authUrl.searchParams.set("response_type", "code");
+  authUrl.searchParams.set("state", state);
+
+  const cookieStore = await cookies();
+  cookieStore.set(ADOBE_OAUTH_STATE_COOKIE, state, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: ADOBE_OAUTH_STATE_MAX_AGE_SECONDS,
+  });
 
   return NextResponse.redirect(authUrl.toString());
 }

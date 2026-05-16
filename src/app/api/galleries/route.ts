@@ -4,23 +4,6 @@ import path from "path";
 import prisma from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
 
-/**
- * Allowed domains for URL resolution (SSRF protection)
- */
-const ALLOWED_DOMAINS = ["adobe.ly", "lightroom.adobe.com"];
-
-/**
- * Validate URL is from allowed domain
- */
-function isAllowedUrl(urlString: string): boolean {
-  try {
-    const url = new URL(urlString);
-    return ALLOWED_DOMAINS.some(domain => url.hostname === domain || url.hostname.endsWith(`.${domain}`));
-  } catch {
-    return false;
-  }
-}
-
 // Pattern for valid adobe.ly short code (alphanumeric only, 4-20 chars)
 const ADOBE_SHORT_CODE_PATTERN = /^\/[a-zA-Z0-9]{4,20}$/;
 
@@ -161,13 +144,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate URL format
-    if (!resolvedUrl.includes("lightroom.adobe.com/shares/") && !resolvedUrl.includes("adobe.ly/")) {
+    // Validate URL format strictly: must be https and a known Adobe host.
+    let submittedUrl: URL;
+    try {
+      submittedUrl = new URL(resolvedUrl);
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid URL" },
+        { status: 400 }
+      );
+    }
+
+    if (submittedUrl.protocol !== "https:") {
+      return NextResponse.json(
+        { error: "URL must use https" },
+        { status: 400 }
+      );
+    }
+
+    const isLightroomShare =
+      submittedUrl.hostname === "lightroom.adobe.com" &&
+      submittedUrl.pathname.startsWith("/shares/");
+    const isAdobeShortUrl =
+      submittedUrl.hostname === "adobe.ly" &&
+      ADOBE_SHORT_CODE_PATTERN.test(submittedUrl.pathname);
+
+    if (!isLightroomShare && !isAdobeShortUrl) {
       return NextResponse.json(
         { error: "Invalid Lightroom share URL" },
         { status: 400 }
       );
     }
+
+    resolvedUrl = submittedUrl.toString();
 
     // Resolve short URLs
     resolvedUrl = await resolveShortUrl(resolvedUrl);

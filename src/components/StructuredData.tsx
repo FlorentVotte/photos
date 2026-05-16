@@ -1,3 +1,24 @@
+// Escape characters that would break out of a <script type="application/ld+json">
+// tag or terminate a JS string literal in embedded JSON. JSON.stringify alone
+// is not safe inside a <script> element because it leaves "</script>" and the
+// U+2028 / U+2029 line separators intact.
+const LS = String.fromCharCode(0x2028);
+const PS = String.fromCharCode(0x2029);
+const SCRIPT_ESCAPE_MAP: Record<string, string> = {
+  "<": "\\u003c",
+  ">": "\\u003e",
+  "&": "\\u0026",
+  [LS]: "\\u2028",
+  [PS]: "\\u2029",
+};
+const SCRIPT_ESCAPE_RE = new RegExp("[<>&" + LS + PS + "]", "g");
+
+function safeJsonLd(value: unknown): string {
+  return JSON.stringify(value).replace(SCRIPT_ESCAPE_RE, (ch) =>
+    SCRIPT_ESCAPE_MAP[ch] ?? ch
+  );
+}
+
 interface WebsiteStructuredDataProps {
   name: string;
   description: string;
@@ -24,7 +45,7 @@ export function WebsiteStructuredData({ name, description, url }: WebsiteStructu
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   );
 }
@@ -72,7 +93,7 @@ export function ImageGalleryStructuredData({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   );
 }
@@ -143,7 +164,7 @@ export function PhotoStructuredData({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   );
 }
@@ -170,7 +191,7 @@ export function BreadcrumbStructuredData({ items }: BreadcrumbStructuredDataProp
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   );
 }
