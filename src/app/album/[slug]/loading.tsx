@@ -6,28 +6,25 @@ export default function AlbumLoading() {
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />
       <main className="flex-1 flex flex-col items-center w-full">
-        {/* Hero skeleton */}
-        <div className="w-full relative h-[70vh] md:h-[85vh] min-h-[400px] md:min-h-[600px] flex items-center justify-center overflow-hidden">
+        {/* Hero */}
+        <div className="relative w-full h-[75vh] min-h-[480px] md:h-[88vh] md:min-h-[640px] overflow-hidden">
           <ImageSkeleton className="absolute inset-0" />
-          <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-black/20 to-background-dark" />
-          <div className="relative z-20 text-center px-4 max-w-4xl mx-auto flex flex-col items-center gap-6">
-            <Skeleton className="h-6 w-32 rounded-full" />
-            <Skeleton className="h-16 w-96 max-w-full" />
-            <Skeleton className="h-px w-24" />
-            <Skeleton className="h-6 w-48" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-background-dark" />
+          <div className="relative z-10 mx-auto flex h-full max-w-[1100px] flex-col justify-end px-6 pb-20 md:px-12 md:pb-28">
+            <div className="flex max-w-3xl flex-col gap-4">
+              <Skeleton className="h-3 w-32" />
+              <Skeleton className="h-16 w-72 max-w-full" />
+              <Skeleton className="h-3 w-48" />
+            </div>
           </div>
         </div>
 
-        {/* Content skeleton */}
-        <div className="w-full max-w-screen-xl px-4 md:px-8 lg:px-12 py-16 md:py-24 flex flex-col gap-24">
-          {/* Intro skeleton */}
-          <div className="max-w-2xl mx-auto text-center space-y-4">
-            <Skeleton className="h-8 w-8 mx-auto rounded" />
+        {/* Content */}
+        <div className="flex w-full max-w-[1100px] flex-col gap-28 px-6 py-20 md:px-12 md:py-28">
+          <div className="mx-auto max-w-2xl text-center space-y-3">
             <Skeleton className="h-6 w-full" />
             <Skeleton className="h-6 w-3/4 mx-auto" />
           </div>
-
-          {/* Chapter skeleton */}
           <ChapterSkeleton />
         </div>
       </main>

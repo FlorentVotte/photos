@@ -13,10 +13,6 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-/**
- * React Error Boundary component for catching and handling errors in child components.
- * Use this to wrap components that might throw errors to prevent the entire app from crashing.
- */
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -39,21 +35,25 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       }
 
       return (
-        <div className="flex flex-col items-center justify-center min-h-[200px] p-8 text-center">
-          <span className="material-symbols-outlined text-4xl text-red-500 mb-4">
-            error
-          </span>
-          <h2 className="text-xl font-semibold text-foreground mb-2">
+        <div className="flex flex-col items-center justify-center min-h-[240px] p-12 text-center">
+          <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+            Error
+          </p>
+          <h2 className="mt-4 font-display text-2xl font-semibold tracking-tight text-foreground">
             Something went wrong
           </h2>
-          <p className="text-text-muted mb-4">
+          <p className="mt-3 max-w-md font-sans text-sm leading-relaxed text-text-muted">
             An unexpected error occurred. Please try refreshing the page.
           </p>
           <button
             onClick={() => this.setState({ hasError: false, error: null })}
-            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            className="group/cta mt-8 inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
           >
-            Try Again
+            <span>Try again</span>
+            <span
+              aria-hidden="true"
+              className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+            />
           </button>
         </div>
       );
@@ -63,9 +63,6 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 }
 
-/**
- * Default error fallback component for use in error boundaries.
- */
 export function ErrorFallback({
   error,
   resetError,
@@ -74,35 +71,44 @@ export function ErrorFallback({
   resetError?: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center bg-background-dark">
-      <span className="material-symbols-outlined text-6xl text-red-500 mb-6">
-        error_outline
-      </span>
-      <h1 className="text-2xl font-bold text-foreground mb-3">
-        Oops! Something went wrong
+    <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 py-20 text-center bg-background-dark">
+      <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+        Error
+      </p>
+      <h1 className="mt-4 font-display text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
+        Something went wrong
       </h1>
-      <p className="text-text-muted mb-6 max-w-md">
-        We encountered an unexpected error. Please try again or contact support if the problem persists.
+      <p className="mt-4 max-w-md font-sans text-base leading-relaxed text-text-muted">
+        We encountered an unexpected error. Please try again or contact support
+        if the problem persists.
       </p>
       {error && process.env.NODE_ENV === "development" && (
-        <pre className="text-xs text-red-400 bg-red-500/10 p-4 rounded-lg mb-6 max-w-lg overflow-auto">
+        <pre className="mt-8 max-w-lg overflow-auto bg-surface-dark border border-surface-border p-4 text-left font-mono text-xs text-text-muted">
           {error.message}
         </pre>
       )}
-      <div className="flex gap-4">
+      <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
         {resetError && (
           <button
             onClick={resetError}
-            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
           >
-            Try Again
+            <span>Try again</span>
+            <span
+              aria-hidden="true"
+              className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+            />
           </button>
         )}
         <button
           onClick={() => window.location.reload()}
-          className="px-6 py-2 border border-surface-border text-foreground rounded-lg hover:bg-surface-dark transition-colors"
+          className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
         >
-          Refresh Page
+          <span>Refresh page</span>
+          <span
+            aria-hidden="true"
+            className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+          />
         </button>
       </div>
     </div>
