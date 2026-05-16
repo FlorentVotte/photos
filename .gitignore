@@ -47,6 +47,12 @@ inspiration/
 coverage/
 test-results/
 
+# Playwright MCP output (screenshots, snapshots)
+.playwright-mcp/
+
+# Stitch design artifacts (regenerable from the Stitch project)
+.stitch/designs/
+
 /src/generated/prisma
 *.db
 *.db-journal

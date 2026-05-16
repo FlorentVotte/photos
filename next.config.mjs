@@ -1,6 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.watchOptions = {
+        ...(config.watchOptions || {}),
+        ignored: [
+          "**/.git/**",
+          "**/node_modules/**",
+          "**/.next/**",
+          "**/.playwright-mcp/**",
+          "**/.stitch/**",
+          "**/test-results/**",
+          "**/*.png",
+          "**/*.jpg",
+          "**/*.jpeg",
+        ],
+      };
+    }
+    return config;
+  },
   images: {
     remotePatterns: [
       {
