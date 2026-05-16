@@ -9,18 +9,11 @@ import ChapterLocationSummary from "./ChapterLocationSummary";
 import ProtectedImage from "./ProtectedImage";
 import { useLocale } from "@/lib/LocaleContext";
 import { extractLocations, computeChapterStats } from "@/lib/geo-utils";
-import type {
-  Photo,
-  Album,
-  Chapter,
-} from "@/lib/types";
+import type { Photo, Album, Chapter } from "@/lib/types";
 
-// Lazy load the route map component to reduce initial bundle size
 const ChapterRouteMap = dynamic(() => import("./ChapterRouteMap"), {
   loading: () => (
-    <div className="w-full h-[300px] bg-surface-dark/50 rounded-xl flex items-center justify-center">
-      <span className="material-symbols-outlined text-2xl text-text-muted animate-pulse">map</span>
-    </div>
+    <div className="w-full h-[300px] bg-surface-dark/50 animate-pulse" />
   ),
   ssr: false,
 });
@@ -42,12 +35,10 @@ export default function AlbumContent({
   const heroRef = useRef<HTMLDivElement>(null);
   const [scrollY, setScrollY] = useState(0);
 
-  // Parallax scroll effect
   useEffect(() => {
     const handleScroll = () => {
       if (heroRef.current) {
         const rect = heroRef.current.getBoundingClientRect();
-        // Only update when hero is in view
         if (rect.bottom > 0) {
           setScrollY(window.scrollY);
         }
@@ -58,31 +49,26 @@ export default function AlbumContent({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Calculate parallax values
   const heroHeight = heroRef.current?.offsetHeight || 600;
-  const parallaxOffset = scrollY * 0.4; // Background moves at 40% of scroll speed
+  const parallaxOffset = scrollY * 0.35;
   const textOpacity = Math.max(0, 1 - scrollY / (heroHeight * 0.6));
-  const textTranslate = scrollY * 0.2; // Text moves up slightly
+  const textTranslate = scrollY * 0.18;
 
-  // Scroll position restoration (only when returning from photo detail)
   useEffect(() => {
     const storageKey = `scroll-album-${album.slug}`;
     const savedPosition = sessionStorage.getItem(storageKey);
 
     if (savedPosition) {
-      // Small delay to ensure content is rendered
       const timer = setTimeout(() => {
         window.scrollTo(0, parseInt(savedPosition, 10));
         sessionStorage.removeItem(storageKey);
       }, 100);
       return () => clearTimeout(timer);
     } else {
-      // Fresh navigation - scroll to top
       window.scrollTo(0, 0);
     }
   }, [album.slug]);
 
-  // Save scroll position before navigating away
   useEffect(() => {
     const storageKey = `scroll-album-${album.slug}`;
 
@@ -90,7 +76,6 @@ export default function AlbumContent({
       sessionStorage.setItem(storageKey, String(window.scrollY));
     };
 
-    // Save on any click that might navigate away (photo links)
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const link = target.closest('a[href^="/photo/"]');
@@ -108,7 +93,6 @@ export default function AlbumContent({
     };
   }, [album.slug]);
 
-  // Helper to get localized chapter content
   const getChapterTitle = (chapter: Chapter) => {
     if (locale === "fr" && chapter.titleFr) return chapter.titleFr;
     return chapter.title;
@@ -121,10 +105,10 @@ export default function AlbumContent({
 
   return (
     <main className="flex-1 flex flex-col items-center w-full">
-      {/* Cinematic Hero Header with Parallax */}
+      {/* Cinematic hero with parallax */}
       <div
         ref={heroRef}
-        className="w-full relative h-[70vh] md:h-[85vh] min-h-[400px] md:min-h-[600px] flex items-center justify-center overflow-hidden"
+        className="relative h-[75vh] min-h-[480px] w-full overflow-hidden md:h-[88vh] md:min-h-[640px]"
       >
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
@@ -133,92 +117,83 @@ export default function AlbumContent({
             transform: `translateY(${parallaxOffset}px) scale(1.1)`,
           }}
         />
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-black/20 to-background-dark" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-black/15 to-background-dark" />
 
         <div
-          className="relative z-20 text-center px-4 max-w-4xl mx-auto flex flex-col items-center gap-6 will-change-transform"
+          className="relative z-20 mx-auto flex h-full max-w-[1100px] flex-col justify-end px-6 pb-20 md:px-12 md:pb-28 will-change-transform"
           style={{
             opacity: textOpacity,
             transform: `translateY(${textTranslate}px)`,
           }}
         >
-          <span className="inline-block py-1 px-3 rounded-full border border-white/30 bg-black/20 text-xs font-sans tracking-widest uppercase text-foreground backdrop-blur-sm">
-            {t("album", "travelDiary")}
-          </span>
-          <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-foreground leading-tight tracking-tight drop-shadow-2xl">
-            {album.title.split(" ")[0]}{" "}
-            <span className="italic text-primary font-serif font-medium">
-              {album.subtitle || album.title.split(" ").slice(1).join(" ")}
-            </span>
-          </h1>
-          <div className="h-px w-24 bg-primary/80 my-2" />
-          <p className="text-lg md:text-xl text-gray-200 font-light tracking-wide max-w-2xl">
-            {album.date} • {album.location}
-          </p>
-          <div className="mt-8 animate-bounce text-foreground/50">
-            <span className="material-symbols-outlined text-3xl">
-              keyboard_arrow_down
-            </span>
+          <div className="flex max-w-3xl flex-col gap-4">
+            <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-white/70">
+              {t("album", "travelDiary")}
+            </p>
+
+            <h1 className="text-foreground text-5xl md:text-7xl lg:text-8xl font-semibold leading-[1.02] tracking-tight">
+              {album.title}
+            </h1>
+
+            {album.subtitle && (
+              <p className="font-display text-xl md:text-2xl italic text-white/80">
+                {album.subtitle}
+              </p>
+            )}
+
+            <p className="mt-2 font-sans text-[11px] uppercase tracking-[0.32em] text-white/60">
+              {album.date} <span className="mx-2 text-white/30">·</span>{" "}
+              {album.location}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Content Container */}
-      <div className="w-full max-w-screen-xl px-4 md:px-8 lg:px-12 py-16 md:py-24 flex flex-col gap-24">
-        {/* Intro Narrative */}
+      {/* Content */}
+      <div className="flex w-full max-w-[1100px] flex-col gap-28 px-6 py-20 md:px-12 md:py-28">
+        {/* Intro narrative */}
         {album.description && (
-          <article className="max-w-2xl mx-auto text-center flex flex-col gap-6">
-            <span className="material-symbols-outlined text-primary/50 text-4xl mb-2">
-              format_quote
-            </span>
-            <p className="text-xl md:text-2xl text-gray-200 leading-relaxed font-light">
+          <article className="mx-auto max-w-2xl text-center">
+            <p className="font-display text-xl md:text-2xl italic leading-snug tracking-tight text-foreground/90">
               {album.description}
             </p>
           </article>
         )}
 
-        {/* Chapters with Photos */}
+        {/* Chapters */}
         {chapters.map((chapter, chapterIndex) => {
           const locations = extractLocations(chapter.photos);
           const stats = computeChapterStats(chapter.photos);
           const coverPhoto = chapter.coverPhoto || chapter.photos[0];
 
           return (
-            <section key={chapter.id} className="w-full">
-              {/* Cover Photo Hero */}
+            <section key={chapter.id} className="flex w-full flex-col gap-10">
               {coverPhoto && (
-                <div className="relative w-full h-[40vh] rounded-xl overflow-hidden mb-8">
+                <div className="relative aspect-[16/9] w-full overflow-hidden md:aspect-[21/9]">
                   <ProtectedImage
                     src={coverPhoto.src.full}
                     alt={coverPhoto.title}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background-dark/90 via-background-dark/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background-dark/85 via-background-dark/10 to-transparent" />
                 </div>
               )}
 
-              {/* Chapter Title */}
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <div className="h-px w-12 bg-gray-700" />
-                <h2 className="text-3xl text-foreground font-bold tracking-tight">
-                  {t("album", "chapter")} {chapterIndex + 1}: {getChapterTitle(chapter)}
+              <header className="flex flex-col items-center gap-3 text-center">
+                <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+                  {t("album", "chapter")} {chapterIndex + 1}
+                </p>
+                <h2 className="font-display text-3xl md:text-4xl font-semibold leading-tight tracking-tight text-foreground">
+                  {getChapterTitle(chapter)}
                 </h2>
-                <div className="h-px w-12 bg-gray-700" />
-              </div>
-
-              {/* Location Summary */}
-              {locations.cities.length > 0 && (
-                <div className="mb-4">
+                {locations.cities.length + locations.countries.length > 0 && (
                   <ChapterLocationSummary locations={locations} />
-                </div>
-              )}
+                )}
+                <ChapterStats stats={stats} />
+              </header>
 
-              {/* Statistics */}
-              <ChapterStats stats={stats} />
-
-              {/* Route Map */}
               {locations.coordinates.length > 1 && (
-                <div className="my-8">
+                <div className="overflow-hidden">
                   <ChapterRouteMap
                     photos={chapter.photos}
                     height="350px"
@@ -227,16 +202,14 @@ export default function AlbumContent({
                 </div>
               )}
 
-              {/* Chapter Narrative */}
               {getChapterNarrative(chapter) && (
-                <div className="max-w-prose mx-auto my-12">
-                  <p className="text-lg text-gray-300 leading-loose first-letter:text-5xl first-letter:font-bold first-letter:text-primary first-letter:mr-2 first-letter:float-left">
+                <div className="mx-auto max-w-prose">
+                  <p className="font-sans text-base md:text-lg leading-loose text-text-muted first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-6xl first-letter:font-semibold first-letter:leading-none first-letter:text-foreground">
                     {getChapterNarrative(chapter)}
                   </p>
                 </div>
               )}
 
-              {/* Photo Grid */}
               <PhotoGrid
                 photos={chapter.photos}
                 variant="chapter"
@@ -247,17 +220,14 @@ export default function AlbumContent({
           );
         })}
 
-        {/* If no chapters, show all photos in a grid */}
+        {/* Fallback: no chapters */}
         {chapters.length === 0 && photos.length > 0 && (
-          <section className="w-full">
-            <div className="flex items-center justify-center gap-4 mb-12">
-              <div className="h-px w-12 bg-gray-700" />
-              <h2 className="text-3xl text-foreground font-bold tracking-tight">
+          <section className="flex w-full flex-col gap-10">
+            <header className="text-center">
+              <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
                 {t("album", "gallery")}
-              </h2>
-              <div className="h-px w-12 bg-gray-700" />
-            </div>
-
+              </p>
+            </header>
             <PhotoGrid
               photos={photos}
               variant="chapter"
@@ -267,45 +237,39 @@ export default function AlbumContent({
           </section>
         )}
 
-        {/* Next Journey */}
+        {/* Next album */}
         {nextAlbum && nextAlbum.id !== album.id && (
-          <footer className="mt-12 w-full">
-            <div className="relative overflow-hidden rounded-2xl bg-surface-dark border border-surface-border">
-              <div className="grid md:grid-cols-2">
-                <div className="p-10 md:p-16 flex flex-col justify-center items-start gap-6 z-10 bg-background-dark/95 backdrop-blur-sm">
-                  <p className="text-primary font-bold tracking-widest uppercase text-sm font-sans">
-                    {t("album", "nextJourney")}
+          <footer className="mt-8 w-full border-t border-surface-border pt-16">
+            <Link
+              href={`/album/${nextAlbum.slug}`}
+              className="group relative block w-full overflow-hidden"
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+                style={{ backgroundImage: `url("${nextAlbum.coverImage}")` }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/70 to-background-dark/30" />
+              <div className="relative flex min-h-[280px] flex-col justify-center gap-4 px-8 py-16 md:min-h-[360px] md:px-16">
+                <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+                  {t("album", "nextJourney")}
+                </p>
+                <h3 className="font-display text-3xl md:text-5xl font-semibold leading-tight tracking-tight text-foreground">
+                  {nextAlbum.title}
+                </h3>
+                {nextAlbum.description && (
+                  <p className="max-w-md font-sans text-sm md:text-base text-text-muted">
+                    {nextAlbum.description}
                   </p>
-                  <h3 className="text-4xl md:text-5xl text-foreground font-bold leading-tight">
-                    {nextAlbum.title}
-                  </h3>
-                  <p className="text-gray-400 max-w-md">
-                    {nextAlbum.description ||
-                      `${t("home", "viewAlbum")} ${nextAlbum.location}`}
-                  </p>
-                  <Link
-                    href={`/album/${nextAlbum.slug}`}
-                    className="mt-4 flex items-center gap-2 text-foreground hover:text-primary transition-colors group"
-                  >
-                    <span className="font-bold underline decoration-primary underline-offset-4">
-                      {t("home", "viewAlbum")}
-                    </span>
-                    <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">
-                      arrow_forward
-                    </span>
-                  </Link>
-                </div>
-                <div className="relative h-64 md:h-auto min-h-[300px]">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{
-                      backgroundImage: `url("${nextAlbum.coverImage}")`,
-                    }}
+                )}
+                <div className="mt-2 inline-flex items-center gap-3 self-start font-sans text-sm uppercase tracking-[0.24em] text-text-muted transition-colors group-hover:text-foreground">
+                  <span>{t("home", "viewAlbum")}</span>
+                  <span
+                    aria-hidden="true"
+                    className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover:w-12 group-hover:bg-foreground"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-background-dark/95 to-transparent md:w-1/3" />
                 </div>
               </div>
-            </div>
+            </Link>
           </footer>
         )}
       </div>
