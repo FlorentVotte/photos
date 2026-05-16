@@ -7,7 +7,7 @@ import type { Photo } from "@/lib/types";
 const PhotoMap = dynamic(() => import("./PhotoMap"), {
   loading: () => (
     <div className="w-full h-[600px] bg-surface-dark flex items-center justify-center">
-      <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+      <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
         Loading map
       </p>
     </div>

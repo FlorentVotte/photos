@@ -81,7 +81,7 @@ export default function ChapterRouteMap({
         className="w-full bg-surface-dark flex items-center justify-center"
         style={{ height }}
       >
-        <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+        <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
           Loading map
         </p>
       </div>
@@ -229,7 +229,7 @@ export default function ChapterRouteMap({
             ))}
         </MapContainer>
       </div>
-      <p className="text-center font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted mt-6">
+      <p className="text-center font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted mt-6">
         {geoPhotos.length} locations along the route
       </p>
     </>

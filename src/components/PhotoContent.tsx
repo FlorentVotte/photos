@@ -8,6 +8,7 @@ import PhotoLocationMap from "./PhotoLocationMap";
 import PhotoKeyboardNav from "./PhotoKeyboardNav";
 import Lightbox from "./Lightbox";
 import { useLocale } from "@/lib/LocaleContext";
+import { formatPhotoTitle } from "@/lib/photo-display";
 import type { Photo, Album } from "@/lib/types";
 
 interface PhotoContentProps {
@@ -22,7 +23,7 @@ interface PhotoContentProps {
 function MetaRow({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-surface-border/60 py-3 last:border-b-0">
-      <span className="font-sans text-[11px] uppercase tracking-[0.22em] text-text-muted">
+      <span className="font-sans text-[12px] uppercase tracking-[0.22em] text-text-muted">
         {label}
       </span>
       <span className="font-sans text-sm tabular-nums text-foreground">
@@ -42,6 +43,8 @@ export default function PhotoContent({
 }: PhotoContentProps) {
   const { t } = useLocale();
   const router = useRouter();
+
+  const displayTitle = formatPhotoTitle(photo, album, currentIndex);
 
   const [showCopied, setShowCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -74,8 +77,8 @@ export default function PhotoContent({
 
   const handleShare = async () => {
     const url = window.location.href;
-    const title = photo.title;
-    const text = photo.caption || `${photo.title} - ${photo.metadata.location}`;
+    const title = displayTitle;
+    const text = photo.caption || `${displayTitle} - ${photo.metadata.location}`;
 
     if (navigator.share) {
       try {
@@ -163,7 +166,7 @@ export default function PhotoContent({
         <div className="flex w-full max-w-[1200px] flex-col">
           {/* Breadcrumbs */}
           <nav
-            className="mb-6 flex flex-wrap items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em]"
+            className="mb-6 flex flex-wrap items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em]"
             aria-label="Breadcrumb"
           >
             <Link
@@ -184,7 +187,7 @@ export default function PhotoContent({
                 <span className="text-text-muted/40">/</span>
               </>
             )}
-            <span className="text-foreground">{photo.title}</span>
+            <span className="text-foreground">{displayTitle}</span>
           </nav>
 
           {/* Photo stage — full bleed within the content frame, no card frame */}
@@ -219,14 +222,18 @@ export default function PhotoContent({
               onClick={openLightbox}
             >
               <ProtectedImage
-                alt={photo.title}
+                alt={displayTitle}
                 className="max-h-full max-w-full object-contain pointer-events-none"
                 src={photo.src.full}
+                sources={photo.src}
+                sizes="(max-width: 1200px) 100vw, 1200px"
+                loading="eager"
+                fetchPriority="high"
               />
             </div>
 
             {/* Counter — quiet caption, not a backdrop pill */}
-            <p className="absolute top-4 left-4 z-10 font-sans text-[11px] uppercase tracking-[0.32em] text-white/60 tabular-nums">
+            <p className="absolute top-4 left-4 z-10 font-sans text-[12px] uppercase tracking-[0.32em] text-white/60 tabular-nums">
               {String(currentIndex + 1).padStart(2, "0")} /{" "}
               {String(albumPhotos.length).padStart(2, "0")}
             </p>
@@ -262,7 +269,7 @@ export default function PhotoContent({
             <div className="flex flex-col gap-6">
               <header className="flex flex-col gap-3">
                 <h1 className="font-display text-3xl md:text-4xl font-semibold leading-tight tracking-tight text-foreground">
-                  {photo.title}
+                  {displayTitle}
                 </h1>
                 {photo.caption && (
                   <p className="max-w-2xl font-sans text-base leading-relaxed text-text-muted">
@@ -271,47 +278,42 @@ export default function PhotoContent({
                 )}
               </header>
 
-              {/* Actions — quiet text row, no buttons */}
-              <div className="mt-2 flex flex-wrap items-center gap-x-8 gap-y-3">
+              {/* Actions — outlined chips for clearer affordance */}
+              <div className="mt-2 flex flex-wrap items-center gap-3">
                 <button
                   onClick={handleDownload}
                   disabled={isDownloading}
-                  className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 hover:border-primary hover:bg-primary/10 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t("photo", "download")}
                 >
-                  <span>
-                    {isDownloading ? "…" : t("photo", "download")}
+                  <span aria-hidden="true" className="material-symbols-outlined !text-[16px]">
+                    download
                   </span>
-                  <span
-                    aria-hidden="true"
-                    className="h-px w-6 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-10 group-hover/cta:bg-foreground"
-                  />
+                  <span>{isDownloading ? "…" : t("photo", "download")}</span>
                 </button>
                 <button
                   onClick={handleShare}
-                  className="group/cta relative inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                  className="relative inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t("photo", "share")}
                 >
+                  <span aria-hidden="true" className="material-symbols-outlined !text-[16px]">
+                    share
+                  </span>
                   <span>{t("photo", "share")}</span>
-                  <span
-                    aria-hidden="true"
-                    className="h-px w-6 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-10 group-hover/cta:bg-foreground"
-                  />
                   {showCopied && (
-                    <span className="absolute -top-8 left-0 font-sans text-[10px] uppercase tracking-[0.24em] text-foreground">
+                    <span className="absolute -top-9 left-0 whitespace-nowrap rounded-full bg-foreground px-3 py-1 font-sans text-[10px] uppercase tracking-[0.24em] text-background-dark">
                       {t("photo", "linkCopied")}
                     </span>
                   )}
                 </button>
                 <button
                   onClick={openLightbox}
-                  className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
+                  <span aria-hidden="true" className="material-symbols-outlined !text-[16px]">
+                    slideshow
+                  </span>
                   <span>{t("photo", "slideshow")}</span>
-                  <span
-                    aria-hidden="true"
-                    className="h-px w-6 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-10 group-hover/cta:bg-foreground"
-                  />
                 </button>
               </div>
 
@@ -320,7 +322,7 @@ export default function PhotoContent({
                 <div className="mt-8 border-t border-surface-border pt-8">
                   <Link
                     href={`/album/${album.slug}`}
-                    className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                    className="group/cta inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
                   >
                     <span
                       aria-hidden="true"
@@ -339,7 +341,7 @@ export default function PhotoContent({
               {/* Location */}
               <section className="flex flex-col gap-4">
                 <header className="flex flex-col gap-1">
-                  <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+                  <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
                     Location
                   </p>
                   <p className="font-display text-base text-foreground">
@@ -372,7 +374,7 @@ export default function PhotoContent({
               {/* EXIF */}
               <section className="flex flex-col gap-4">
                 <header className="flex flex-col gap-1">
-                  <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+                  <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
                     Capture
                   </p>
                   <p className="font-display text-base text-foreground">

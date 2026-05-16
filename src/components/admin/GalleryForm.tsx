@@ -57,7 +57,7 @@ export default function GalleryForm({
         <button
           type="submit"
           disabled={isDisabled || !url.trim()}
-          className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="group/cta inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <span>{submitting ? "Adding…" : "Add gallery"}</span>
           <span

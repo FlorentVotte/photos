@@ -33,7 +33,7 @@ export default function Hero({
       <div className="mx-auto flex min-h-[70vh] max-w-[1200px] flex-col justify-end px-6 pb-16 pt-40 md:px-12 lg:min-h-[80vh] lg:pb-24">
         <div className="flex max-w-2xl flex-col gap-4 text-left">
           {kicker && (
-            <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-white/70">
+            <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-white/70">
               {kicker}
             </p>
           )}
@@ -57,13 +57,15 @@ export default function Hero({
           {ctaLink && (
             <Link
               href={ctaLink}
-              className="group/cta mt-4 inline-flex items-center gap-3 self-start font-sans text-sm uppercase tracking-[0.24em] text-white/80 hover:text-white transition-colors"
+              className="group/cta mt-6 inline-flex items-center gap-3 self-start rounded-full border border-white/40 bg-white/5 px-7 py-3 font-sans text-xs uppercase tracking-[0.24em] text-white backdrop-blur-sm transition-all duration-300 hover:border-white hover:bg-white hover:text-background-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <span>{t("home", "viewAlbum")}</span>
               <span
                 aria-hidden="true"
-                className="h-px w-8 bg-white/50 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-white"
-              />
+                className="text-base transition-transform duration-300 group-hover/cta:translate-x-1"
+              >
+                →
+              </span>
             </Link>
           )}
         </div>

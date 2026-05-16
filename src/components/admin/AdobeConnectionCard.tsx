@@ -40,7 +40,7 @@ export default function AdobeConnectionCard({
             <h2 className="font-display text-xl md:text-2xl font-semibold tracking-tight text-foreground">
               Adobe Lightroom API
             </h2>
-            <span className={`font-sans text-[11px] uppercase tracking-[0.24em] ${getStatusColor()}`}>
+            <span className={`font-sans text-[12px] uppercase tracking-[0.24em] ${getStatusColor()}`}>
               {getStatusLabel()}
             </span>
           </div>
@@ -58,7 +58,7 @@ export default function AdobeConnectionCard({
         {status?.connected ? (
           <a
             href="/api/auth/adobe"
-            className="group/cta inline-flex items-center gap-3 self-start font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+            className="group/cta inline-flex items-center gap-3 self-start font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
             aria-label="Reconnect Adobe account"
           >
             <span>Reconnect</span>
@@ -70,7 +70,7 @@ export default function AdobeConnectionCard({
         ) : (
           <a
             href="/api/auth/adobe"
-            className="group/cta inline-flex items-center gap-3 self-start font-sans text-[11px] uppercase tracking-[0.24em] text-foreground hover:text-foreground transition-colors"
+            className="group/cta inline-flex items-center gap-3 self-start font-sans text-[12px] uppercase tracking-[0.24em] text-foreground hover:text-foreground transition-colors"
             aria-label="Connect Adobe account"
           >
             <span>Connect Adobe</span>
@@ -103,7 +103,7 @@ export default function AdobeConnectionCard({
           <button
             onClick={onBrowseAlbums}
             disabled={browsingAlbums}
-            className="group/cta inline-flex items-center gap-3 self-start font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group/cta inline-flex items-center gap-3 self-start font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Browse your Lightroom albums"
           >
             <span>

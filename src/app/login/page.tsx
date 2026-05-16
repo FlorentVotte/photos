@@ -42,7 +42,7 @@ function LoginForm() {
     <main className="flex-1 flex items-center justify-center px-6 py-20">
       <div className="w-full max-w-md">
         <header className="mb-12 text-center">
-          <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+          <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
             Admin access
           </p>
           <h1 className="mt-4 font-display text-4xl font-semibold tracking-tight text-foreground">
@@ -57,7 +57,7 @@ function LoginForm() {
           <div className="flex flex-col gap-3">
             <label
               htmlFor="password"
-              className="font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted"
+              className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted"
             >
               Password
             </label>
@@ -79,7 +79,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading || !password}
-            className="group/cta mt-2 inline-flex items-center gap-3 self-start font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            className="group/cta mt-2 inline-flex items-center gap-3 self-start font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-40"
           >
             <span>{loading ? "Signing in…" : "Sign in"}</span>
             <span
@@ -89,7 +89,7 @@ function LoginForm() {
           </button>
         </form>
 
-        <p className="mt-16 text-center font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted/50">
+        <p className="mt-16 text-center font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted/50">
           Set ADMIN_PASSWORD env var to configure
         </p>
       </div>
@@ -104,7 +104,7 @@ export default function LoginPage() {
       <Suspense
         fallback={
           <div className="flex-1 flex items-center justify-center">
-            <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+            <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
               Loading
             </p>
           </div>

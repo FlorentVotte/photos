@@ -40,7 +40,7 @@ export default function ChapterStats({
 
   return (
     <div className="flex flex-col items-center gap-1 py-2 text-center">
-      <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+      <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
         {parts.join("  ·  ")}
       </p>
       {photosWithGps > 0 && photosWithGps < photoCount && (
