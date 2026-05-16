@@ -5,11 +5,11 @@ A self-hosted photo gallery web application that syncs with Adobe Lightroom gall
 ## Features
 
 - **Lightroom Integration**: Sync photos from public galleries or private albums via Adobe API
-- **Album Organization**: Organize photos into albums with customizable chapters
+- **Album Organization**: Organize photos into albums with narrative chapters (bilingual EN/FR content, featured photos, per-chapter cover)
 - **Photo Map**: View photos on an interactive map based on GPS metadata
 - **Search**: Full-text search across photo titles and captions
-- **Admin Panel**: Manage galleries, albums, covers, and sync settings
-- **Dark Theme**: Multiple dark theme presets (forest green, ocean blue, sunset orange, etc.)
+- **Admin Panel**: Manage galleries, albums, chapters, covers, site settings, and sync
+- **Theming**: Multiple built-in themes (Forest Sage, Ocean Blue, Sunset Orange, Midnight Purple, Desert Sand, Editorial Monograph, Brutalist Photojournalist, Warm Print Catalogue, Modernist Tonal) with per-theme font pairings
 - **PWA Support**: Installable as a Progressive Web App with offline support
 - **Docker Ready**: Easy deployment with Docker Compose
 - **CI/CD**: Automated testing and deployment with GitHub Actions
@@ -60,8 +60,9 @@ Copy `.env.example` to `.env.local` and configure:
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `ADMIN_PASSWORD` | Yes | Password for the admin panel |
-| `NEXT_PUBLIC_SITE_URL` | Yes | Your site's public URL |
+| `NEXT_PUBLIC_SITE_URL` | Yes | Your site's public URL (no trailing slash) |
 | `ENCRYPTION_KEY` | Yes* | Key for encrypting Adobe tokens (generate with `openssl rand -hex 32`) |
+| `SESSION_SECRET` | No | Dedicated secret for signing admin session cookies. Falls back to `ENCRYPTION_KEY`, then `ADMIN_PASSWORD` |
 | `SYNC_WEBHOOK_SECRET` | No | Secret for webhook-triggered syncs |
 | `ADOBE_CLIENT_ID` | No | Adobe API client ID (for private albums) |
 | `ADOBE_CLIENT_SECRET` | No | Adobe API client secret |
@@ -80,15 +81,17 @@ Copy `.env.example` to `.env.local` and configure:
 ### Syncing Photos
 
 ```bash
-# Sync once
+# Sync once (uses the compiled bundle in dist/)
 npm run sync
 
-# Sync continuously (every 30 minutes)
+# Sync continuously (watch mode)
 npm run sync:watch
 
-# Add a new gallery URL
-npm run sync:add
+# Sync from TypeScript source (no build step needed)
+npm run sync:dev
 ```
+
+Galleries are added from the admin panel under `/admin/albums`, then sync imports their photos.
 
 ### Adobe Lightroom API (Optional)
 
@@ -149,12 +152,16 @@ The project includes a GitHub Actions workflow that automatically builds and dep
 ```
 photobook/
 ├── src/
-│   ├── app/          # Next.js App Router pages
+│   ├── app/          # Next.js App Router pages and API routes
 │   ├── components/   # React components
-│   └── lib/          # Utilities and helpers
-├── sync/             # Lightroom sync service
-├── prisma/           # Database schema
-└── public/           # Static assets
+│   ├── hooks/        # React hooks
+│   ├── lib/          # Utilities, theme registry, helpers
+│   └── middleware.ts # Admin auth middleware
+├── sync/             # Lightroom sync service (TypeScript)
+├── prisma/           # Database schema and migrations
+├── scripts/          # Helper scripts (icon generation, etc.)
+├── public/           # Static assets
+└── .github/workflows # CI/CD pipelines
 ```
 
 ## Scripts
@@ -162,12 +169,15 @@ photobook/
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Start development server |
-| `npm run build` | Build for production |
+| `npm run build` | Build Next.js for production |
+| `npm run build:sync` | Compile the sync service to `dist/` |
 | `npm run start` | Start production server |
+| `npm run lint` | Lint with ESLint |
 | `npm run test` | Run test suite |
 | `npm run test:watch` | Run tests in watch mode |
 | `npm run test:coverage` | Run tests with coverage report |
-| `npm run sync` | Sync photos from Lightroom |
+| `npm run sync` | Sync photos from Lightroom (compiled bundle) |
+| `npm run sync:dev` | Sync from TypeScript source via tsx |
 | `npm run sync:watch` | Continuous sync mode |
 
 ## License
