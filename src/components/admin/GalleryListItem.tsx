@@ -70,7 +70,7 @@ export default function GalleryListItem({
         <button
           onClick={() => onSync(gallery)}
           disabled={disabled || syncing}
-          className={`font-sans text-[11px] uppercase tracking-[0.24em] transition-colors disabled:opacity-50 ${
+          className={`font-sans text-[12px] uppercase tracking-[0.24em] transition-colors disabled:opacity-50 ${
             syncing
               ? "text-foreground animate-pulse"
               : "text-text-muted hover:text-foreground"
@@ -83,7 +83,7 @@ export default function GalleryListItem({
         <button
           onClick={() => onToggleFeatured(gallery, !gallery.featured)}
           disabled={disabled}
-          className={`font-sans text-[11px] uppercase tracking-[0.24em] transition-colors disabled:opacity-50 ${
+          className={`font-sans text-[12px] uppercase tracking-[0.24em] transition-colors disabled:opacity-50 ${
             gallery.featured
               ? "text-foreground"
               : "text-text-muted hover:text-foreground"
@@ -100,7 +100,7 @@ export default function GalleryListItem({
         <button
           onClick={() => onDelete(gallery)}
           disabled={disabled}
-          className="font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-red-400 transition-colors disabled:opacity-50"
+          className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-red-400 transition-colors disabled:opacity-50"
           aria-label={`Remove ${displayName}`}
           title="Remove gallery"
         >

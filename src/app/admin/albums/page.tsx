@@ -192,7 +192,7 @@ export default function AlbumsEditorPage() {
   const inputClass =
     "w-full border-b border-surface-border bg-transparent py-2 font-sans text-sm text-foreground placeholder-text-muted/40 focus:border-foreground focus:outline-none transition-colors";
   const labelClass =
-    "block mb-2 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted";
+    "block mb-2 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted";
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
@@ -210,7 +210,7 @@ export default function AlbumsEditorPage() {
 
           <header className="mb-16 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex flex-col gap-2 max-w-2xl">
-              <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+              <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
                 Admin
               </p>
               <h1 className="font-display text-4xl md:text-5xl font-semibold tracking-tight text-foreground">
@@ -231,14 +231,14 @@ export default function AlbumsEditorPage() {
                       setHasOrderChanges(false);
                       fetchAlbums();
                     }}
-                    className="font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                    className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={saveOrder}
                     disabled={saving || !hasOrderChanges}
-                    className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-foreground hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="group/cta inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-foreground hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <span>{saving ? "Saving…" : "Save order"}</span>
                     <span
@@ -250,7 +250,7 @@ export default function AlbumsEditorPage() {
               ) : (
                 <button
                   onClick={() => setReorderMode(true)}
-                  className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                  className="group/cta inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
                 >
                   <span>Reorder</span>
                   <span
@@ -263,7 +263,7 @@ export default function AlbumsEditorPage() {
           </header>
 
           {loading ? (
-            <p className="py-12 text-center font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+            <p className="py-12 text-center font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
               Loading
             </p>
           ) : (
@@ -377,14 +377,14 @@ export default function AlbumsEditorPage() {
                       <div className="flex items-center justify-end gap-8">
                         <button
                           onClick={() => setEditingAlbum(null)}
-                          className="font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                          className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
                         >
                           Cancel
                         </button>
                         <button
                           onClick={saveAlbum}
                           disabled={saving}
-                          className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-foreground hover:text-foreground transition-colors disabled:opacity-40"
+                          className="group/cta inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-foreground hover:text-foreground transition-colors disabled:opacity-40"
                         >
                           <span>{saving ? "Saving…" : "Save changes"}</span>
                           <span
@@ -407,7 +407,7 @@ export default function AlbumsEditorPage() {
                           >
                             ↑
                           </button>
-                          <span className="font-sans text-[11px] tabular-nums text-text-muted">
+                          <span className="font-sans text-[12px] tabular-nums text-text-muted">
                             {String(index + 1).padStart(2, "0")}
                           </span>
                           <button
@@ -466,7 +466,7 @@ export default function AlbumsEditorPage() {
                             {album.subtitle}
                           </p>
                         )}
-                        <p className="font-sans text-[11px] uppercase tracking-[0.22em] text-text-muted">
+                        <p className="font-sans text-[12px] uppercase tracking-[0.22em] text-text-muted">
                           {album.location || (
                             <span className="text-yellow-400/80">
                               Missing location
@@ -492,14 +492,14 @@ export default function AlbumsEditorPage() {
                         <div className="flex shrink-0 items-center gap-6">
                           <Link
                             href={`/album/${album.slug}`}
-                            className="font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                            className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
                             title="View album"
                           >
                             View
                           </Link>
                           <button
                             onClick={() => setEditingAlbum(album)}
-                            className="font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                            className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
                             title="Edit album"
                           >
                             Edit
@@ -521,7 +521,7 @@ export default function AlbumsEditorPage() {
           <div className="flex max-h-[80vh] w-full max-w-4xl flex-col overflow-hidden border border-surface-border bg-background-dark">
             <header className="flex items-center justify-between gap-6 border-b border-surface-border px-8 py-6">
               <div className="flex flex-col gap-1">
-                <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+                <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
                   Cover
                 </p>
                 <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">
@@ -536,7 +536,7 @@ export default function AlbumsEditorPage() {
                   setCoverPickerAlbum(null);
                   setAlbumPhotos([]);
                 }}
-                className="font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
                 aria-label="Close modal"
               >
                 Close
@@ -545,7 +545,7 @@ export default function AlbumsEditorPage() {
 
             <div className="flex-1 overflow-y-auto px-8 py-6">
               {loadingPhotos ? (
-                <p className="py-12 text-center font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+                <p className="py-12 text-center font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
                   Loading photos
                 </p>
               ) : albumPhotos.length === 0 ? (

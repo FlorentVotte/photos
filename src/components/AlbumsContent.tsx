@@ -49,21 +49,30 @@ export default function AlbumsContent({ albums }: AlbumsContentProps) {
           </p>
         </header>
 
-        {sortedYears.map((year) => (
-          <section key={year} className="mb-20 last:mb-0">
-            <div className="mb-8 flex items-baseline gap-6">
-              <h2 className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
-                {year}
-              </h2>
-              <div className="h-px flex-1 bg-surface-border" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {albumsByYear[year].map((album) => (
-                <AlbumCard key={album.id} album={album} variant="square" />
-              ))}
-            </div>
-          </section>
-        ))}
+        {sortedYears.map((year) => {
+          const yearAlbums = albumsByYear[year];
+          // Avoid lonely orphan rows: when a year has exactly 4 albums, use a
+          // balanced 2×2 layout instead of 3-col-with-orphan.
+          const gridClass =
+            yearAlbums.length === 4
+              ? "grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6"
+              : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6";
+          return (
+            <section key={year} className="mb-20 last:mb-0">
+              <div className="mb-8 flex items-baseline gap-6">
+                <h2 className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                  {year}
+                </h2>
+                <div className="h-px flex-1 bg-surface-border" />
+              </div>
+              <div className={gridClass}>
+                {yearAlbums.map((album) => (
+                  <AlbumCard key={album.id} album={album} variant="square" />
+                ))}
+              </div>
+            </section>
+          );
+        })}
 
         {albums.length === 0 && (
           <div className="py-20 text-center font-sans text-sm text-text-muted">

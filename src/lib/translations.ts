@@ -175,6 +175,18 @@ export const translations = {
     of: { en: "of", fr: "sur" },
   },
 
+  // Not found
+  notFound: {
+    label: { en: "404 — Not Found", fr: "404 — Introuvable" },
+    title: { en: "This page slipped away", fr: "Cette page s'est échappée" },
+    subtitle: {
+      en: "The link is broken, the photo moved, or it never existed.",
+      fr: "Le lien est cassé, la photo a été déplacée, ou elle n'a jamais existé.",
+    },
+    backHome: { en: "Back to home", fr: "Retour à l'accueil" },
+    browseAlbums: { en: "Browse albums", fr: "Voir les albums" },
+  },
+
   // Privacy Policy
   privacy: {
     title: { en: "Privacy", fr: "Politique de" },

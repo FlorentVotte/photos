@@ -77,7 +77,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
   if (!isClient || !L) {
     return (
       <div className="w-full h-[600px] bg-surface-dark flex items-center justify-center">
-        <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+        <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
           Loading map
         </p>
       </div>
@@ -183,7 +183,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
           </Marker>
         ))}
       </MapContainer>
-      <p className="text-center font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted mt-6">
+      <p className="text-center font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted mt-6">
         {geoPhotos.length} {t("map", "photosWithGps")}
       </p>
     </>

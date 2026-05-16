@@ -14,6 +14,47 @@ interface SearchClientProps {
   photos: Photo[];
 }
 
+// Strip diacritics and lowercase. NFD splits "é" into "e" + combining accent,
+// then we drop combining marks (U+0300–U+036F). Lets "désert" match "desert".
+function normalize(value: string | undefined | null): string {
+  if (!value) return "";
+  return value
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase();
+}
+
+function buildAlbumHaystack(album: Album): string {
+  const parts: Array<string | undefined> = [
+    album.title,
+    album.subtitle,
+    album.description,
+    album.location,
+    album.date,
+  ];
+  album.chapters?.forEach((chapter) => {
+    parts.push(chapter.title, chapter.titleFr, chapter.narrative, chapter.narrativeFr);
+  });
+  return normalize(parts.filter(Boolean).join(" \n "));
+}
+
+function buildPhotoHaystack(photo: Photo): string {
+  const m = photo.metadata;
+  const parts: Array<string | undefined> = [
+    photo.title,
+    photo.caption,
+    photo.description,
+    photo.albumTitle,
+    m.location,
+    m.locationDetail,
+    m.city,
+    m.date,
+    m.camera,
+    m.lens,
+  ];
+  return normalize(parts.filter(Boolean).join(" \n "));
+}
+
 export default function SearchClient({ albums, photos }: SearchClientProps) {
   const { t } = useLocale();
   const [query, setQuery] = useState("");
@@ -22,46 +63,47 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
   const [selectedCamera] = useState<string>("");
   const [selectedLens] = useState<string>("");
 
+  const normalizedQuery = useMemo(() => normalize(query), [query]);
+
+  // Pre-build searchable text per item so each keystroke is cheap.
+  const albumIndex = useMemo(
+    () => albums.map((album) => ({ album, haystack: buildAlbumHaystack(album) })),
+    [albums]
+  );
+  const photoIndex = useMemo(
+    () => photos.map((photo) => ({ photo, haystack: buildPhotoHaystack(photo) })),
+    [photos]
+  );
+
   const filteredAlbums = useMemo(() => {
     if (filterType === "photos") return [];
 
-    return albums.filter((album) => {
-      const matchesQuery =
-        !query ||
-        album.title.toLowerCase().includes(query.toLowerCase()) ||
-        album.location.toLowerCase().includes(query.toLowerCase()) ||
-        album.date.toLowerCase().includes(query.toLowerCase());
-
-      const matchesLocation =
-        !selectedLocation || album.location === selectedLocation;
-
-      return matchesQuery && matchesLocation;
-    });
-  }, [albums, query, filterType, selectedLocation]);
+    return albumIndex
+      .filter(({ album, haystack }) => {
+        const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
+        const matchesLocation =
+          !selectedLocation || album.location === selectedLocation;
+        return matchesQuery && matchesLocation;
+      })
+      .map((entry) => entry.album);
+  }, [albumIndex, normalizedQuery, filterType, selectedLocation]);
 
   const filteredPhotos = useMemo(() => {
     if (filterType === "albums") return [];
 
-    return photos.filter((photo) => {
-      const queryLower = query.toLowerCase();
-      const matchesQuery =
-        !query ||
-        photo.title.toLowerCase().includes(queryLower) ||
-        photo.metadata.location?.toLowerCase().includes(queryLower) ||
-        photo.metadata.date?.toLowerCase().includes(queryLower) ||
-        photo.metadata.camera?.toLowerCase().includes(queryLower) ||
-        photo.metadata.lens?.toLowerCase().includes(queryLower);
-
-      const matchesLocation =
-        !selectedLocation || photo.metadata.location === selectedLocation;
-      const matchesCamera =
-        !selectedCamera || photo.metadata.camera === selectedCamera;
-      const matchesLens =
-        !selectedLens || photo.metadata.lens === selectedLens;
-
-      return matchesQuery && matchesLocation && matchesCamera && matchesLens;
-    });
-  }, [photos, query, filterType, selectedLocation, selectedCamera, selectedLens]);
+    return photoIndex
+      .filter(({ photo, haystack }) => {
+        const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
+        const matchesLocation =
+          !selectedLocation || photo.metadata.location === selectedLocation;
+        const matchesCamera =
+          !selectedCamera || photo.metadata.camera === selectedCamera;
+        const matchesLens =
+          !selectedLens || photo.metadata.lens === selectedLens;
+        return matchesQuery && matchesLocation && matchesCamera && matchesLens;
+      })
+      .map((entry) => entry.photo);
+  }, [photoIndex, normalizedQuery, filterType, selectedLocation, selectedCamera, selectedLens]);
 
   const totalResults = filteredAlbums.length + filteredPhotos.length;
 
@@ -91,7 +133,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                 <button
                   key={type}
                   onClick={() => setFilterType(type)}
-                  className={`relative font-sans text-[11px] uppercase tracking-[0.32em] transition-colors ${
+                  className={`relative font-sans text-[12px] uppercase tracking-[0.32em] transition-colors ${
                     filterType === type
                       ? "text-foreground after:absolute after:-bottom-2 after:left-0 after:right-0 after:h-px after:bg-foreground"
                       : "text-text-muted hover:text-foreground"
@@ -103,7 +145,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
             </div>
           </div>
 
-          <p className="mb-12 font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+          <p className="mb-12 font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
             {totalResults}{" "}
             {totalResults !== 1 ? t("search", "results") : t("search", "result")}
             {query && (
@@ -116,7 +158,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
 
           {filteredAlbums.length > 0 && (
             <section className="mb-20">
-              <h2 className="mb-8 font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+              <h2 className="mb-8 font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
                 Albums ({filteredAlbums.length})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -135,7 +177,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                       <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight text-foreground">
                         {album.title}
                       </h3>
-                      <p className="font-sans text-[11px] uppercase tracking-[0.22em] text-white/70">
+                      <p className="font-sans text-[12px] uppercase tracking-[0.22em] text-white/70">
                         {album.location} <span className="text-white/40">·</span>{" "}
                         {album.date}
                       </p>
@@ -148,7 +190,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
 
           {filteredPhotos.length > 0 && (
             <section>
-              <h2 className="mb-8 font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+              <h2 className="mb-8 font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
                 Photos ({filteredPhotos.length})
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
@@ -167,7 +209,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                 ))}
               </div>
               {filteredPhotos.length > 50 && (
-                <p className="mt-10 text-center font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+                <p className="mt-10 text-center font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
                   {t("search", "showingFirst")} {filteredPhotos.length}{" "}
                   {t("search", "photos")}
                 </p>
