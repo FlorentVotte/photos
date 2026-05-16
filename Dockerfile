@@ -49,6 +49,11 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN apk add --no-cache libc6-compat sqlite
 
+# Patch CVEs in npm's bundled deps (picomatch, ip-address, brace-expansion)
+# that ship with node:25-alpine. The runtime only invokes `npx prisma`, but
+# the vulnerable files still sit in the image and trip container scanners.
+RUN npm install -g npm@latest && npm cache clean --force
+
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
