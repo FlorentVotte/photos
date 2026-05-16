@@ -76,22 +76,19 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
 
   if (!isClient || !L) {
     return (
-      <div className="w-full h-[600px] bg-surface-dark rounded-xl flex items-center justify-center">
-        <span className="material-symbols-outlined text-4xl text-primary animate-spin">
-          progress_activity
-        </span>
+      <div className="w-full h-[600px] bg-surface-dark flex items-center justify-center">
+        <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+          Loading map
+        </p>
       </div>
     );
   }
 
   if (geoPhotos.length === 0) {
     return (
-      <div className="w-full h-[400px] bg-surface-dark rounded-xl flex flex-col items-center justify-center gap-4 border border-surface-border">
-        <span className="material-symbols-outlined text-6xl text-text-muted/30">
-          location_off
-        </span>
-        <p className="text-text-muted">{t("map", "noGpsPhotos")}</p>
-        <p className="text-sm text-text-muted/70">
+      <div className="w-full h-[400px] bg-surface-dark flex flex-col items-center justify-center gap-3 border-y border-surface-border">
+        <p className="font-sans text-sm text-text-muted">{t("map", "noGpsPhotos")}</p>
+        <p className="font-sans text-xs text-text-muted/60">
           GPS coordinates are extracted from photo EXIF data during sync
         </p>
       </div>
@@ -108,15 +105,13 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
   const centerLat = (bounds[0][0] + bounds[1][0]) / 2;
   const centerLng = (bounds[0][1] + bounds[1][1]) / 2;
 
-  // Custom marker icon
+  // Custom marker — a small ring, no icon
   const customIcon = L.divIcon({
     className: "custom-marker",
-    html: `<div class="w-8 h-8 bg-primary rounded-full border-2 border-white shadow-lg flex items-center justify-center">
-      <span class="material-symbols-outlined text-black text-sm">photo_camera</span>
-    </div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
+    html: `<div class="w-3 h-3 rounded-full bg-primary ring-4 ring-primary/30"></div>`,
+    iconSize: [12, 12],
+    iconAnchor: [6, 6],
+    popupAnchor: [0, -10],
   });
 
   return (
@@ -133,14 +128,14 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
           border: none !important;
         }
         .leaflet-popup-content-wrapper {
-          background: #1a2e22;
-          color: white;
-          border-radius: 12px;
+          background: var(--color-surface);
+          color: var(--color-text-primary);
+          border-radius: 0;
           padding: 0;
           overflow: hidden;
         }
         .leaflet-popup-tip {
-          background: #1a2e22;
+          background: var(--color-surface);
         }
         .leaflet-popup-content {
           margin: 0 !important;
@@ -153,7 +148,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
       <MapContainer
         center={[centerLat, centerLng]}
         zoom={4}
-        className="w-full h-[600px] rounded-xl overflow-hidden z-0"
+        className="w-full h-[600px] overflow-hidden z-0"
         scrollWheelZoom={true}
       >
         <FitBoundsComponent bounds={bounds} />
@@ -188,7 +183,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
           </Marker>
         ))}
       </MapContainer>
-      <p className="text-center text-text-muted text-sm mt-4">
+      <p className="text-center font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted mt-6">
         {geoPhotos.length} {t("map", "photosWithGps")}
       </p>
     </>

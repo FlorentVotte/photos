@@ -22,29 +22,29 @@ describe("theme-utils", () => {
     it("should generate CSS for ocean-blue theme", () => {
       const css = generateThemeCSSVars("ocean-blue");
 
-      expect(css).toContain("--color-primary: #1d9dc9");
-      expect(css).toContain("--color-background: #111821");
+      expect(css).toContain("--color-primary: #6c9bb5");
+      expect(css).toContain("--color-background: #0f1a23");
     });
 
     it("should generate CSS for sunset-orange theme", () => {
       const css = generateThemeCSSVars("sunset-orange");
 
-      expect(css).toContain("--color-primary: #e86c4f");
-      expect(css).toContain("--color-background: #211814");
+      expect(css).toContain("--color-primary: #c08770");
+      expect(css).toContain("--color-background: #1f1612");
     });
 
     it("should generate CSS for midnight-purple theme", () => {
       const css = generateThemeCSSVars("midnight-purple");
 
-      expect(css).toContain("--color-primary: #9b6dff");
-      expect(css).toContain("--color-background: #17111f");
+      expect(css).toContain("--color-primary: #8a7cad");
+      expect(css).toContain("--color-background: #150f1d");
     });
 
     it("should generate CSS for desert-sand theme", () => {
       const css = generateThemeCSSVars("desert-sand");
 
-      expect(css).toContain("--color-primary: #d4a653");
-      expect(css).toContain("--color-background: #1f1c14");
+      expect(css).toContain("--color-primary: #b39870");
+      expect(css).toContain("--color-background: #1c1912");
     });
 
     it("should fall back to default theme for invalid theme", () => {
@@ -99,22 +99,22 @@ describe("theme-utils", () => {
 
     it("should return primary color for ocean-blue theme", () => {
       const color = getThemeMetaColor("ocean-blue");
-      expect(color).toBe("#1d9dc9");
+      expect(color).toBe("#6c9bb5");
     });
 
     it("should return primary color for sunset-orange theme", () => {
       const color = getThemeMetaColor("sunset-orange");
-      expect(color).toBe("#e86c4f");
+      expect(color).toBe("#c08770");
     });
 
     it("should return primary color for midnight-purple theme", () => {
       const color = getThemeMetaColor("midnight-purple");
-      expect(color).toBe("#9b6dff");
+      expect(color).toBe("#8a7cad");
     });
 
     it("should return primary color for desert-sand theme", () => {
       const color = getThemeMetaColor("desert-sand");
-      expect(color).toBe("#d4a653");
+      expect(color).toBe("#b39870");
     });
 
     it("should fall back to default theme for invalid theme", () => {
@@ -142,22 +142,22 @@ describe("theme-utils", () => {
 
     it("should return background color for ocean-blue theme", () => {
       const color = getThemeBackgroundColor("ocean-blue");
-      expect(color).toBe("#111821");
+      expect(color).toBe("#0f1a23");
     });
 
     it("should return background color for sunset-orange theme", () => {
       const color = getThemeBackgroundColor("sunset-orange");
-      expect(color).toBe("#211814");
+      expect(color).toBe("#1f1612");
     });
 
     it("should return background color for midnight-purple theme", () => {
       const color = getThemeBackgroundColor("midnight-purple");
-      expect(color).toBe("#17111f");
+      expect(color).toBe("#150f1d");
     });
 
     it("should return background color for desert-sand theme", () => {
       const color = getThemeBackgroundColor("desert-sand");
-      expect(color).toBe("#1f1c14");
+      expect(color).toBe("#1c1912");
     });
 
     it("should fall back to default theme for invalid theme", () => {

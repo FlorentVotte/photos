@@ -78,12 +78,12 @@ export default function ChapterRouteMap({
   if (!isClient || !L) {
     return (
       <div
-        className="w-full bg-surface-dark rounded-xl flex items-center justify-center"
+        className="w-full bg-surface-dark flex items-center justify-center"
         style={{ height }}
       >
-        <span className="material-symbols-outlined text-4xl text-primary animate-spin">
-          progress_activity
-        </span>
+        <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+          Loading map
+        </p>
       </div>
     );
   }
@@ -91,13 +91,10 @@ export default function ChapterRouteMap({
   if (geoPhotos.length === 0) {
     return (
       <div
-        className="w-full bg-surface-dark rounded-xl flex flex-col items-center justify-center gap-2 border border-surface-border"
+        className="w-full bg-surface-dark flex items-center justify-center border-y border-surface-border"
         style={{ height }}
       >
-        <span className="material-symbols-outlined text-4xl text-text-muted/30">
-          location_off
-        </span>
-        <p className="text-text-muted text-sm">No GPS data available</p>
+        <p className="font-sans text-sm text-text-muted">No GPS data available</p>
       </div>
     );
   }
@@ -118,29 +115,26 @@ export default function ChapterRouteMap({
     p.metadata.longitude!,
   ]);
 
-  // Create numbered marker icons
+  // Numbered marker icons — small, restrained, themed via CSS vars
   const createNumberedIcon = (index: number, isFirst: boolean, isLast: boolean) => {
     let iconHtml: string;
-    if (isFirst) {
-      iconHtml = `<div class="w-8 h-8 bg-primary rounded-full border-2 border-white shadow-lg flex items-center justify-center">
-        <span class="material-symbols-outlined text-black text-sm">play_arrow</span>
-      </div>`;
-    } else if (isLast) {
-      iconHtml = `<div class="w-8 h-8 bg-primary rounded-full border-2 border-white shadow-lg flex items-center justify-center">
-        <span class="material-symbols-outlined text-black text-sm">flag</span>
+    if (isFirst || isLast) {
+      const letter = isFirst ? "A" : "B";
+      iconHtml = `<div class="w-6 h-6 rounded-full bg-primary ring-4 ring-primary/30 flex items-center justify-center">
+        <span class="text-[10px] font-semibold text-background-dark tracking-wider">${letter}</span>
       </div>`;
     } else {
-      iconHtml = `<div class="w-6 h-6 bg-white rounded-full border-2 border-primary shadow-lg flex items-center justify-center">
-        <span class="text-xs font-bold text-primary">${index + 1}</span>
+      iconHtml = `<div class="w-4 h-4 rounded-full bg-primary/70 ring-2 ring-primary/20 flex items-center justify-center">
+        <span class="text-[8px] font-semibold text-background-dark">${index + 1}</span>
       </div>`;
     }
 
     return L.divIcon({
       className: "custom-marker",
       html: iconHtml,
-      iconSize: isFirst || isLast ? [32, 32] : [24, 24],
-      iconAnchor: isFirst || isLast ? [16, 32] : [12, 24],
-      popupAnchor: [0, isFirst || isLast ? -32 : -24],
+      iconSize: isFirst || isLast ? [24, 24] : [16, 16],
+      iconAnchor: isFirst || isLast ? [12, 12] : [8, 8],
+      popupAnchor: [0, isFirst || isLast ? -16 : -10],
     });
   };
 
@@ -158,21 +152,21 @@ export default function ChapterRouteMap({
           border: none !important;
         }
         .leaflet-popup-content-wrapper {
-          background: #1a2e22;
-          color: white;
-          border-radius: 12px;
+          background: var(--color-surface);
+          color: var(--color-text-primary);
+          border-radius: 0;
           padding: 0;
           overflow: hidden;
         }
         .leaflet-popup-tip {
-          background: #1a2e22;
+          background: var(--color-surface);
         }
         .leaflet-popup-content {
           margin: 0;
           width: 180px !important;
         }
       `}</style>
-      <div className="rounded-xl overflow-hidden border border-surface-border">
+      <div className="overflow-hidden border-y border-surface-border">
         <MapContainer
           center={[centerLat, centerLng]}
           zoom={10}
@@ -192,10 +186,10 @@ export default function ChapterRouteMap({
             <Polyline
               positions={routeCoordinates}
               pathOptions={{
-                color: "#1dc964",
-                weight: 3,
-                opacity: 0.8,
-                dashArray: "10, 10",
+                color: "#7ba88e",
+                weight: 2,
+                opacity: 0.7,
+                dashArray: "8, 8",
               }}
             />
           )}
@@ -235,7 +229,7 @@ export default function ChapterRouteMap({
             ))}
         </MapContainer>
       </div>
-      <p className="text-center text-text-muted text-sm mt-3">
+      <p className="text-center font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted mt-6">
         {geoPhotos.length} locations along the route
       </p>
     </>
