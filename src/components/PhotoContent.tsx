@@ -19,6 +19,19 @@ interface PhotoContentProps {
   nextPhoto: Photo | null;
 }
 
+function MetaRow({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 border-b border-surface-border/60 py-3 last:border-b-0">
+      <span className="font-sans text-[11px] uppercase tracking-[0.22em] text-text-muted">
+        {label}
+      </span>
+      <span className="font-sans text-sm tabular-nums text-foreground">
+        {value}
+      </span>
+    </div>
+  );
+}
+
 export default function PhotoContent({
   photo,
   album,
@@ -30,11 +43,8 @@ export default function PhotoContent({
   const { t } = useLocale();
   const router = useRouter();
 
-  // Share functionality
   const [showCopied, setShowCopied] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-
-  // Lightbox state
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(currentIndex);
 
@@ -43,18 +53,19 @@ export default function PhotoContent({
     setLightboxOpen(true);
   }, [currentIndex]);
 
-  const handleLightboxNavigate = useCallback((newIndex: number) => {
-    setLightboxIndex(newIndex);
-    // Update URL without triggering navigation (preserves lightbox state)
-    const newPhoto = albumPhotos[newIndex];
-    if (newPhoto) {
-      window.history.replaceState(null, "", `/photo/${newPhoto.id}`);
-    }
-  }, [albumPhotos]);
+  const handleLightboxNavigate = useCallback(
+    (newIndex: number) => {
+      setLightboxIndex(newIndex);
+      const newPhoto = albumPhotos[newIndex];
+      if (newPhoto) {
+        window.history.replaceState(null, "", `/photo/${newPhoto.id}`);
+      }
+    },
+    [albumPhotos]
+  );
 
   const handleLightboxClose = useCallback(() => {
     setLightboxOpen(false);
-    // If we navigated to a different photo in the lightbox, load that page
     const currentPhoto = albumPhotos[lightboxIndex];
     if (currentPhoto && currentPhoto.id !== photo.id) {
       router.push(`/photo/${currentPhoto.id}`, { scroll: false });
@@ -66,23 +77,21 @@ export default function PhotoContent({
     const title = photo.title;
     const text = photo.caption || `${photo.title} - ${photo.metadata.location}`;
 
-    // Try native share first (mobile)
     if (navigator.share) {
       try {
         await navigator.share({ title, text, url });
         return;
       } catch {
-        // User cancelled or share failed, fall through to clipboard
+        // user cancelled
       }
     }
 
-    // Fallback to clipboard
     try {
       await navigator.clipboard.writeText(url);
       setShowCopied(true);
       setTimeout(() => setShowCopied(false), 2000);
     } catch {
-      // Clipboard failed silently
+      // silent
     }
   };
 
@@ -94,21 +103,20 @@ export default function PhotoContent({
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      // Extract extension from src or default to jpg
-      const extension = photo.src.full.split(".").pop()?.split("?")[0] || "jpg";
+      const extension =
+        photo.src.full.split(".").pop()?.split("?")[0] || "jpg";
       link.download = `${photo.title}.${extension}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch {
-      // Download failed silently
+      // silent
     } finally {
       setIsDownloading(false);
     }
   };
 
-  // Touch/swipe handling for mobile navigation
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
@@ -126,14 +134,14 @@ export default function PhotoContent({
       const deltaX = touchEndX - touchStartX.current;
       const deltaY = touchEndY - touchStartY.current;
 
-      // Minimum swipe distance (50px) and ensure horizontal swipe is dominant
       const minSwipeDistance = 50;
-      if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (
+        Math.abs(deltaX) > minSwipeDistance &&
+        Math.abs(deltaX) > Math.abs(deltaY)
+      ) {
         if (deltaX > 0 && prevPhoto) {
-          // Swipe right - go to previous
           router.push(`/photo/${prevPhoto.id}`, { scroll: false });
         } else if (deltaX < 0 && nextPhoto) {
-          // Swipe left - go to next
           router.push(`/photo/${nextPhoto.id}`, { scroll: false });
         }
       }
@@ -151,269 +159,266 @@ export default function PhotoContent({
         nextPhotoId={nextPhoto?.id}
       />
 
-      <div className="layout-container flex h-full grow flex-col">
-        <div className="flex flex-1 justify-center py-5 px-4 md:px-10 lg:px-40">
-          <div className="layout-content-container flex flex-col max-w-[1080px] flex-1">
-            {/* Breadcrumbs */}
-            <div className="flex flex-wrap items-center gap-2 py-4 mb-2">
+      <div className="flex flex-1 justify-center px-6 pt-6 pb-20 md:px-12">
+        <div className="flex w-full max-w-[1200px] flex-col">
+          {/* Breadcrumbs */}
+          <nav
+            className="mb-6 flex flex-wrap items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em]"
+            aria-label="Breadcrumb"
+          >
+            <Link
+              href="/"
+              className="text-text-muted hover:text-foreground transition-colors"
+            >
+              {t("nav", "home")}
+            </Link>
+            <span className="text-text-muted/40">/</span>
+            {album && (
+              <>
+                <Link
+                  href={`/album/${album.slug}`}
+                  className="text-text-muted hover:text-foreground transition-colors"
+                >
+                  {album.title}
+                </Link>
+                <span className="text-text-muted/40">/</span>
+              </>
+            )}
+            <span className="text-foreground">{photo.title}</span>
+          </nav>
+
+          {/* Photo stage — full bleed within the content frame, no card frame */}
+          <div
+            className="relative group w-full overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            {prevPhoto && (
               <Link
-                href="/"
-                className="text-text-muted hover:text-primary transition-colors text-sm font-medium leading-normal"
+                href={`/photo/${prevPhoto.id}`}
+                scroll={false}
+                className="absolute inset-y-0 left-0 z-10 hidden w-20 items-center justify-start pl-4 text-3xl font-thin text-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:text-white md:flex"
+                aria-label="Previous photo"
               >
-                {t("nav", "home")}
+                ←
               </Link>
-              <span className="material-symbols-outlined text-text-muted text-[14px]">
-                chevron_right
-              </span>
-              {album && (
-                <>
-                  <Link
-                    href={`/album/${album.slug}`}
-                    className="text-text-muted hover:text-primary transition-colors text-sm font-medium leading-normal"
-                  >
-                    {album.title}
-                  </Link>
-                  <span className="material-symbols-outlined text-text-muted text-[14px]">
-                    chevron_right
-                  </span>
-                </>
-              )}
-              <span className="text-foreground text-sm font-medium leading-normal">
-                {photo.title}
-              </span>
+            )}
+            {nextPhoto && (
+              <Link
+                href={`/photo/${nextPhoto.id}`}
+                scroll={false}
+                className="absolute inset-y-0 right-0 z-10 hidden w-20 items-center justify-end pr-4 text-3xl font-thin text-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:text-white md:flex"
+                aria-label="Next photo"
+              >
+                →
+              </Link>
+            )}
+
+            <div
+              className="relative w-full h-[60vh] sm:h-[70vh] md:h-[78vh] flex items-center justify-center bg-background-dark cursor-pointer"
+              onClick={openLightbox}
+            >
+              <ProtectedImage
+                alt={photo.title}
+                className="max-h-full max-w-full object-contain pointer-events-none"
+                src={photo.src.full}
+              />
             </div>
 
-            {/* Main Photo Stage */}
-            <div
-              className="relative group w-full bg-surface-dark rounded-xl overflow-hidden shadow-2xl shadow-black/40 border border-surface-border"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
-              {/* Navigation Overlays */}
+            {/* Counter — quiet caption, not a backdrop pill */}
+            <p className="absolute top-4 left-4 z-10 font-sans text-[11px] uppercase tracking-[0.32em] text-white/60 tabular-nums">
+              {String(currentIndex + 1).padStart(2, "0")} /{" "}
+              {String(albumPhotos.length).padStart(2, "0")}
+            </p>
+
+            {/* Mobile nav */}
+            <div className="absolute bottom-4 right-4 z-10 flex gap-6 md:hidden">
               {prevPhoto && (
                 <Link
                   href={`/photo/${prevPhoto.id}`}
                   scroll={false}
-                  className="absolute inset-y-0 left-0 w-16 md:w-24 bg-gradient-to-r from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10"
+                  className="text-2xl font-thin text-white/60 hover:text-white"
+                  aria-label="Previous photo"
                 >
-                  <div className="size-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-primary hover:text-black transition-colors">
-                    <span className="material-symbols-outlined text-foreground hover:text-black">
-                      arrow_back
-                    </span>
-                  </div>
+                  ←
                 </Link>
               )}
               {nextPhoto && (
                 <Link
                   href={`/photo/${nextPhoto.id}`}
                   scroll={false}
-                  className="absolute inset-y-0 right-0 w-16 md:w-24 bg-gradient-to-l from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10"
+                  className="text-2xl font-thin text-white/60 hover:text-white"
+                  aria-label="Next photo"
                 >
-                  <div className="size-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-primary hover:text-black transition-colors">
-                    <span className="material-symbols-outlined text-foreground hover:text-black">
-                      arrow_forward
-                    </span>
-                  </div>
+                  →
                 </Link>
               )}
+            </div>
+          </div>
 
-              {/* The Image - Flickr-style: viewport height based for all aspect ratios */}
-              <div
-                className="relative w-full h-[60vh] sm:h-[70vh] md:h-[75vh] lg:h-[80vh] flex items-center justify-center bg-background-dark cursor-pointer"
-                onClick={openLightbox}
-              >
-                <ProtectedImage
-                  alt={photo.title}
-                  className="max-h-full max-w-full object-contain shadow-lg pointer-events-none"
-                  src={photo.src.full}
-                />
-              </div>
-
-              {/* Photo counter */}
-              <div className="absolute top-4 left-4 z-10 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-foreground text-sm font-medium">
-                {currentIndex + 1} / {albumPhotos.length}
-              </div>
-
-              {/* Mobile Nav Controls */}
-              <div className="md:hidden absolute bottom-4 right-4 flex gap-2">
-                {prevPhoto && (
-                  <Link
-                    href={`/photo/${prevPhoto.id}`}
-                    scroll={false}
-                    className="size-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-foreground border border-white/10"
-                  >
-                    <span className="material-symbols-outlined">arrow_back</span>
-                  </Link>
+          {/* Details */}
+          <div className="mt-12 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12 lg:gap-16">
+            {/* Left: title, caption, actions */}
+            <div className="flex flex-col gap-6">
+              <header className="flex flex-col gap-3">
+                <h1 className="font-display text-3xl md:text-4xl font-semibold leading-tight tracking-tight text-foreground">
+                  {photo.title}
+                </h1>
+                {photo.caption && (
+                  <p className="max-w-2xl font-sans text-base leading-relaxed text-text-muted">
+                    {photo.caption}
+                  </p>
                 )}
-                {nextPhoto && (
+              </header>
+
+              {/* Actions — quiet text row, no buttons */}
+              <div className="mt-2 flex flex-wrap items-center gap-x-8 gap-y-3">
+                <button
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                  className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label={t("photo", "download")}
+                >
+                  <span>
+                    {isDownloading ? "…" : t("photo", "download")}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="h-px w-6 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-10 group-hover/cta:bg-foreground"
+                  />
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="group/cta relative inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                  aria-label={t("photo", "share")}
+                >
+                  <span>{t("photo", "share")}</span>
+                  <span
+                    aria-hidden="true"
+                    className="h-px w-6 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-10 group-hover/cta:bg-foreground"
+                  />
+                  {showCopied && (
+                    <span className="absolute -top-8 left-0 font-sans text-[10px] uppercase tracking-[0.24em] text-foreground">
+                      {t("photo", "linkCopied")}
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={openLightbox}
+                  className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                >
+                  <span>{t("photo", "slideshow")}</span>
+                  <span
+                    aria-hidden="true"
+                    className="h-px w-6 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-10 group-hover/cta:bg-foreground"
+                  />
+                </button>
+              </div>
+
+              {/* Back to album */}
+              {album && (
+                <div className="mt-8 border-t border-surface-border pt-8">
                   <Link
-                    href={`/photo/${nextPhoto.id}`}
-                    scroll={false}
-                    className="size-10 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center text-foreground border border-white/10"
+                    href={`/album/${album.slug}`}
+                    className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
                   >
-                    <span className="material-symbols-outlined">
-                      arrow_forward
+                    <span
+                      aria-hidden="true"
+                      className="h-px w-6 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-10 group-hover/cta:bg-foreground"
+                    />
+                    <span>
+                      {t("photo", "backTo")} {album.title}
                     </span>
                   </Link>
-                )}
-              </div>
+                </div>
+              )}
             </div>
 
-            {/* Details Section */}
-            <div className="mt-8 pb-20">
-              {/* Title and Actions */}
-              <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                <div>
-                  <h1 className="text-foreground text-2xl md:text-3xl font-bold leading-tight tracking-[-0.015em] font-display">
-                    {photo.title}
-                  </h1>
-                  {photo.caption && (
-                    <p className="text-text-muted text-base mt-3 leading-relaxed max-w-2xl">
-                      {photo.caption}
+            {/* Right: location + EXIF — typographic, not dashboard */}
+            <aside className="flex flex-col gap-12">
+              {/* Location */}
+              <section className="flex flex-col gap-4">
+                <header className="flex flex-col gap-1">
+                  <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+                    Location
+                  </p>
+                  <p className="font-display text-base text-foreground">
+                    {photo.metadata.city
+                      ? `${photo.metadata.city}, ${photo.metadata.location}`
+                      : photo.metadata.location}
+                  </p>
+                  {photo.metadata.date && (
+                    <p className="font-sans text-xs text-text-muted">
+                      {photo.metadata.date}
                     </p>
                   )}
-                </div>
-                <div className="flex items-center gap-2">
-                  {/* Download button */}
-                  <button
-                    onClick={handleDownload}
-                    disabled={isDownloading}
-                    className="flex items-center gap-2 px-4 py-2 bg-surface-dark border border-surface-border rounded-lg text-foreground hover:border-primary hover:text-primary transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label={t("photo", "download")}
-                  >
-                    <span className={`material-symbols-outlined text-lg ${isDownloading ? "animate-spin" : ""}`}>
-                      {isDownloading ? "progress_activity" : "download"}
-                    </span>
-                    <span className="hidden sm:inline">{t("photo", "download")}</span>
-                  </button>
-                  {/* Share button */}
-                  <button
-                    onClick={handleShare}
-                    className="relative flex items-center gap-2 px-4 py-2 bg-surface-dark border border-surface-border rounded-lg text-foreground hover:border-primary hover:text-primary transition-colors text-sm font-medium"
-                    aria-label={t("photo", "share")}
-                  >
-                    <span className="material-symbols-outlined text-lg">share</span>
-                    <span className="hidden sm:inline">{t("photo", "share")}</span>
-                    {/* Copied tooltip */}
-                    {showCopied && (
-                      <span className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-black text-xs font-medium rounded-full whitespace-nowrap">
-                        {t("photo", "linkCopied")}
-                      </span>
-                    )}
-                  </button>
-                  <button
-                    onClick={openLightbox}
-                    className="flex items-center gap-2 px-4 py-2 bg-surface-dark border border-surface-border rounded-lg text-foreground hover:border-primary hover:text-primary transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-xl">slideshow</span>
-                    <span className="text-sm font-medium">{t("photo", "slideshow")}</span>
-                  </button>
-                </div>
-              </div>
+                </header>
 
-              {/* Info Grid - Map and Metadata side by side on desktop */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Left: Location Map or Location Info */}
-                <div className="bg-surface-dark rounded-xl p-5 border border-surface-border flex flex-col">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="size-9 rounded-full bg-surface-border flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-xl">location_on</span>
-                    </div>
-                    <div>
-                      <h3 className="text-foreground text-sm font-semibold">
-                        {photo.metadata.city
-                          ? `${photo.metadata.city}, ${photo.metadata.location}`
-                          : photo.metadata.location}
-                      </h3>
-                      <p className="text-text-muted text-xs">{photo.metadata.date}</p>
-                    </div>
-                  </div>
-
-                  {photo.metadata.latitude && photo.metadata.longitude ? (
+                {photo.metadata.latitude && photo.metadata.longitude ? (
+                  <div className="overflow-hidden border-y border-surface-border">
                     <PhotoLocationMap
                       latitude={photo.metadata.latitude}
                       longitude={photo.metadata.longitude}
                       title={photo.title}
                     />
-                  ) : (
-                    <div className="flex-1 min-h-[200px] bg-background-dark rounded-lg flex items-center justify-center">
-                      <span className="text-text-muted text-sm">{t("photo", "noGpsData")}</span>
-                    </div>
+                  </div>
+                ) : (
+                  <p className="border-y border-surface-border py-12 text-center font-sans text-xs text-text-muted">
+                    {t("photo", "noGpsData")}
+                  </p>
+                )}
+              </section>
+
+              {/* EXIF */}
+              <section className="flex flex-col gap-4">
+                <header className="flex flex-col gap-1">
+                  <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+                    Capture
+                  </p>
+                  <p className="font-display text-base text-foreground">
+                    {photo.metadata.camera || t("photo", "camera")}
+                  </p>
+                  {photo.metadata.lens && (
+                    <p className="font-sans text-xs text-text-muted truncate">
+                      {photo.metadata.lens}
+                    </p>
+                  )}
+                </header>
+
+                <div className="flex flex-col">
+                  {photo.metadata.aperture && (
+                    <MetaRow
+                      label={t("photo", "aperture")}
+                      value={photo.metadata.aperture}
+                    />
+                  )}
+                  {photo.metadata.shutterSpeed && (
+                    <MetaRow
+                      label={t("photo", "shutter")}
+                      value={photo.metadata.shutterSpeed}
+                    />
+                  )}
+                  {photo.metadata.iso && (
+                    <MetaRow
+                      label={t("photo", "iso")}
+                      value={photo.metadata.iso}
+                    />
+                  )}
+                  {photo.metadata.focalLength && (
+                    <MetaRow
+                      label={t("photo", "focal")}
+                      value={photo.metadata.focalLength}
+                    />
+                  )}
+                  {photo.metadata.width && photo.metadata.height && (
+                    <MetaRow
+                      label={t("photo", "resolution")}
+                      value={`${photo.metadata.width} × ${photo.metadata.height}`}
+                    />
                   )}
                 </div>
-
-                {/* Right: EXIF Data */}
-                <div className="bg-surface-dark rounded-xl p-5 border border-surface-border">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="size-9 rounded-full bg-surface-border flex items-center justify-center text-primary">
-                      <span className="material-symbols-outlined text-xl">camera</span>
-                    </div>
-                    <div>
-                      <h3 className="text-foreground text-sm font-semibold">
-                        {photo.metadata.camera || t("photo", "camera")}
-                      </h3>
-                      <p className="text-text-muted text-xs">{photo.metadata.lens || t("photo", "unknownLens")}</p>
-                    </div>
-                  </div>
-
-                  {/* EXIF Grid */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {photo.metadata.aperture && (
-                      <div className="flex flex-col items-center gap-2 p-4 bg-background-dark rounded-lg">
-                        <span className="material-symbols-outlined text-2xl text-primary">camera</span>
-                        <span className="text-foreground font-semibold">{photo.metadata.aperture}</span>
-                        <span className="text-text-muted text-xs uppercase tracking-wide">{t("photo", "aperture")}</span>
-                      </div>
-                    )}
-                    {photo.metadata.shutterSpeed && (
-                      <div className="flex flex-col items-center gap-2 p-4 bg-background-dark rounded-lg">
-                        <span className="material-symbols-outlined text-2xl text-primary">timer</span>
-                        <span className="text-foreground font-semibold">{photo.metadata.shutterSpeed}</span>
-                        <span className="text-text-muted text-xs uppercase tracking-wide">{t("photo", "shutter")}</span>
-                      </div>
-                    )}
-                    {photo.metadata.iso && (
-                      <div className="flex flex-col items-center gap-2 p-4 bg-background-dark rounded-lg">
-                        <span className="material-symbols-outlined text-2xl text-primary">iso</span>
-                        <span className="text-foreground font-semibold">{photo.metadata.iso}</span>
-                        <span className="text-text-muted text-xs uppercase tracking-wide">{t("photo", "iso")}</span>
-                      </div>
-                    )}
-                    {photo.metadata.focalLength && (
-                      <div className="flex flex-col items-center gap-2 p-4 bg-background-dark rounded-lg">
-                        <span className="material-symbols-outlined text-2xl text-primary">straighten</span>
-                        <span className="text-foreground font-semibold">{photo.metadata.focalLength}</span>
-                        <span className="text-text-muted text-xs uppercase tracking-wide">{t("photo", "focal")}</span>
-                      </div>
-                    )}
-                    {photo.metadata.width && photo.metadata.height && (
-                      <div className="flex flex-col items-center gap-2 p-4 bg-background-dark rounded-lg">
-                        <span className="material-symbols-outlined text-2xl text-primary">aspect_ratio</span>
-                        <span className="text-foreground font-semibold">
-                          {photo.metadata.width} × {photo.metadata.height}
-                        </span>
-                        <span className="text-text-muted text-xs uppercase tracking-wide">{t("photo", "resolution")}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Back to Album */}
-                  {album && (
-                    <div className="mt-5 pt-4 border-t border-surface-border">
-                      <Link
-                        href={`/album/${album.slug}`}
-                        className="flex items-center gap-2 text-text-muted hover:text-primary transition-colors text-sm"
-                      >
-                        <span className="material-symbols-outlined text-base">
-                          arrow_back
-                        </span>
-                        {t("photo", "backTo")} {album.title}
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+              </section>
+            </aside>
           </div>
         </div>
       </div>
