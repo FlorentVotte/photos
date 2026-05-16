@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
+import "leaflet/dist/leaflet.css";
 import type { Photo } from "@/lib/types";
 
 export default function V2LeafletMap({ photos }: { photos: Photo[] }) {
@@ -14,7 +14,6 @@ export default function V2LeafletMap({ photos }: { photos: Photo[] }) {
 
     (async () => {
       const L = await import("leaflet");
-      await import("leaflet/dist/leaflet.css");
       if (cancelled || !containerRef.current) return;
 
       const map = L.map(containerRef.current, {
