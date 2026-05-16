@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   // Require authentication to prevent info leakage
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return NextResponse.json(
       { configured: false, connected: false },
       { status: 401 }

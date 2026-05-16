@@ -3,25 +3,41 @@ import fs from "fs";
 import path from "path";
 
 // Serve photos from the data directory (for standalone mode)
-const PHOTOS_DIR = process.env.NODE_ENV === "production"
-  ? "/app/data/photos"
-  : path.join(process.cwd(), "public/photos");
+const PHOTOS_DIR = path.resolve(
+  process.env.NODE_ENV === "production"
+    ? "/app/data/photos"
+    : path.join(process.cwd(), "public/photos")
+);
+const PHOTOS_DIR_PREFIX = PHOTOS_DIR + path.sep;
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
 ) {
   const { path: pathSegments } = await params;
-  const filePath = path.join(PHOTOS_DIR, ...pathSegments);
 
-  // Security: ensure path doesn't escape photos directory
-  const normalizedPath = path.normalize(filePath);
-  if (!normalizedPath.startsWith(PHOTOS_DIR)) {
+  // Reject any segment that contains separators or null bytes outright;
+  // these should never appear in a legitimate path segment.
+  for (const segment of pathSegments) {
+    if (
+      typeof segment !== "string" ||
+      segment.includes("\0") ||
+      segment.includes("/") ||
+      segment.includes("\\")
+    ) {
+      return new NextResponse("Forbidden", { status: 403 });
+    }
+  }
+
+  const filePath = path.resolve(PHOTOS_DIR, ...pathSegments);
+
+  // Security: ensure path is inside photos directory (or is the dir itself).
+  if (filePath !== PHOTOS_DIR && !filePath.startsWith(PHOTOS_DIR_PREFIX)) {
     return new NextResponse("Forbidden", { status: 403 });
   }
 
   try {
-    // Check if file exists
+    // Check if file exists (use the resolved, validated path)
     if (!fs.existsSync(filePath)) {
       return new NextResponse("Not Found", { status: 404 });
     }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { decrypt, isEncrypted } from "@/lib/crypto";
+import { requireAuth } from "@/lib/auth";
 
 // Force dynamic to prevent caching
 export const dynamic = "force-dynamic";
@@ -54,6 +55,9 @@ async function fetchWithAuth(url: string, accessToken: string) {
 }
 
 export async function GET() {
+  const authError = await requireAuth();
+  if (authError) return authError;
+
   try {
     const token = await prisma.adobeToken.findUnique({
       where: { id: "default" },
