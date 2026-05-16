@@ -1,6 +1,10 @@
 "use client";
 
-import { SyncProgress, calculateOverallProgress, formatProgressMessage } from "@/lib/sync-progress";
+import {
+  SyncProgress,
+  calculateOverallProgress,
+  formatProgressMessage,
+} from "@/lib/sync-progress";
 
 interface SyncProgressBarProps {
   progress: SyncProgress;
@@ -10,59 +14,32 @@ export default function SyncProgressBar({ progress }: SyncProgressBarProps) {
   const percentage = calculateOverallProgress(progress);
   const message = formatProgressMessage(progress);
 
-  const getStatusColor = () => {
-    switch (progress.status) {
-      case "completed":
-        return {
-          bg: "bg-green-900/30",
-          border: "border-green-800",
-          text: "text-green-400",
-          bar: "bg-green-500",
-        };
-      case "error":
-        return {
-          bg: "bg-red-900/30",
-          border: "border-red-800",
-          text: "text-red-400",
-          bar: "bg-red-500",
-        };
-      case "syncing":
-        return {
-          bg: "bg-blue-900/30",
-          border: "border-blue-800",
-          text: "text-blue-400",
-          bar: "bg-primary",
-        };
-      default:
-        return {
-          bg: "bg-surface-dark",
-          border: "border-surface-border",
-          text: "text-text-muted",
-          bar: "bg-primary",
-        };
-    }
-  };
-
-  const colors = getStatusColor();
+  const statusColor =
+    progress.status === "completed"
+      ? "text-green-400/90"
+      : progress.status === "error"
+      ? "text-red-400/90"
+      : "text-text-muted";
 
   return (
     <div
-      className={`p-4 rounded-lg border ${colors.bg} ${colors.border}`}
+      className="border-t border-b border-surface-border bg-surface-dark/40 p-5"
       role="status"
       aria-live="polite"
       aria-busy={progress.status === "syncing"}
     >
-      {/* Progress bar */}
       {progress.status === "syncing" && (
         <div className="mb-3">
-          <div className="flex justify-between text-xs mb-1">
-            <span className={colors.text}>
-              {progress.currentGalleryName || "Initializing..."}
+          <div className="mb-2 flex items-baseline justify-between gap-4 font-sans text-[11px] uppercase tracking-[0.24em]">
+            <span className="text-text-muted truncate">
+              {progress.currentGalleryName || "Initializing…"}
             </span>
-            <span className={colors.text}>{Math.round(percentage)}%</span>
+            <span className="text-foreground tabular-nums">
+              {Math.round(percentage)}%
+            </span>
           </div>
           <div
-            className="h-2 bg-background-dark rounded-full overflow-hidden"
+            className="h-px w-full bg-surface-border overflow-hidden"
             role="progressbar"
             aria-valuenow={Math.round(percentage)}
             aria-valuemin={0}
@@ -70,36 +47,24 @@ export default function SyncProgressBar({ progress }: SyncProgressBarProps) {
             aria-label="Sync progress"
           >
             <div
-              className={`h-full ${colors.bar} transition-all duration-300 ease-out`}
+              className="h-full bg-foreground transition-all duration-300 ease-out"
               style={{ width: `${percentage}%` }}
             />
           </div>
         </div>
       )}
 
-      {/* Status message */}
-      <div className="flex items-center gap-2">
+      <p className={`font-sans text-sm ${statusColor}`}>
         {progress.status === "syncing" && (
-          <span className="material-symbols-outlined animate-spin text-sm">
-            sync
+          <span aria-hidden="true" className="mr-2 animate-pulse">
+            ●
           </span>
         )}
-        {progress.status === "completed" && (
-          <span className="material-symbols-outlined text-sm text-green-400">
-            check_circle
-          </span>
-        )}
-        {progress.status === "error" && (
-          <span className="material-symbols-outlined text-sm text-red-400">
-            error
-          </span>
-        )}
-        <span className={`text-sm ${colors.text}`}>{message}</span>
-      </div>
+        {message}
+      </p>
 
-      {/* Detailed progress for syncing */}
       {progress.status === "syncing" && progress.currentPhotoName && (
-        <p className="mt-2 text-xs text-text-muted truncate">
+        <p className="mt-1 truncate font-sans text-xs text-text-muted/70">
           Processing: {progress.currentPhotoName}
         </p>
       )}

@@ -23,24 +23,28 @@ export default function GalleryList({
 }: GalleryListProps) {
   if (loading) {
     return (
-      <div className="text-text-muted py-4" role="status" aria-busy="true">
-        Loading galleries...
-      </div>
+      <p
+        className="py-6 font-sans text-sm text-text-muted"
+        role="status"
+        aria-busy="true"
+      >
+        Loading galleries…
+      </p>
     );
   }
 
   if (galleries.length === 0) {
     return (
-      <div className="text-text-muted py-8 text-center">
+      <p className="py-8 text-center font-sans text-sm text-text-muted">
         No galleries configured. Add your first Lightroom gallery above.
-      </div>
+      </p>
     );
   }
 
   return (
-    <div className="space-y-3" role="list" aria-label="Configured galleries">
+    <ul className="flex flex-col" role="list" aria-label="Configured galleries">
       {galleries.map((gallery) => (
-        <div key={gallery.id} role="listitem">
+        <li key={gallery.id} role="listitem">
           <GalleryListItem
             gallery={gallery}
             onSync={onSync}
@@ -49,8 +53,8 @@ export default function GalleryList({
             syncing={syncingGalleryId === gallery.id}
             disabled={disabled || syncingGalleryId !== null}
           />
-        </div>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

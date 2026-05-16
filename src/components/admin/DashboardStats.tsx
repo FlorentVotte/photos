@@ -10,36 +10,34 @@ interface DashboardStatsProps {
   loading?: boolean;
 }
 
-interface StatCardProps {
-  icon: string;
+interface StatProps {
   label: string;
   value: string | number;
   subtext?: string;
-  status?: "success" | "warning" | "error" | "neutral";
+  state?: "success" | "warning" | "error" | "neutral";
 }
 
-function StatCard({ icon, label, value, subtext, status = "neutral" }: StatCardProps) {
-  const statusColors = {
-    success: "text-green-400",
-    warning: "text-yellow-400",
-    error: "text-red-400",
-    neutral: "text-primary",
-  };
+function Stat({ label, value, subtext, state = "neutral" }: StatProps) {
+  const stateClass = {
+    success: "text-foreground",
+    warning: "text-yellow-400/90",
+    error: "text-red-400/90",
+    neutral: "text-foreground",
+  }[state];
 
   return (
-    <div className="bg-surface-dark rounded-xl p-4 border border-surface-border">
-      <div className="flex items-center gap-3">
-        <span className={`material-symbols-outlined text-2xl ${statusColors[status]}`}>
-          {icon}
+    <div className="flex flex-col gap-1.5">
+      <span className="font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted">
+        {label}
+      </span>
+      <span className={`font-display text-2xl md:text-3xl font-semibold tabular-nums leading-none ${stateClass}`}>
+        {value}
+      </span>
+      {subtext && (
+        <span className="font-sans text-xs text-text-muted truncate">
+          {subtext}
         </span>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-text-muted uppercase tracking-wider">{label}</p>
-          <p className="text-xl font-bold text-foreground">{value}</p>
-          {subtext && (
-            <p className="text-xs text-text-muted truncate">{subtext}</p>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -70,10 +68,10 @@ export default function DashboardStats({
   };
 
   const getAdobeStatusInfo = () => {
-    if (!adobeStatus) return { status: "neutral" as const, text: "Loading..." };
-    if (adobeStatus.connected) return { status: "success" as const, text: "Connected" };
-    if (adobeStatus.configured) return { status: "warning" as const, text: "Disconnected" };
-    return { status: "error" as const, text: "Not configured" };
+    if (!adobeStatus) return { state: "neutral" as const, text: "Loading…" };
+    if (adobeStatus.connected) return { state: "success" as const, text: "Connected" };
+    if (adobeStatus.configured) return { state: "warning" as const, text: "Disconnected" };
+    return { state: "error" as const, text: "Not configured" };
   };
 
   const adobeInfo = getAdobeStatusInfo();
@@ -81,23 +79,15 @@ export default function DashboardStats({
   if (loading) {
     return (
       <div
-        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+        className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-10 mb-12 border-y border-surface-border py-10"
         role="status"
         aria-busy="true"
         aria-label="Loading dashboard statistics"
       >
         {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="bg-surface-dark rounded-xl p-4 border border-surface-border animate-pulse"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-surface-border rounded" />
-              <div className="flex-1">
-                <div className="h-3 w-16 bg-surface-border rounded mb-2" />
-                <div className="h-6 w-12 bg-surface-border rounded" />
-              </div>
-            </div>
+          <div key={i} className="flex flex-col gap-1.5 animate-pulse">
+            <div className="h-3 w-20 bg-surface-border" />
+            <div className="h-8 w-14 bg-surface-border" />
           </div>
         ))}
       </div>
@@ -106,51 +96,41 @@ export default function DashboardStats({
 
   return (
     <div
-      className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+      className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-10 mb-12 border-y border-surface-border py-10"
       role="region"
       aria-label="Dashboard statistics"
     >
-      <StatCard
-        icon="photo_library"
+      <Stat
         label="Albums"
         value={galleries.length}
         subtext={featuredCount > 0 ? `${featuredCount} featured` : undefined}
-        status="neutral"
       />
-      <StatCard
-        icon="image"
-        label="Photos"
-        value={totalPhotos.toLocaleString()}
-        status="neutral"
-      />
-      <StatCard
-        icon="sync"
-        label="Last Sync"
-        value={formatLastSync()}
-        status="neutral"
-      />
-      {/* Adobe API card with reconnect button */}
-      <div className="bg-surface-dark rounded-xl p-4 border border-surface-border">
-        <div className="flex items-center gap-3">
-          <span className={`material-symbols-outlined text-2xl ${
-            adobeInfo.status === "success" ? "text-green-400" :
-            adobeInfo.status === "warning" ? "text-yellow-400" :
-            adobeInfo.status === "error" ? "text-red-400" : "text-primary"
-          }`}>
-            cloud
+      <Stat label="Photos" value={totalPhotos.toLocaleString()} />
+      <Stat label="Last sync" value={formatLastSync()} />
+      <div className="flex flex-col gap-1.5">
+        <span className="font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted">
+          Adobe API
+        </span>
+        <div className="flex items-baseline gap-3">
+          <span
+            className={`font-display text-2xl md:text-3xl font-semibold leading-none ${
+              adobeInfo.state === "success"
+                ? "text-foreground"
+                : adobeInfo.state === "warning"
+                ? "text-yellow-400/90"
+                : adobeInfo.state === "error"
+                ? "text-red-400/90"
+                : "text-foreground"
+            }`}
+          >
+            {adobeInfo.text}
           </span>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-text-muted uppercase tracking-wider">Adobe API</p>
-            <p className="text-xl font-bold text-foreground">{adobeInfo.text}</p>
-          </div>
           <a
             href="/api/auth/adobe"
-            className="p-2 text-text-muted hover:text-primary transition-colors rounded-lg hover:bg-surface-border"
+            className="font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
             title={adobeStatus?.connected ? "Reconnect" : "Connect"}
           >
-            <span className="material-symbols-outlined text-xl">
-              {adobeStatus?.connected ? "refresh" : "link"}
-            </span>
+            {adobeStatus?.connected ? "Reconnect" : "Connect"}
           </a>
         </div>
       </div>

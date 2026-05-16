@@ -18,80 +18,79 @@ export default function AdobeConnectionCard({
   onBrowseAlbums,
   browsingAlbums = false,
 }: AdobeConnectionCardProps) {
-  const getStatusBadge = () => {
+  const getStatusLabel = () => {
     if (!status) return null;
+    if (status.connected) return "Connected";
+    if (status.configured) return "Not connected";
+    return "Not configured";
+  };
 
-    if (status.connected) {
-      return (
-        <span className="px-2 py-0.5 text-xs rounded bg-green-900/30 text-green-400 border border-green-800">
-          Connected
-        </span>
-      );
-    }
-    if (status.configured) {
-      return (
-        <span className="px-2 py-0.5 text-xs rounded bg-yellow-900/30 text-yellow-400 border border-yellow-800">
-          Not connected
-        </span>
-      );
-    }
-    return (
-      <span className="px-2 py-0.5 text-xs rounded bg-red-900/30 text-red-400 border border-red-800">
-        Not configured
-      </span>
-    );
+  const getStatusColor = () => {
+    if (!status) return "text-text-muted";
+    if (status.connected) return "text-green-400/90";
+    if (status.configured) return "text-yellow-400/90";
+    return "text-red-400/90";
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-foreground mb-1 flex items-center gap-2">
-            Adobe Lightroom API
-            {getStatusBadge()}
-          </h2>
-          <p className="text-sm text-text-muted">
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-baseline gap-4">
+            <h2 className="font-display text-xl md:text-2xl font-semibold tracking-tight text-foreground">
+              Adobe Lightroom API
+            </h2>
+            <span className={`font-sans text-[11px] uppercase tracking-[0.24em] ${getStatusColor()}`}>
+              {getStatusLabel()}
+            </span>
+          </div>
+          <p className="font-sans text-sm text-text-muted">
             {status?.connected
               ? "Your Adobe account is connected"
               : "Connect your Adobe account to sync photo titles and captions"}
           </p>
           {status?.connected && status.updatedAt && (
-            <p className="text-xs text-text-muted mt-1">
-              Connected on: {new Date(status.updatedAt).toLocaleString()}
+            <p className="font-sans text-xs text-text-muted/70">
+              Connected on {new Date(status.updatedAt).toLocaleString()}
             </p>
           )}
         </div>
         {status?.connected ? (
           <a
             href="/api/auth/adobe"
-            className="p-2 text-text-muted hover:text-primary transition-colors rounded-lg hover:bg-surface-border"
+            className="group/cta inline-flex items-center gap-3 self-start font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
             aria-label="Reconnect Adobe account"
-            title="Reconnect Adobe account"
           >
-            <span className="material-symbols-outlined">refresh</span>
+            <span>Reconnect</span>
+            <span
+              aria-hidden="true"
+              className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+            />
           </a>
         ) : (
           <a
             href="/api/auth/adobe"
-            className="px-6 py-3 font-semibold rounded-lg transition-colors flex items-center gap-2 bg-[#FF0000] text-foreground hover:bg-[#CC0000]"
+            className="group/cta inline-flex items-center gap-3 self-start font-sans text-[11px] uppercase tracking-[0.24em] text-foreground hover:text-foreground transition-colors"
             aria-label="Connect Adobe account"
           >
-            <span className="material-symbols-outlined">link</span>
-            Connect Adobe
+            <span>Connect Adobe</span>
+            <span
+              aria-hidden="true"
+              className="h-px w-8 bg-foreground/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+            />
           </a>
         )}
       </div>
 
-      {/* Configuration hint */}
       {status && !status.configured && (
-        <p className="text-xs text-text-muted/70">
+        <p className="font-sans text-xs text-text-muted/70 leading-relaxed">
           Requires ADOBE_CLIENT_ID and ADOBE_CLIENT_SECRET in .env file. Get
           credentials from{" "}
           <a
             href="https://developer.adobe.com/console"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary hover:underline"
+            className="underline underline-offset-2 hover:text-foreground transition-colors"
           >
             Adobe Developer Console
           </a>
@@ -99,30 +98,23 @@ export default function AdobeConnectionCard({
         </p>
       )}
 
-      {/* Browse albums when connected */}
       {status?.connected && (
-        <div className="pt-4 border-t border-surface-border">
+        <div className="flex flex-col gap-3 border-t border-surface-border pt-6">
           <button
             onClick={onBrowseAlbums}
             disabled={browsingAlbums}
-            className="px-6 py-3 bg-primary text-black font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50"
+            className="group/cta inline-flex items-center gap-3 self-start font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Browse your Lightroom albums"
           >
-            {browsingAlbums ? (
-              <>
-                <span className="material-symbols-outlined animate-spin">
-                  sync
-                </span>
-                Loading albums...
-              </>
-            ) : (
-              <>
-                <span className="material-symbols-outlined">photo_library</span>
-                Browse Lightroom Albums
-              </>
-            )}
+            <span>
+              {browsingAlbums ? "Loading albums…" : "Browse Lightroom albums"}
+            </span>
+            <span
+              aria-hidden="true"
+              className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+            />
           </button>
-          <p className="mt-2 text-xs text-text-muted">
+          <p className="font-sans text-xs text-text-muted/70">
             Add albums directly from your Lightroom catalog (no public sharing
             needed)
           </p>
