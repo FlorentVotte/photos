@@ -18,14 +18,14 @@ export interface ThemePreset {
 export const THEME_PRESETS = {
   "forest-green": {
     name: "Forest Green",
-    description: "Deep forest tones with emerald accents",
+    description: "Deep forest tones with restrained sage accents",
     colors: {
-      primary: "#1dc964",
-      background: "#112118",
-      surface: "#1a2e22",
-      surfaceBorder: "#254633",
-      textPrimary: "#ffffff",
-      textMuted: "#95c6a9",
+      primary: "#7ba88e",
+      background: "#0f1c14",
+      surface: "#172620",
+      surfaceBorder: "#22372e",
+      textPrimary: "#f4f4f3",
+      textMuted: "#9aae9f",
     },
   },
   "ocean-blue": {

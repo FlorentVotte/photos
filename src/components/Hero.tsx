@@ -1,14 +1,15 @@
+"use client";
+
 import Link from "next/link";
+import { useLocale } from "@/lib/LocaleContext";
 
 interface HeroProps {
   title: string;
   subtitle?: string;
   description?: string;
   backgroundImage: string;
-  tag?: string;
-  ctaText?: string;
+  kicker?: string;
   ctaLink?: string;
-  showScrollHint?: boolean;
 }
 
 export default function Hero({
@@ -16,68 +17,57 @@ export default function Hero({
   subtitle,
   description,
   backgroundImage,
-  tag = "Featured Story",
-  ctaText = "Read Story",
+  kicker,
   ctaLink,
-  showScrollHint = true,
 }: HeroProps) {
+  const { t } = useLocale();
+
   return (
-    <div className="@container mb-12">
-      <div
-        className="flex min-h-[560px] flex-col gap-6 bg-cover bg-center bg-no-repeat rounded-xl items-start justify-end px-6 pb-12 pt-40 md:px-12"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 40%, rgba(0, 0, 0, 0.8) 100%), url("${backgroundImage}")`,
-        }}
-      >
-        <div className="flex flex-col gap-3 text-left max-w-2xl">
-          {tag && (
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 backdrop-blur-sm border border-primary/30 w-fit mb-2">
-              <span className="material-symbols-outlined text-primary text-sm">
-                auto_awesome
-              </span>
-              <span className="text-foreground text-xs font-bold uppercase tracking-widest">
-                {tag}
-              </span>
-            </div>
+    <section
+      className="relative w-full bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.15) 45%, rgba(0, 0, 0, 0.7) 100%), url("${backgroundImage}")`,
+      }}
+      aria-label={title}
+    >
+      <div className="mx-auto flex min-h-[70vh] max-w-[1200px] flex-col justify-end px-6 pb-16 pt-40 md:px-12 lg:min-h-[80vh] lg:pb-24">
+        <div className="flex max-w-2xl flex-col gap-4 text-left">
+          {kicker && (
+            <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-white/70">
+              {kicker}
+            </p>
           )}
 
-          <h1 className="text-foreground text-4xl md:text-6xl font-black leading-tight tracking-[-0.033em]">
+          <h1 className="text-foreground text-5xl md:text-7xl font-semibold leading-[1.02] tracking-tight">
             {title}
           </h1>
 
           {subtitle && (
-            <p className="text-primary text-xl md:text-2xl font-medium italic">
+            <p className="text-white/80 text-lg md:text-xl font-normal italic font-display">
               {subtitle}
             </p>
           )}
 
           {description && (
-            <p className="text-gray-200 text-base md:text-lg font-normal leading-relaxed font-sans max-w-xl">
+            <p className="max-w-xl text-white/70 text-base md:text-lg font-normal leading-relaxed font-sans">
               {description}
             </p>
           )}
+
+          {ctaLink && (
+            <Link
+              href={ctaLink}
+              className="group/cta mt-4 inline-flex items-center gap-3 self-start font-sans text-sm uppercase tracking-[0.24em] text-white/80 hover:text-white transition-colors"
+            >
+              <span>{t("home", "viewAlbum")}</span>
+              <span
+                aria-hidden="true"
+                className="h-px w-8 bg-white/50 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-white"
+              />
+            </Link>
+          )}
         </div>
-
-        {ctaLink && (
-          <Link
-            href={ctaLink}
-            className="flex items-center gap-2 cursor-pointer overflow-hidden rounded-lg h-12 px-6 bg-white text-background-dark hover:bg-gray-100 transition-colors text-base font-bold leading-normal tracking-[0.015em]"
-          >
-            <span>{ctaText}</span>
-            <span className="material-symbols-outlined text-sm">
-              arrow_forward
-            </span>
-          </Link>
-        )}
-
-        {showScrollHint && (
-          <div className="animate-bounce text-foreground/50 mt-4 self-center">
-            <span className="material-symbols-outlined text-3xl">
-              keyboard_arrow_down
-            </span>
-          </div>
-        )}
       </div>
-    </div>
+    </section>
   );
 }

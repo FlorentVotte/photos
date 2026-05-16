@@ -24,13 +24,13 @@ export default function Header({ transparent = false }: HeaderProps) {
           : "bg-background-dark/95 backdrop-blur-md"
       }`}
     >
-      <Link href="/" className="flex items-center gap-4">
-        <div className="size-8 flex items-center justify-center text-primary">
-          <span className="material-symbols-outlined text-3xl">public</span>
-        </div>
-        <h2 className="text-lg sm:text-xl font-bold leading-tight tracking-[-0.015em]">
-          REGARDS PERDUS
+      <Link href="/" className="group flex items-baseline gap-2">
+        <h2 className="text-base sm:text-lg font-semibold leading-none tracking-[0.18em] uppercase">
+          Regards
         </h2>
+        <span className="text-base sm:text-lg font-light leading-none tracking-[0.18em] uppercase text-text-muted group-hover:text-foreground transition-colors">
+          Perdus
+        </span>
       </Link>
 
       <div className="flex flex-1 justify-end gap-8">
