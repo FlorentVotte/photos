@@ -7,7 +7,10 @@ interface GalleryFormProps {
   loading?: boolean;
 }
 
-export default function GalleryForm({ onSubmit, loading = false }: GalleryFormProps) {
+export default function GalleryForm({
+  onSubmit,
+  loading = false,
+}: GalleryFormProps) {
   const [url, setUrl] = useState("");
   const [featured, setFeatured] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -16,9 +19,13 @@ export default function GalleryForm({ onSubmit, loading = false }: GalleryFormPr
     e.preventDefault();
     if (!url.trim() || submitting) return;
 
-    // Validate URL format
-    if (!url.includes("lightroom.adobe.com/shares/") && !url.includes("adobe.ly/")) {
-      alert("Please enter a valid Lightroom share URL (https://lightroom.adobe.com/shares/... or https://adobe.ly/...)");
+    if (
+      !url.includes("lightroom.adobe.com/shares/") &&
+      !url.includes("adobe.ly/")
+    ) {
+      alert(
+        "Please enter a valid Lightroom share URL (https://lightroom.adobe.com/shares/... or https://adobe.ly/...)"
+      );
       return;
     }
 
@@ -35,24 +42,28 @@ export default function GalleryForm({ onSubmit, loading = false }: GalleryFormPr
   const isDisabled = loading || submitting;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="flex gap-2">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:gap-6">
         <input
           id="gallery-url"
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://lightroom.adobe.com/shares/..."
+          placeholder="https://lightroom.adobe.com/shares/…"
           disabled={isDisabled}
           aria-label="Lightroom gallery URL"
-          className="flex-1 px-4 py-2.5 bg-background-dark border border-surface-border rounded-lg text-foreground placeholder-text-muted focus:outline-none focus:border-primary transition-colors disabled:opacity-50 text-sm"
+          className="flex-1 border-b border-surface-border bg-transparent pb-2.5 font-sans text-sm text-foreground placeholder-text-muted/50 focus:border-foreground focus:outline-none transition-colors disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={isDisabled || !url.trim()}
-          className="px-5 py-2.5 bg-surface-border text-foreground font-medium rounded-lg hover:bg-surface-border/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
+          className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {submitting ? "Adding..." : "Add"}
+          <span>{submitting ? "Adding…" : "Add gallery"}</span>
+          <span
+            aria-hidden="true"
+            className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+          />
         </button>
       </div>
       <div className="flex items-center gap-2">
@@ -62,9 +73,12 @@ export default function GalleryForm({ onSubmit, loading = false }: GalleryFormPr
           checked={featured}
           onChange={(e) => setFeatured(e.target.checked)}
           disabled={isDisabled}
-          className="w-4 h-4 accent-primary"
+          className="h-3.5 w-3.5 accent-primary"
         />
-        <label htmlFor="gallery-featured" className="text-xs text-text-muted">
+        <label
+          htmlFor="gallery-featured"
+          className="font-sans text-xs text-text-muted"
+        >
           Set as featured (shown on homepage)
         </label>
       </div>

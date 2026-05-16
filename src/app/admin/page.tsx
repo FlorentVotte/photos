@@ -277,22 +277,30 @@ export default function AdminPage() {
         <SkipLink />
         <Header />
 
-        <main id="main-content" className="flex-1 py-6 md:py-12 px-4 md:px-8 lg:px-16">
-          <div className="max-w-4xl mx-auto">
+        <main id="main-content" className="flex-1 px-6 pt-16 pb-20 md:px-12 md:pt-20">
+          <div className="mx-auto max-w-4xl">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-                Album Manager
-              </h1>
+            <header className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex flex-col gap-2">
+                <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+                  Admin
+                </p>
+                <h1 className="font-display text-4xl md:text-5xl font-semibold tracking-tight text-foreground">
+                  Album Manager
+                </h1>
+              </div>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-sm text-text-muted hover:text-foreground transition-colors flex items-center gap-2"
+                className="group/cta inline-flex items-center gap-3 self-start font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
                 aria-label="Logout from admin"
               >
-                <span className="material-symbols-outlined text-base">logout</span>
-                Logout
+                <span>Logout</span>
+                <span
+                  aria-hidden="true"
+                  className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+                />
               </button>
-            </div>
+            </header>
 
             {/* Dashboard Stats */}
             <DashboardStats
@@ -303,93 +311,99 @@ export default function AdminPage() {
             />
 
             {/* Add New Album */}
-            <AdminSection
-              title="Add New Album"
-              className="mb-6"
-            >
-              <div className="space-y-4">
-                {/* Browse Lightroom - Primary option */}
-                {adobeStatus?.connected ? (
-                  <button
-                    onClick={fetchLightroomAlbums}
-                    disabled={loadingAlbums}
-                    className="w-full px-6 py-3 bg-primary text-black font-semibold rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-                    aria-label="Browse your Lightroom albums"
-                  >
-                    {loadingAlbums ? (
-                      <>
-                        <span className="material-symbols-outlined animate-spin">sync</span>
-                        Loading...
-                      </>
-                    ) : (
-                      <>
-                        <span className="material-symbols-outlined">photo_library</span>
-                        Browse Lightroom
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <div className="flex items-center gap-3 p-3 bg-surface-dark rounded-lg border border-surface-border">
-                    <span className="material-symbols-outlined text-text-muted">link_off</span>
-                    <span className="text-sm text-text-muted flex-1">
-                      Connect Adobe to browse private albums
-                    </span>
-                    <a
-                      href="/api/auth/adobe"
-                      className="px-4 py-2 bg-[#FF0000] text-white text-sm font-semibold rounded-lg hover:bg-[#CC0000] transition-colors"
+            <div className="mb-16">
+              <AdminSection title="Add new album">
+                <div className="flex flex-col gap-6">
+                  {/* Browse Lightroom — primary option */}
+                  {adobeStatus?.connected ? (
+                    <button
+                      onClick={fetchLightroomAlbums}
+                      disabled={loadingAlbums}
+                      className="group/cta inline-flex items-center gap-3 self-start font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-50"
+                      aria-label="Browse your Lightroom albums"
                     >
-                      Connect
-                    </a>
+                      <span>
+                        {loadingAlbums ? "Loading…" : "Browse Lightroom"}
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className={`h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground ${
+                          loadingAlbums ? "animate-pulse" : ""
+                        }`}
+                      />
+                    </button>
+                  ) : (
+                    <div className="flex flex-col gap-3 border-t border-b border-surface-border py-4 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="font-sans text-sm text-text-muted">
+                        Connect Adobe to browse private albums
+                      </p>
+                      <a
+                        href="/api/auth/adobe"
+                        className="group/cta inline-flex shrink-0 items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-foreground hover:text-foreground transition-colors"
+                      >
+                        <span>Connect</span>
+                        <span
+                          aria-hidden="true"
+                          className="h-px w-8 bg-foreground/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+                        />
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Divider */}
+                  <div className="flex items-center gap-6 py-2">
+                    <div className="h-px flex-1 bg-surface-border" />
+                    <span className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+                      or add by URL
+                    </span>
+                    <div className="h-px flex-1 bg-surface-border" />
                   </div>
-                )}
 
-                {/* Divider */}
-                <div className="flex items-center gap-4">
-                  <div className="flex-1 h-px bg-surface-border" />
-                  <span className="text-xs text-text-muted uppercase">or add by URL</span>
-                  <div className="flex-1 h-px bg-surface-border" />
+                  {/* Public URL form */}
+                  <GalleryForm onSubmit={addGallery} loading={loading} />
                 </div>
+              </AdminSection>
+            </div>
 
-                {/* Public URL form */}
-                <GalleryForm onSubmit={addGallery} loading={loading} />
+            {/* Quick links */}
+            <div className="mb-16">
+              <p className="mb-2 font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+                More
+              </p>
+              <div className="flex flex-col">
+                <AdminLinkCard
+                  title="Album metadata"
+                  description="Edit titles, locations, dates"
+                  href="/admin/albums"
+                  icon="edit_note"
+                />
+                <AdminLinkCard
+                  title="Album chapters"
+                  description="Organize photos with narratives"
+                  href="/admin/chapters"
+                  icon="auto_stories"
+                />
+                <AdminLinkCard
+                  title="Site settings"
+                  description="Customize theme and colors"
+                  href="/admin/settings"
+                  icon="palette"
+                />
               </div>
-            </AdminSection>
-
-            {/* Quick Links */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <AdminLinkCard
-                title="Album Metadata"
-                description="Edit titles, locations, dates"
-                href="/admin/albums"
-                icon="edit_note"
-              />
-              <AdminLinkCard
-                title="Album Chapters"
-                description="Organize photos with narratives"
-                href="/admin/chapters"
-                icon="auto_stories"
-              />
-              <AdminLinkCard
-                title="Site Settings"
-                description="Customize theme and colors"
-                href="/admin/settings"
-                icon="palette"
-              />
             </div>
 
             {/* Sync Controls */}
-            <AdminSection className="mb-6">
+            <div className="mb-16">
               <SyncControls
                 onSync={() => triggerSync()}
                 progress={syncProgress}
                 disabled={loading || galleries.length === 0}
               />
-            </AdminSection>
+            </div>
 
             {/* Gallery List */}
             <AdminSection
-              title={`Configured Galleries (${galleries.length})`}
-              className="mb-6"
+              title={`Configured galleries (${galleries.length})`}
             >
               <GalleryList
                 galleries={galleries}

@@ -5,26 +5,21 @@ export default function SearchLoading() {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />
-      <main className="flex-1 py-12 px-4 md:px-8 lg:px-16">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <Skeleton className="h-10 w-32 mb-8" />
+      <main className="flex-1 px-6 pt-20 pb-20 md:px-12 md:pt-28">
+        <div className="mx-auto max-w-[1200px]">
+          <Skeleton className="h-12 w-48 mb-12" />
 
-          {/* Search input skeleton */}
-          <Skeleton className="h-14 w-full rounded-xl mb-6" />
-
-          {/* Filters skeleton */}
-          <div className="flex flex-wrap gap-4 mb-8">
-            <Skeleton className="h-10 w-40 rounded-lg" />
-            <div className="flex gap-2">
-              <Skeleton className="h-10 w-16 rounded-full" />
-              <Skeleton className="h-10 w-20 rounded-full" />
-              <Skeleton className="h-10 w-20 rounded-full" />
+          {/* Underlined search + filter row */}
+          <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
+            <Skeleton className="h-12 flex-1" />
+            <div className="flex shrink-0 items-center gap-6">
+              <Skeleton className="h-3 w-12" />
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-3 w-16" />
             </div>
           </div>
 
-          {/* Results skeleton */}
-          <Skeleton className="h-5 w-48 mb-6" />
+          <Skeleton className="h-3 w-32 mb-12" />
           <PhotoGridSkeleton count={12} />
         </div>
       </main>

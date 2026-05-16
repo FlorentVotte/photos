@@ -17,13 +17,13 @@ export default function SyncControls({
   const isSyncing = progress?.status === "syncing";
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-foreground mb-1">
-            Sync Albums
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div className="flex flex-col gap-1">
+          <h2 className="font-display text-xl md:text-2xl font-semibold tracking-tight text-foreground">
+            Sync albums
           </h2>
-          <p className="text-sm text-text-muted">
+          <p className="font-sans text-sm text-text-muted">
             Download photos from all configured Lightroom galleries
           </p>
         </div>
@@ -32,25 +32,15 @@ export default function SyncControls({
           disabled={disabled || isSyncing}
           aria-busy={isSyncing}
           aria-describedby={isSyncing ? "sync-progress" : undefined}
-          className={`px-6 py-3 font-semibold rounded-lg transition-colors flex items-center gap-2 ${
-            isSyncing
-              ? "bg-gray-600 text-gray-300 cursor-not-allowed"
-              : "bg-primary text-black hover:bg-primary/90"
-          }`}
+          className="group/cta inline-flex items-center gap-3 self-start font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSyncing ? (
-            <>
-              <span className="material-symbols-outlined animate-spin">
-                sync
-              </span>
-              Syncing...
-            </>
-          ) : (
-            <>
-              <span className="material-symbols-outlined">sync</span>
-              Sync Now
-            </>
-          )}
+          <span>{isSyncing ? "Syncing…" : "Sync now"}</span>
+          <span
+            aria-hidden="true"
+            className={`h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground ${
+              isSyncing ? "animate-pulse" : ""
+            }`}
+          />
         </button>
       </div>
 

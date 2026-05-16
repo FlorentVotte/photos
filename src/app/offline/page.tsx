@@ -6,23 +6,27 @@ export default function OfflinePage() {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />
-      <main className="flex-1 flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <span className="material-symbols-outlined text-6xl text-text-muted mb-6 block">
-            cloud_off
-          </span>
-          <h1 className="text-3xl font-bold text-foreground mb-4">
-            You're Offline
+      <main className="flex-1 flex items-center justify-center px-6">
+        <div className="max-w-md text-center">
+          <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+            Offline
+          </p>
+          <h1 className="mt-4 font-display text-4xl md:text-5xl font-semibold leading-tight tracking-tight text-foreground">
+            You&rsquo;re offline
           </h1>
-          <p className="text-text-muted mb-8">
-            It looks like you're not connected to the internet. Some content may not be available until you're back online.
+          <p className="mt-6 font-sans text-base leading-relaxed text-text-muted">
+            It looks like you&rsquo;re not connected to the internet. Some
+            content may not be available until you&rsquo;re back online.
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-primary text-black font-semibold rounded-lg hover:bg-primary/90 transition-colors inline-flex items-center gap-2"
+            className="group/cta mt-10 inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
           >
-            <span className="material-symbols-outlined">refresh</span>
-            Try Again
+            <span>Try again</span>
+            <span
+              aria-hidden="true"
+              className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+            />
           </button>
         </div>
       </main>

@@ -6,34 +6,36 @@ export default function HomeLoading() {
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />
 
-      {/* Hero skeleton */}
-      <div className="relative h-[80vh] min-h-[500px] flex items-center justify-center overflow-hidden">
+      {/* Hero — full-bleed */}
+      <section className="relative w-full">
         <ImageSkeleton className="absolute inset-0" />
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/40 via-black/20 to-background-dark" />
-        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto flex flex-col items-center gap-6">
-          <Skeleton className="h-6 w-32 rounded-full" />
-          <Skeleton className="h-20 w-[500px] max-w-full" />
-          <Skeleton className="h-6 w-64" />
-          <Skeleton className="h-12 w-40 rounded-lg mt-4" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/15 to-background-dark/70" />
+        <div className="mx-auto flex min-h-[70vh] max-w-[1200px] flex-col justify-end px-6 pb-16 pt-40 md:px-12 lg:min-h-[80vh] lg:pb-24">
+          <div className="relative z-10 flex max-w-2xl flex-col gap-4">
+            <Skeleton className="h-3 w-44" />
+            <Skeleton className="h-16 w-3/4 max-w-lg" />
+            <Skeleton className="h-5 w-1/2 max-w-sm" />
+            <Skeleton className="h-3 w-32 mt-2" />
+          </div>
         </div>
-      </div>
-
-      {/* Quote skeleton */}
-      <div className="py-8 md:py-16 px-4 md:px-20 text-center border-b border-surface-border mb-12">
-        <Skeleton className="h-10 w-10 mx-auto mb-4 rounded" />
-        <Skeleton className="h-8 w-[600px] max-w-full mx-auto mb-2" />
-        <Skeleton className="h-8 w-[400px] max-w-full mx-auto mb-4" />
-        <Skeleton className="h-4 w-48 mx-auto" />
-      </div>
-
-      {/* Albums section skeleton */}
-      <section className="px-4">
-        <div className="flex items-end justify-between pb-6">
-          <Skeleton className="h-8 w-48" />
-          <Skeleton className="h-5 w-32" />
-        </div>
-        <AlbumGridSkeleton count={5} />
       </section>
+
+      <div className="flex flex-1 justify-center">
+        <div className="flex w-full max-w-[1200px] flex-col px-4 lg:px-8">
+          {/* Quote */}
+          <section className="py-20 md:py-28 px-4 text-center border-b border-surface-border">
+            <Skeleton className="h-8 w-3/4 max-w-xl mx-auto" />
+            <Skeleton className="h-3 w-32 mx-auto mt-6" />
+            <Skeleton className="h-4 w-72 mx-auto mt-10" />
+          </section>
+
+          {/* Albums */}
+          <section className="pt-20 md:pt-24">
+            <Skeleton className="h-10 w-64 mb-10 md:mb-14" />
+            <AlbumGridSkeleton count={5} />
+          </section>
+        </div>
+      </div>
     </div>
   );
 }

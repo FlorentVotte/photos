@@ -18,21 +18,21 @@ export default function AdminSection({
   className = "",
 }: AdminSectionProps) {
   return (
-    <section
-      className={`bg-surface-dark rounded-xl p-6 border border-surface-border ${className}`}
-    >
+    <section className={`flex flex-col gap-6 ${className}`}>
       {(title || description || action) && (
-        <div className="flex items-start justify-between mb-4">
-          <div>
+        <header className="flex items-start justify-between gap-6 border-b border-surface-border pb-4">
+          <div className="flex flex-col gap-1">
             {title && (
-              <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+              <h2 className="font-display text-xl md:text-2xl font-semibold tracking-tight text-foreground">
+                {title}
+              </h2>
             )}
             {description && (
-              <p className="text-sm text-text-muted mt-1">{description}</p>
+              <p className="font-sans text-sm text-text-muted">{description}</p>
             )}
           </div>
-          {action && <div className="ml-4 flex-shrink-0">{action}</div>}
-        </div>
+          {action && <div className="flex-shrink-0">{action}</div>}
+        </header>
       )}
       {children}
     </section>

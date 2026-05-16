@@ -32,63 +32,62 @@ export default function GalleryListItem({
   const displayName = gallery.title || gallery.albumName || "Untitled Album";
 
   return (
-    <div className="flex items-center justify-between p-4 bg-background-dark rounded-lg border border-surface-border">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
+    <div className="flex items-center justify-between gap-4 border-b border-surface-border/60 py-5 last:border-b-0">
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span className="font-display text-base text-foreground truncate">
+            {displayName}
+          </span>
           {gallery.featured && (
-            <span className="px-2 py-0.5 text-xs bg-primary/20 text-primary rounded">
+            <span className="font-sans text-[10px] uppercase tracking-[0.24em] text-foreground/80">
               Featured
             </span>
           )}
           {gallery.type === "private" && (
-            <span className="px-2 py-0.5 text-xs bg-blue-900/30 text-blue-400 border border-blue-800 rounded">
+            <span className="font-sans text-[10px] uppercase tracking-[0.24em] text-blue-400/80">
               Private
             </span>
           )}
-          <span className="text-foreground font-medium truncate">
-            {displayName}
-          </span>
         </div>
-        <p className="text-xs text-text-muted truncate">
+        <p className="truncate font-sans text-xs text-text-muted">
           {gallery.type === "private"
-            ? `Lightroom Album: ${gallery.albumId?.slice(0, 8)}...`
+            ? `Lightroom Album · ${gallery.albumId?.slice(0, 8)}…`
             : gallery.url}
         </p>
         {gallery.photoCount !== undefined && (
-          <p className="text-xs text-text-muted mt-1">
+          <p className="font-sans text-xs text-text-muted/70">
             {gallery.photoCount} photos
             {gallery.lastSynced && (
-              <> • Last synced: {new Date(gallery.lastSynced).toLocaleString()}</>
+              <>
+                {" "}
+                · synced {new Date(gallery.lastSynced).toLocaleString()}
+              </>
             )}
           </p>
         )}
       </div>
-      <div className="flex items-center gap-2 ml-4">
+      <div className="flex shrink-0 items-center gap-6">
         <button
           onClick={() => onSync(gallery)}
           disabled={disabled || syncing}
-          className={`p-2 rounded-lg transition-colors ${
+          className={`font-sans text-[11px] uppercase tracking-[0.24em] transition-colors disabled:opacity-50 ${
             syncing
-              ? "text-primary"
-              : "text-text-muted hover:text-primary hover:bg-primary/10"
-          } disabled:opacity-50`}
+              ? "text-foreground animate-pulse"
+              : "text-text-muted hover:text-foreground"
+          }`}
           aria-label={`Sync ${displayName}`}
           title="Sync this album"
         >
-          <span
-            className={`material-symbols-outlined ${syncing ? "animate-spin" : ""}`}
-          >
-            sync
-          </span>
+          {syncing ? "Syncing…" : "Sync"}
         </button>
         <button
           onClick={() => onToggleFeatured(gallery, !gallery.featured)}
           disabled={disabled}
-          className={`p-2 rounded-lg transition-colors ${
+          className={`font-sans text-[11px] uppercase tracking-[0.24em] transition-colors disabled:opacity-50 ${
             gallery.featured
-              ? "text-primary hover:bg-primary/10"
-              : "text-text-muted hover:bg-surface-border"
-          } disabled:opacity-50`}
+              ? "text-foreground"
+              : "text-text-muted hover:text-foreground"
+          }`}
           aria-label={
             gallery.featured
               ? `Remove ${displayName} from featured`
@@ -96,18 +95,16 @@ export default function GalleryListItem({
           }
           title={gallery.featured ? "Remove from featured" : "Set as featured"}
         >
-          <span className="material-symbols-outlined">
-            {gallery.featured ? "star" : "star_outline"}
-          </span>
+          {gallery.featured ? "★ Featured" : "Feature"}
         </button>
         <button
           onClick={() => onDelete(gallery)}
           disabled={disabled}
-          className="p-2 text-red-400 hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
+          className="font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-red-400 transition-colors disabled:opacity-50"
           aria-label={`Remove ${displayName}`}
           title="Remove gallery"
         >
-          <span className="material-symbols-outlined">delete</span>
+          Delete
         </button>
       </div>
     </div>

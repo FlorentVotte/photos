@@ -14,7 +14,7 @@ interface Settings {
 }
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState<Settings | null>(null);
+  const [, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<ThemePresetKey>(DEFAULT_THEME);
@@ -58,15 +58,17 @@ export default function SettingsPage() {
         throw new Error(error.error || "Failed to save theme");
       }
 
-      setMessage({ type: "success", text: "Theme saved! Reloading..." });
-      // Reload the page to apply the new theme from server
+      setMessage({ type: "success", text: "Theme saved. Reloading…" });
       setTimeout(() => {
         window.location.reload();
       }, 500);
     } catch (error) {
       console.error("Failed to save theme:", error);
       setSelectedTheme(previousTheme);
-      setMessage({ type: "error", text: error instanceof Error ? error.message : "Failed to save theme" });
+      setMessage({
+        type: "error",
+        text: error instanceof Error ? error.message : "Failed to save theme",
+      });
     } finally {
       setSaving(false);
     }
@@ -77,46 +79,56 @@ export default function SettingsPage() {
       <SkipLink />
       <Header />
 
-      <main id="main-content" className="flex-1 py-12 px-4 md:px-8 lg:px-16">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <Breadcrumb
-              items={[
-                { label: "Admin", href: "/admin" },
-                { label: "Site Settings" },
-              ]}
-            />
-            <h1 className="text-3xl font-bold text-foreground mt-2">Site Settings</h1>
-            <p className="text-text-muted mt-1">
-              Customize the look and feel of your photobook
+      <main id="main-content" className="flex-1 px-6 pt-16 pb-20 md:px-12 md:pt-20">
+        <div className="mx-auto max-w-4xl">
+          <Breadcrumb
+            items={[
+              { label: "Admin", href: "/admin" },
+              { label: "Site settings" },
+            ]}
+          />
+          <header className="mb-16 max-w-2xl">
+            <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+              Settings
             </p>
-          </div>
+            <h1 className="mt-4 font-display text-4xl md:text-5xl font-semibold tracking-tight text-foreground">
+              Site settings
+            </h1>
+            <p className="mt-6 font-sans text-base leading-relaxed text-text-muted">
+              Customize the look and feel of your photobook.
+            </p>
+          </header>
 
           {message && (
-            <div
-              className={`mb-6 p-4 rounded-lg ${
+            <p
+              className={`mb-10 font-sans text-sm ${
                 message.type === "success"
-                  ? "bg-green-500/10 border border-green-500/30 text-green-400"
-                  : "bg-red-500/10 border border-red-500/30 text-red-400"
+                  ? "text-green-400/90"
+                  : "text-red-400/90"
               }`}
+              role="status"
             >
               {message.text}
-            </div>
+            </p>
           )}
 
           {loading ? (
-            <div className="text-center py-12 text-text-muted">
-              <span className="material-symbols-outlined text-4xl animate-pulse">settings</span>
-              <p className="mt-2">Loading settings...</p>
-            </div>
+            <p className="py-12 text-center font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+              Loading settings
+            </p>
           ) : (
-            <section className="bg-surface-dark rounded-xl p-6 border border-surface-border">
-              <h2 className="text-xl font-semibold text-foreground mb-2">Theme</h2>
-              <p className="text-text-muted text-sm mb-6">
-                Select a color theme for your site. All visitors will see the selected theme.
-              </p>
+            <section className="flex flex-col gap-8">
+              <div className="flex flex-col gap-2 border-b border-surface-border pb-4">
+                <h2 className="font-display text-xl md:text-2xl font-semibold tracking-tight text-foreground">
+                  Theme
+                </h2>
+                <p className="font-sans text-sm text-text-muted">
+                  Select a color theme. All visitors will see the selected
+                  theme.
+                </p>
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
                 {Object.entries(THEME_PRESETS).map(([key, preset]) => {
                   const isSelected = selectedTheme === key;
                   return (
@@ -124,39 +136,45 @@ export default function SettingsPage() {
                       key={key}
                       onClick={() => saveTheme(key as ThemePresetKey)}
                       disabled={saving}
-                      className={`relative p-4 rounded-xl border-2 transition-all text-left ${
+                      className={`group relative flex flex-col gap-4 border-t pt-5 text-left transition-colors ${
                         isSelected
-                          ? "border-primary bg-primary/10"
-                          : "border-surface-border hover:border-primary/50"
+                          ? "border-foreground"
+                          : "border-surface-border hover:border-foreground/40"
                       } ${saving ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
-                      {/* Color preview swatches */}
-                      <div className="flex gap-2 mb-3">
+                      {/* Colour swatches */}
+                      <div className="flex">
                         <div
-                          className="w-8 h-8 rounded-full border border-white/20"
+                          className="h-10 flex-1"
                           style={{ backgroundColor: preset.colors.primary }}
-                          title="Primary color"
+                          title="Primary"
                         />
                         <div
-                          className="w-8 h-8 rounded-full border border-white/20"
-                          style={{ backgroundColor: preset.colors.background }}
-                          title="Background"
-                        />
-                        <div
-                          className="w-8 h-8 rounded-full border border-white/20"
+                          className="h-10 flex-1"
                           style={{ backgroundColor: preset.colors.surface }}
                           title="Surface"
                         />
+                        <div
+                          className="h-10 flex-1"
+                          style={{ backgroundColor: preset.colors.background }}
+                          title="Background"
+                        />
                       </div>
 
-                      <h3 className="font-semibold text-foreground">{preset.name}</h3>
-                      <p className="text-xs text-text-muted mt-1">{preset.description}</p>
+                      <div className="flex items-baseline justify-between gap-3">
+                        <h3 className="font-display text-base font-semibold tracking-tight text-foreground">
+                          {preset.name}
+                        </h3>
+                        {isSelected && (
+                          <span className="font-sans text-[10px] uppercase tracking-[0.24em] text-foreground">
+                            Active
+                          </span>
+                        )}
+                      </div>
 
-                      {isSelected && (
-                        <span className="absolute top-2 right-2 text-primary">
-                          <span className="material-symbols-outlined">check_circle</span>
-                        </span>
-                      )}
+                      <p className="font-sans text-xs leading-relaxed text-text-muted">
+                        {preset.description}
+                      </p>
                     </button>
                   );
                 })}

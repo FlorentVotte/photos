@@ -5,37 +5,24 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ className = "" }: SkeletonProps) {
-  return (
-    <div
-      className={`animate-pulse bg-surface-border rounded ${className}`}
-    />
-  );
+  return <div className={`animate-pulse bg-surface-border ${className}`} />;
 }
 
 export function ImageSkeleton({ className = "" }: SkeletonProps) {
   return (
     <div className={`relative overflow-hidden ${className}`}>
       <Skeleton className="absolute inset-0" />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="material-symbols-outlined text-4xl text-text-muted/30 animate-pulse">
-          image
-        </span>
-      </div>
     </div>
   );
 }
 
 export function AlbumCardSkeleton() {
   return (
-    <div className="relative overflow-hidden rounded-xl bg-surface-dark border border-surface-border">
-      <ImageSkeleton className="aspect-[4/3] w-full" />
-      <div className="p-4 space-y-3">
-        <Skeleton className="h-6 w-3/4" />
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-20" />
-          <Skeleton className="h-4 w-16" />
-        </div>
-        <Skeleton className="h-4 w-1/2" />
+    <div className="relative overflow-hidden bg-surface-dark">
+      <ImageSkeleton className="aspect-square w-full" />
+      <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-5 md:p-6">
+        <Skeleton className="h-7 w-3/5" />
+        <Skeleton className="h-3 w-1/2" />
       </div>
     </div>
   );
@@ -43,9 +30,9 @@ export function AlbumCardSkeleton() {
 
 export function PhotoGridSkeleton({ count = 12 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
       {Array.from({ length: count }).map((_, i) => (
-        <ImageSkeleton key={i} className="aspect-square rounded-lg" />
+        <ImageSkeleton key={i} className="aspect-square" />
       ))}
     </div>
   );
@@ -53,7 +40,7 @@ export function PhotoGridSkeleton({ count = 12 }: { count?: number }) {
 
 export function AlbumGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {Array.from({ length: count }).map((_, i) => (
         <AlbumCardSkeleton key={i} />
       ))}
@@ -63,32 +50,21 @@ export function AlbumGridSkeleton({ count = 6 }: { count?: number }) {
 
 export function ChapterSkeleton() {
   return (
-    <div className="space-y-6">
-      {/* Cover image skeleton */}
-      <ImageSkeleton className="w-full h-[40vh] rounded-xl" />
+    <div className="flex flex-col gap-10">
+      <ImageSkeleton className="w-full aspect-[16/9] md:aspect-[21/9]" />
 
-      {/* Title skeleton */}
-      <div className="flex items-center justify-center gap-4">
-        <Skeleton className="h-px w-12" />
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-px w-12" />
+      <div className="flex flex-col items-center gap-3">
+        <Skeleton className="h-3 w-24" />
+        <Skeleton className="h-9 w-72 max-w-full" />
+        <Skeleton className="h-3 w-40" />
       </div>
 
-      {/* Stats skeleton */}
-      <div className="flex justify-center gap-8">
-        <Skeleton className="h-6 w-24" />
-        <Skeleton className="h-6 w-24" />
-        <Skeleton className="h-6 w-24" />
-      </div>
-
-      {/* Narrative skeleton */}
-      <div className="max-w-prose mx-auto space-y-2">
+      <div className="mx-auto max-w-prose space-y-3">
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-3/4" />
       </div>
 
-      {/* Photo grid skeleton */}
       <PhotoGridSkeleton count={8} />
     </div>
   );
