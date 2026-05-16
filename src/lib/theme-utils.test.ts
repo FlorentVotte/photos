@@ -11,12 +11,12 @@ describe("theme-utils", () => {
     it("should generate CSS variables for valid theme", () => {
       const css = generateThemeCSSVars("forest-green");
 
-      expect(css).toContain("--color-primary: #1dc964");
-      expect(css).toContain("--color-background: #112118");
-      expect(css).toContain("--color-surface: #1a2e22");
-      expect(css).toContain("--color-surface-border: #254633");
-      expect(css).toContain("--color-text-primary: #ffffff");
-      expect(css).toContain("--color-text-muted: #95c6a9");
+      expect(css).toContain("--color-primary: #7ba88e");
+      expect(css).toContain("--color-background: #0f1c14");
+      expect(css).toContain("--color-surface: #172620");
+      expect(css).toContain("--color-surface-border: #22372e");
+      expect(css).toContain("--color-text-primary: #f4f4f3");
+      expect(css).toContain("--color-text-muted: #9aae9f");
     });
 
     it("should generate CSS for ocean-blue theme", () => {
@@ -94,7 +94,7 @@ describe("theme-utils", () => {
   describe("getThemeMetaColor", () => {
     it("should return primary color for forest-green theme", () => {
       const color = getThemeMetaColor("forest-green");
-      expect(color).toBe("#1dc964");
+      expect(color).toBe("#7ba88e");
     });
 
     it("should return primary color for ocean-blue theme", () => {
@@ -137,7 +137,7 @@ describe("theme-utils", () => {
   describe("getThemeBackgroundColor", () => {
     it("should return background color for forest-green theme", () => {
       const color = getThemeBackgroundColor("forest-green");
-      expect(color).toBe("#112118");
+      expect(color).toBe("#0f1c14");
     });
 
     it("should return background color for ocean-blue theme", () => {

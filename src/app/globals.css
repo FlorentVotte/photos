@@ -24,12 +24,12 @@
 
 /* Theme CSS Variables - defaults to forest-green dark */
 :root {
-  --color-primary: #1dc964;
-  --color-background: #112118;
-  --color-surface: #1a2e22;
-  --color-surface-border: #254633;
-  --color-text-primary: #ffffff;
-  --color-text-muted: #95c6a9;
+  --color-primary: #7ba88e;
+  --color-background: #0f1c14;
+  --color-surface: #172620;
+  --color-surface-border: #22372e;
+  --color-text-primary: #f4f4f3;
+  --color-text-muted: #9aae9f;
 }
 
 /* Custom scrollbar using theme colors */

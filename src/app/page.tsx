@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import Hero from "@/components/Hero";
 import HomeContent from "@/components/HomeContent";
 import Footer from "@/components/Footer";
 import { WebsiteStructuredData } from "@/components/StructuredData";
@@ -22,6 +23,10 @@ export default async function Home() {
 
   const recentAlbums = albums.filter((a) => a.id !== featuredAlbum?.id);
 
+  const heroKicker = featuredAlbum
+    ? [featuredAlbum.location, featuredAlbum.date].filter(Boolean).join(" — ")
+    : undefined;
+
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
       <WebsiteStructuredData
@@ -31,14 +36,20 @@ export default async function Home() {
       />
       <Header />
 
-      <div className="layout-container flex h-full grow flex-col">
-        <div className="flex flex-1 justify-center py-5">
-          <div className="layout-content-container flex flex-col max-w-[1200px] flex-1 px-4 lg:px-8">
-            <HomeContent
-              featuredAlbum={featuredAlbum}
-              recentAlbums={recentAlbums}
-            />
-          </div>
+      {featuredAlbum && (
+        <Hero
+          title={featuredAlbum.title}
+          subtitle={featuredAlbum.subtitle}
+          description={featuredAlbum.description}
+          backgroundImage={featuredAlbum.coverImage}
+          kicker={heroKicker}
+          ctaLink={`/album/${featuredAlbum.slug}`}
+        />
+      )}
+
+      <div className="flex flex-1 justify-center">
+        <div className="flex w-full max-w-[1200px] flex-col px-4 lg:px-8">
+          <HomeContent recentAlbums={recentAlbums} />
         </div>
       </div>
 

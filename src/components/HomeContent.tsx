@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Hero from "./Hero";
 import AlbumCard from "./AlbumCard";
 import { useLocale } from "@/lib/LocaleContext";
 
@@ -19,63 +18,36 @@ interface Album {
 }
 
 interface HomeContentProps {
-  featuredAlbum?: Album;
   recentAlbums: Album[];
 }
 
-export default function HomeContent({
-  featuredAlbum,
-  recentAlbums,
-}: HomeContentProps) {
+export default function HomeContent({ recentAlbums }: HomeContentProps) {
   const { t } = useLocale();
 
   return (
     <>
-      {/* Hero Section */}
-      {featuredAlbum && (
-        <Hero
-          title={featuredAlbum.title}
-          subtitle={featuredAlbum.subtitle}
-          description={featuredAlbum.description}
-          backgroundImage={featuredAlbum.coverImage}
-          tag={t("home", "featuredStory")}
-          ctaText={t("home", "viewAlbum")}
-          ctaLink={`/album/${featuredAlbum.slug}`}
-          showScrollHint={true}
-        />
-      )}
-
-      {/* Quote Section */}
-      <div className="py-8 md:py-16 px-4 md:px-20 text-center border-b border-surface-border mb-12">
-        <span className="material-symbols-outlined text-4xl text-primary mb-4">
-          camera
-        </span>
-        <h2 className="text-2xl md:text-4xl font-bold leading-tight tracking-tight max-w-3xl mx-auto italic">
+      {/* Quote / colophon */}
+      <section className="py-20 md:py-28 px-4 text-center border-b border-surface-border">
+        <p className="font-display text-2xl md:text-[2rem] leading-snug tracking-tight italic max-w-2xl mx-auto text-white/90">
           &ldquo;{t("home", "quote")}&rdquo;
-        </h2>
-        <p className="mt-2 text-sm text-text-muted font-sans">{t("home", "quoteAuthor")}</p>
-        <p className="mt-4 text-gray-500 font-sans">{t("home", "tagline")}</p>
-      </div>
+        </p>
+        <p className="mt-6 font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+          {t("home", "quoteAuthor")}
+        </p>
+        <p className="mt-10 font-sans text-sm text-white/50 max-w-xl mx-auto">
+          {t("home", "tagline")}
+        </p>
+      </section>
 
-      {/* Albums Section */}
-      <section id="albums">
-        <div className="flex items-end justify-between px-4 pb-6 pt-2">
-          <h2 className="text-3xl font-bold leading-tight tracking-tight">
+      {/* Albums */}
+      <section id="albums" className="pt-20 md:pt-24">
+        <header className="px-1 pb-10 md:pb-14">
+          <h2 className="font-display text-3xl md:text-4xl font-semibold leading-tight tracking-tight">
             {t("home", "recentAlbums")}
           </h2>
-          <Link
-            href="/albums"
-            className="hidden md:flex items-center gap-1 text-sm font-medium text-primary hover:text-foreground transition-colors"
-          >
-            {t("home", "viewArchive")}{" "}
-            <span className="material-symbols-outlined text-sm">
-              arrow_forward
-            </span>
-          </Link>
-        </div>
+        </header>
 
-        {/* Magazine Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {recentAlbums.slice(0, 5).map((album, index) => (
             <AlbumCard
               key={album.id}
@@ -91,16 +63,16 @@ export default function HomeContent({
           ))}
         </div>
 
-        {/* View Archive Button */}
-        <div className="flex justify-center py-8">
+        <div className="flex justify-center md:justify-end pt-12 pb-4 md:pr-1">
           <Link
             href="/albums"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-surface-dark border border-surface-border rounded-lg text-foreground font-medium hover:bg-surface-border transition-colors"
+            className="group/cta inline-flex items-center gap-3 font-sans text-sm uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
           >
-            {t("home", "viewArchive")}
-            <span className="material-symbols-outlined text-lg">
-              arrow_forward
-            </span>
+            <span>{t("home", "viewArchive")}</span>
+            <span
+              aria-hidden="true"
+              className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+            />
           </Link>
         </div>
       </section>
