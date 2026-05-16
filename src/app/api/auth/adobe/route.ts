@@ -2,6 +2,10 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { generateSecureToken } from "@/lib/security";
+import {
+  ADOBE_OAUTH_STATE_COOKIE,
+  ADOBE_OAUTH_STATE_MAX_AGE_SECONDS,
+} from "@/lib/adobe-oauth";
 
 // Adobe OAuth configuration
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
@@ -16,9 +20,6 @@ const SCOPES = [
   "lr_partner_apis",
   "lr_partner_rendition_apis",
 ].join(",");
-
-export const ADOBE_OAUTH_STATE_COOKIE = "adobe_oauth_state";
-const STATE_MAX_AGE_SECONDS = 600;
 
 // GET - Redirect to Adobe OAuth
 export async function GET() {
@@ -47,7 +48,7 @@ export async function GET() {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: STATE_MAX_AGE_SECONDS,
+    maxAge: ADOBE_OAUTH_STATE_MAX_AGE_SECONDS,
   });
 
   return NextResponse.redirect(authUrl.toString());

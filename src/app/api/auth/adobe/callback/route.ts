@@ -4,7 +4,7 @@ import prisma from "@/lib/db";
 import { encrypt } from "@/lib/crypto";
 import { requireAuth } from "@/lib/auth";
 import { secureCompare } from "@/lib/security";
-import { ADOBE_OAUTH_STATE_COOKIE } from "../route";
+import { ADOBE_OAUTH_STATE_COOKIE } from "@/lib/adobe-oauth";
 
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
 const ADOBE_CLIENT_SECRET = process.env.ADOBE_CLIENT_SECRET;
