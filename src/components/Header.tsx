@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale } from "@/lib/LocaleContext";
 
 interface HeaderProps {
@@ -15,6 +15,29 @@ export default function Header({ transparent = false }: HeaderProps) {
   const toggleLocale = () => {
     setLocale(locale === "en" ? "fr" : "en");
   };
+
+  // Lock body scroll when the mobile menu is open.
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = original;
+    };
+  }, [mobileMenuOpen]);
+
+  // Close on Escape for keyboard accessibility.
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileMenuOpen]);
+
+  const navItemClass =
+    "font-display text-3xl font-semibold tracking-tight text-foreground/85 hover:text-foreground transition-colors";
 
   return (
     <header
@@ -78,7 +101,7 @@ export default function Header({ transparent = false }: HeaderProps) {
         {/* Mobile menu button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden flex items-center justify-center size-10 text-foreground hover:text-primary transition-colors"
+          className="md:hidden flex items-center justify-center size-10 text-foreground hover:text-primary transition-colors relative z-[60]"
           aria-label={mobileMenuOpen ? t("nav", "closeMenu") : t("nav", "openMenu")}
           aria-expanded={mobileMenuOpen}
         >
@@ -88,57 +111,62 @@ export default function Header({ transparent = false }: HeaderProps) {
         </button>
       </div>
 
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-background-dark border-b border-surface-border md:hidden">
-          <nav className="flex flex-col p-4 gap-4">
-            <Link
-              href="/"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2"
-            >
-              {t("nav", "home")}
-            </Link>
-            <Link
-              href="/albums"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2"
-            >
-              {t("nav", "albums")}
-            </Link>
-            <Link
-              href="/search"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2"
-            >
-              {t("nav", "search")}
-            </Link>
-            <Link
-              href="/map"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2"
-            >
-              {t("nav", "map")}
-            </Link>
-            <Link
-              href="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors py-2"
-            >
-              {t("nav", "about")}
-            </Link>
-            <button
-              onClick={() => {
-                toggleLocale();
-                setMobileMenuOpen(false);
-              }}
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors uppercase py-2"
-            >
-              {locale === "en" ? "FR - Français" : "EN - English"}
-            </button>
-          </nav>
-        </div>
-      )}
+      {/* Mobile menu — full-viewport overlay with scroll lock */}
+      <div
+        className={`md:hidden fixed inset-0 z-40 bg-background-dark/95 backdrop-blur-lg transition-opacity duration-300 ${
+          mobileMenuOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+        aria-hidden={!mobileMenuOpen}
+      >
+        <nav className="flex h-full flex-col items-start justify-center gap-8 px-8">
+          <Link
+            href="/"
+            onClick={() => setMobileMenuOpen(false)}
+            className={navItemClass}
+          >
+            {t("nav", "home")}
+          </Link>
+          <Link
+            href="/albums"
+            onClick={() => setMobileMenuOpen(false)}
+            className={navItemClass}
+          >
+            {t("nav", "albums")}
+          </Link>
+          <Link
+            href="/search"
+            onClick={() => setMobileMenuOpen(false)}
+            className={navItemClass}
+          >
+            {t("nav", "search")}
+          </Link>
+          <Link
+            href="/map"
+            onClick={() => setMobileMenuOpen(false)}
+            className={navItemClass}
+          >
+            {t("nav", "map")}
+          </Link>
+          <Link
+            href="/about"
+            onClick={() => setMobileMenuOpen(false)}
+            className={navItemClass}
+          >
+            {t("nav", "about")}
+          </Link>
+          <button
+            onClick={() => {
+              toggleLocale();
+              setMobileMenuOpen(false);
+            }}
+            className="mt-4 font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted hover:text-foreground transition-colors"
+          >
+            {locale === "en" ? "FR — Français" : "EN — English"}
+          </button>
+        </nav>
+      </div>
     </header>
   );
 }

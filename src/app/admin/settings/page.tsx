@@ -88,7 +88,7 @@ export default function SettingsPage() {
             ]}
           />
           <header className="mb-16 max-w-2xl">
-            <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+            <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
               Settings
             </p>
             <h1 className="mt-4 font-display text-4xl md:text-5xl font-semibold tracking-tight text-foreground">
@@ -113,7 +113,7 @@ export default function SettingsPage() {
           )}
 
           {loading ? (
-            <p className="py-12 text-center font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+            <p className="py-12 text-center font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
               Loading settings
             </p>
           ) : (

@@ -7,6 +7,7 @@ import {
   getAlbums,
   getAllPhotos,
 } from "@/lib/data";
+import { formatPhotoTitle } from "@/lib/photo-display";
 import type { Metadata } from "next";
 
 // Force dynamic to always fetch fresh data
@@ -21,19 +22,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const photo = await getPhotoById(id);
   if (!photo) return { title: "Photo Not Found" };
 
+  const albums = await getAlbums();
+  const album = albums.find((a) => a.id === photo.albumId);
+  const albumPhotos = album ? await getPhotosByAlbum(photo.albumId) : [];
+  const index = albumPhotos.findIndex((p) => p.id === photo.id);
+  const displayTitle = formatPhotoTitle(photo, album, index >= 0 ? index : undefined);
+
   const description = photo.caption || `Photo from ${photo.metadata.location}`;
   return {
-    title: `${photo.title} - Regards Perdus`,
+    title: `${displayTitle} - Regards Perdus`,
     description,
     openGraph: {
-      title: photo.title,
+      title: displayTitle,
       description,
       images: [photo.src.full],
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
-      title: photo.title,
+      title: displayTitle,
       description,
       images: [photo.src.full],
     },

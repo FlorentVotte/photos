@@ -36,7 +36,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
       return (
         <div className="flex flex-col items-center justify-center min-h-[240px] p-12 text-center">
-          <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+          <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
             Error
           </p>
           <h2 className="mt-4 font-display text-2xl font-semibold tracking-tight text-foreground">
@@ -47,7 +47,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           </p>
           <button
             onClick={() => this.setState({ hasError: false, error: null })}
-            className="group/cta mt-8 inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+            className="group/cta mt-8 inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
           >
             <span>Try again</span>
             <span
@@ -72,7 +72,7 @@ export function ErrorFallback({
 }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 py-20 text-center bg-background-dark">
-      <p className="font-sans text-[11px] uppercase tracking-[0.32em] text-text-muted">
+      <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
         Error
       </p>
       <h1 className="mt-4 font-display text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
@@ -91,7 +91,7 @@ export function ErrorFallback({
         {resetError && (
           <button
             onClick={resetError}
-            className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+            className="group/cta inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
           >
             <span>Try again</span>
             <span
@@ -102,7 +102,7 @@ export function ErrorFallback({
         )}
         <button
           onClick={() => window.location.reload()}
-          className="group/cta inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+          className="group/cta inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
         >
           <span>Refresh page</span>
           <span
