@@ -32,13 +32,13 @@
     "@prisma/adapter-better-sqlite3": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@types/leaflet": "^1.9.21",
-    "better-sqlite3": "^12.5.0",
-    "exifreader": "^4.33.1",
+    "better-sqlite3": "^12.10.0",
+    "exifreader": "^4.39.0",
     "leaflet": "^1.9.4",
     "next": "^15.5.18",
     "prisma": "^7.8.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "react-leaflet": "^5.0.0",
     "sharp": "^0.34.5"
   },
@@ -49,15 +49,15 @@
     "postcss": "^8.5.10"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.8",
+    "@tailwindcss/postcss": "^4.3.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
-    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/coverage-v8": "^4.1.6",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.1",
     "tailwindcss": "^4.1.8",
-    "tsx": "^4.21.0",
+    "tsx": "^4.22.2",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16"
   }
