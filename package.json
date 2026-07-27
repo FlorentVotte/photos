@@ -35,7 +35,7 @@
     "better-sqlite3": "^12.5.0",
     "exifreader": "^4.33.1",
     "leaflet": "^1.9.4",
-    "next": "^15.5.18",
+    "next": "^15.5.21",
     "prisma": "^7.8.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
