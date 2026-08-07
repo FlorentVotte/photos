@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { encrypt, decrypt, isEncrypted } from "./crypto";
+import { encrypt, decrypt, isEncrypted, getAccessToken } from "./crypto";
 
 describe("crypto", () => {
   const originalEnv = process.env;
@@ -238,6 +238,32 @@ describe("crypto", () => {
 
       // IVs are random so these are always different, but even the ciphertext portion would differ
       expect(encrypted1).not.toBe(encrypted2);
+    });
+  });
+
+  describe("getAccessToken", () => {
+    it("should decrypt an encrypted token", () => {
+      process.env.ENCRYPTION_KEY = "test-encryption-key-for-testing";
+      const plaintext = "eyJhbGciOiJSUzI1NiJ9.adobe-access-token";
+      const stored = encrypt(plaintext);
+
+      expect(getAccessToken(stored)).toBe(plaintext);
+    });
+
+    it("should pass through a plain token unchanged (pre-encryption rows)", () => {
+      const plaintext = "eyJhbGciOiJSUzI1NiJ9.legacy-plain-token";
+      expect(getAccessToken(plaintext)).toBe(plaintext);
+    });
+
+    it("should never return something in the stored iv:tag:ciphertext form", () => {
+      // Regression guard: sync/index.ts used to send the raw stored value as a
+      // Bearer token, so every Adobe rendition request 401'd and every photo
+      // was skipped — the album synced to 0 photos with no visible error.
+      process.env.ENCRYPTION_KEY = "test-encryption-key-for-testing";
+      const stored = encrypt("adobe-access-token");
+
+      expect(isEncrypted(stored)).toBe(true);
+      expect(isEncrypted(getAccessToken(stored))).toBe(false);
     });
   });
 });

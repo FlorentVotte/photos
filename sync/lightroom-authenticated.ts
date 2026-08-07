@@ -1,7 +1,7 @@
 import fs from "fs";
 import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { decrypt, isEncrypted } from "../src/lib/crypto";
+import { getAccessToken } from "../src/lib/crypto";
 
 const LIGHTROOM_API = "https://lr.adobe.io/v2";
 const ADOBE_CLIENT_ID = process.env.ADOBE_CLIENT_ID;
@@ -12,13 +12,6 @@ const dbPath = process.env.NODE_ENV === "production" && fs.existsSync("/app/data
   : "./photobook.db";
 const adapter = new PrismaBetterSqlite3({ url: dbPath });
 const prisma = new PrismaClient({ adapter });
-
-function getAccessToken(encryptedToken: string): string {
-  if (isEncrypted(encryptedToken)) {
-    return decrypt(encryptedToken);
-  }
-  return encryptedToken;
-}
 
 interface TokenData {
   access_token: string;

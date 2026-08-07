@@ -14,6 +14,7 @@ import fs from "fs";
 import { config } from "./config";
 import { parseGalleryUrl, generateSlug, extractGalleryId } from "./lightroom-parser";
 import { generateThumbnails, thumbnailsExist } from "./thumbnail";
+import { getAccessToken } from "../src/lib/crypto";
 import {
   isAuthenticatedApiAvailable,
   fetchAuthenticatedCatalog,
@@ -116,6 +117,12 @@ async function syncPrivateAlbum(
     return;
   }
 
+  // Tokens are stored encrypted — decrypt once here and use this value for
+  // every Adobe request below. Passing token.accessToken straight through sent
+  // "iv:tag:ciphertext" as a Bearer token, so rendition lookups 401'd and every
+  // photo was skipped, leaving the album at 0 photos with no visible error.
+  const accessToken = getAccessToken(token.accessToken);
+
   let catId: string;
   if (catalogId) {
     catId = catalogId;
@@ -171,7 +178,7 @@ async function syncPrivateAlbum(
       const photoName = asset.payload?.importSource?.fileName || `Photo ${i + 1}`;
       onProgress?.(i, assets.length, photoName);
 
-      const renditionUrl = await getAssetRenditionUrl(catId, catalogAssetId, token.accessToken);
+      const renditionUrl = await getAssetRenditionUrl(catId, catalogAssetId, accessToken);
       if (!renditionUrl) {
         console.log(`  No rendition URL for ${assetId}, skipping`);
         continue;
@@ -194,7 +201,7 @@ async function syncPrivateAlbum(
           const parsedUrl = new URL(renditionUrl);
           if (parsedUrl.hostname === "lr.adobe.io" || parsedUrl.hostname.endsWith(".adobe.io")) {
             authHeaders = {
-              Authorization: `Bearer ${token.accessToken}`,
+              Authorization: `Bearer ${accessToken}`,
               "X-API-Key": process.env.ADOBE_CLIENT_ID!,
             };
           }

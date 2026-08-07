@@ -113,3 +113,23 @@ export function isEncrypted(value: string): boolean {
     /^[a-f0-9]+$/i.test(data)
   );
 }
+
+/**
+ * Read a token as stored in the database and return it ready to use.
+ *
+ * Adobe tokens are stored encrypted (see the OAuth callback), so every caller
+ * that puts one in an `Authorization: Bearer` header must decrypt it first.
+ * Rows written before encryption was introduced are still plaintext, hence the
+ * isEncrypted() check rather than an unconditional decrypt().
+ *
+ * Use this instead of hand-rolling the check: three copies of it existed and a
+ * fourth call site (the sync's rendition/download path) had none, which sent
+ * the raw "iv:tag:ciphertext" value to Adobe as a Bearer token. Every request
+ * 401'd, every photo was skipped, and albums synced to 0 photos.
+ */
+export function getAccessToken(storedToken: string): string {
+  if (isEncrypted(storedToken)) {
+    return decrypt(storedToken);
+  }
+  return storedToken;
+}
