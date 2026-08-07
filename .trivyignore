@@ -1,41 +1,17 @@
-# Trivy ignore list — reviewed 2026-08-07
+# Trivy ignore list — currently empty, deliberately.
 #
-# Each entry needs a reason and a re-check trigger. Do not add a CVE here
-# just to make CI green; if it is fixable in our dependencies, fix it.
-
-# CVE-2026-69192 — ip-address <10.3.1, SSRF via inconsistent IP parsing.
+# Policy: do not add a CVE here to make CI green. If it is reachable from
+# package.json, fix it with a dependency bump or an `overrides` entry.
+# Anything listed here needs a reason and a re-check trigger.
 #
-# Not reachable through our dependency tree. This copy lives inside npm's
-# own bundled deps at /usr/local/lib/node_modules/npm/node_modules/ip-address,
-# not in /app/node_modules, so no change to package.json can move it.
-# npm 12.0.2 is the current latest and still bundles 10.2.0, so there is no
-# npm release to upgrade to. Removing npm is not an option either: the
-# entrypoint runs `npx prisma migrate deploy` at container start.
+# History worth keeping: this file briefly carried exemptions for CVEs in
+# ip-address and brace-expansion. Both lived inside npm's own vendored
+# dependency tree at /usr/local/lib/node_modules/npm/node_modules/, which no
+# package.json change can reach — the only lever was installing a newer npm,
+# and none existed with the fixes. The exemptions were removed when npm was
+# deleted from the runner image instead (see the Dockerfile runner stage).
 #
-# Exposure in this image is nil — the vulnerable code path is npm's
-# registry/proxy URL handling, and the container never runs npm against a
-# network registry; it only invokes the local prisma CLI against SQLite.
-#
-# Re-check when npm >12.0.2 ships: if it bundles ip-address >=10.3.1, bump
-# the pin in Dockerfile and delete this entry.
-CVE-2026-69192
-
-# CVE-2026-14257, CVE-2026-69152 — brace-expansion <5.0.9, DoS via memory
-# exhaustion / unbounded intermediate arrays in expand().
-#
-# Same situation as the entry above: this copy is npm's own bundled dep at
-# /usr/local/lib/node_modules/npm/node_modules/brace-expansion (5.0.7), not
-# in /app/node_modules. brace-expansion 5.0.9 exists, but no npm release
-# bundles it yet, so the Dockerfile pin cannot reach it.
-#
-# Exposure is nil: expand() is called on glob patterns npm itself parses,
-# and the container runs one fixed command (`prisma migrate deploy`) with no
-# attacker-controlled glob input. Both CVEs are DoS-only, no code execution.
-#
-# Re-check when npm >12.0.2 ships. Worth noting the Dockerfile's global npm
-# upgrade was originally added (06b1bb8) to patch exactly this package —
-# npm's bundled deps go stale faster than npm releases, so the better
-# long-term fix is to drop the global npm from the runner entirely and have
-# docker-entrypoint.sh call ./node_modules/.bin/prisma instead of `npx`.
-CVE-2026-14257
-CVE-2026-69152
+# That is the preferred shape of a fix: make the vulnerable code structurally
+# absent rather than suppressed. Suppression only held until the scanner's
+# vulnerability database updated and flagged a different CVE in the same
+# package, which is exactly what happened here.

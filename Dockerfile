@@ -49,16 +49,25 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN apk add --no-cache libc6-compat sqlite
 
-# Patch CVEs in npm's bundled deps (picomatch, ip-address, brace-expansion)
-# that ship with the base image. The runtime only invokes `npx prisma`, but
-# the vulnerable files still sit in the image and trip container scanners.
+# Remove npm from the runtime image entirely.
 #
-# Pin the version — do NOT use npm@latest. An unpinned upgrade silently broke
-# this build once already: npm 12 dropped Node 25 from its engines while the
-# base image was still node:25-alpine, so a build that had passed in May
-# failed in August with no code change. When bumping this pin, check the new
-# npm's `engines` against the FROM tag above.
-RUN npm install -g npm@12.0.2 && npm cache clean --force
+# npm vendors its own dependency tree (undici, tar, ip-address, brace-expansion,
+# ...) inside /usr/local/lib/node_modules/npm. Those copies are unreachable from
+# package.json — no dependency bump, override or `npm update` touches them — and
+# they go stale faster than npm cuts releases, so they show up as HIGH/CRITICAL
+# findings that can only be fixed by an npm release that may not exist yet. The
+# earlier approach here was to upgrade npm to patch them; that turned the deploy
+# red twice (once when npm@latest dropped the base image's Node version, once
+# when a scanner DB update flagged six CVEs with no fixed npm to move to).
+#
+# Nothing in the runtime needs npm: the entrypoint calls ./node_modules/.bin/prisma
+# and the sync route spawns `node dist/sync/index.js` directly. Deleting it makes
+# the whole class structurally absent rather than suppressed.
+#
+# Build stages above still use npm for `npm ci` and `npm run build`.
+RUN rm -rf /usr/local/lib/node_modules/npm \
+           /usr/local/bin/npm \
+           /usr/local/bin/npx
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs

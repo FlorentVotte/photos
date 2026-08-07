@@ -25,14 +25,17 @@ if [ -f "$DB_FILE" ]; then
       name=$(basename "$migration_dir")
       [ "$name" = "migrations" ] && continue
       echo "  Marking $name as applied"
-      npx prisma migrate resolve --applied "$name"
+      ./node_modules/.bin/prisma migrate resolve --applied "$name"
     done
     echo "Baseline complete"
   fi
 fi
 
+# Call the prisma binary directly rather than via `npx`: npm is removed from
+# the runner image (its bundled deps are a recurring source of scanner CVEs
+# that no package.json change can reach), so `npx` does not exist here.
 echo "Applying database migrations..."
-npx prisma migrate deploy --schema=./prisma/schema.prisma
+./node_modules/.bin/prisma migrate deploy --schema=./prisma/schema.prisma
 echo "Database ready"
 
 # Start the application

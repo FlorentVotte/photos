@@ -82,16 +82,23 @@ export async function POST(request: NextRequest) {
       // No body or invalid JSON, sync all
     }
 
-    // Build command arguments safely (no string concatenation)
-    const args = ["run", "sync"];
+    // Build command arguments safely (no string concatenation).
+    // Invoke the compiled sync script with the running node binary rather than
+    // `npm run sync`. The npm script is literally `node dist/sync/index.js`, so
+    // this is the same command with one less process layer — and npm is not
+    // present in the runner image (removed because its bundled dependencies
+    // are a recurring source of scanner CVEs that no package.json change can
+    // reach). process.execPath is the node binary already running this server.
+    // Note: no `--` separator here; that was only needed to pass args through npm.
+    const args = ["dist/sync/index.js"];
     if (galleryId) {
-      args.push("--", "--gallery", galleryId);
+      args.push("--gallery", galleryId);
     }
 
     console.log(`Starting sync... ${galleryId ? `(gallery: ${galleryId})` : "(all)"}`);
 
     // Run the sync script using execFile (prevents command injection)
-    const { stdout, stderr } = await execFileAsync("npm", args, {
+    const { stdout, stderr } = await execFileAsync(process.execPath, args, {
       cwd: process.cwd(),
       timeout: SYNC.PROCESS_TIMEOUT_MS,
     });
