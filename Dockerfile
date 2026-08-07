@@ -77,8 +77,12 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# Copy pre-compiled sync scripts
-COPY --from=builder /app/dist/sync ./dist/sync
+# Copy pre-compiled sync scripts.
+# Copy all of dist/, not just dist/sync: tsconfig.sync.json has rootDir "." and
+# includes src/lib/crypto.ts, so tsc emits dist/sync/*.js AND dist/src/lib/crypto.js.
+# dist/sync/index.js requires "../src/lib/crypto", so copying only dist/sync
+# produced a runtime "Cannot find module" the moment sync was invoked.
+COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 # prisma.config.ts is required by Prisma 7 CLI (migrate deploy / migrate
 # resolve) to resolve the datasource URL. Without it the entrypoint
