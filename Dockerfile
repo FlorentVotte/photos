@@ -1,5 +1,5 @@
 # Stage 1: Dependencies (all) — used by the Next.js build
-FROM node:25-alpine AS deps
+FROM node:26-alpine AS deps
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat python3 make g++
@@ -12,7 +12,7 @@ RUN npm ci
 RUN npx prisma generate
 
 # Stage 2: Builder
-FROM node:25-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -28,7 +28,7 @@ RUN npx tsc -p tsconfig.sync.json
 # Stage 3: Runtime dependencies — reproducible, pinned via package-lock.json.
 # Installs only production deps (omits dev/optional), so the image stays
 # reasonably small while guaranteeing the exact same versions as CI tests.
-FROM node:25-alpine AS runtime-deps
+FROM node:26-alpine AS runtime-deps
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat python3 make g++
@@ -41,7 +41,7 @@ RUN npm ci --omit=dev --omit=optional
 RUN npx prisma generate
 
 # Stage 4: Runner (minimal)
-FROM node:25-alpine AS runner
+FROM node:26-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -50,9 +50,15 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN apk add --no-cache libc6-compat sqlite
 
 # Patch CVEs in npm's bundled deps (picomatch, ip-address, brace-expansion)
-# that ship with node:25-alpine. The runtime only invokes `npx prisma`, but
+# that ship with the base image. The runtime only invokes `npx prisma`, but
 # the vulnerable files still sit in the image and trip container scanners.
-RUN npm install -g npm@latest && npm cache clean --force
+#
+# Pin the version — do NOT use npm@latest. An unpinned upgrade silently broke
+# this build once already: npm 12 dropped Node 25 from its engines while the
+# base image was still node:25-alpine, so a build that had passed in May
+# failed in August with no code change. When bumping this pin, check the new
+# npm's `engines` against the FROM tag above.
+RUN npm install -g npm@12.0.2 && npm cache clean --force
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
