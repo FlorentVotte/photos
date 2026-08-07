@@ -52,7 +52,14 @@ export async function POST(request: NextRequest) {
       cookieStore.set("admin_auth", signedToken, {
         httpOnly: true,
         secure: true, // Always secure
-        sameSite: "strict", // Stricter CSRF protection
+        // "lax" is required, not a weakening: the Adobe OAuth callback is
+        // reached by a cross-site top-level redirect from adobelogin.com,
+        // and browsers never send SameSite=Strict cookies on those. With
+        // "strict" the callback's requireAuth() failed on every connect.
+        // Lax still withholds the cookie on cross-site POST, which is what
+        // the CSRF protection actually relies on — every mutating route
+        // here is POST/PUT/DELETE.
+        sameSite: "lax",
         maxAge: AUTH.SESSION_EXPIRY_SECONDS,
         path: "/",
       });

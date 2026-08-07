@@ -65,7 +65,11 @@ describe("POST /api/auth/login", () => {
         expect.objectContaining({
           httpOnly: true,
           secure: true,
-          sameSite: "strict",
+          // "lax", not "strict": the Adobe OAuth callback is reached by a
+          // cross-site top-level redirect from adobelogin.com, and browsers
+          // never send SameSite=Strict cookies on those. Strict made
+          // requireAuth() in the callback fail every time.
+          sameSite: "lax",
           path: "/",
         })
       );
