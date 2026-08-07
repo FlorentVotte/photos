@@ -99,6 +99,10 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           exit-code: '1'
+          # Explicit rather than relying on Trivy's cwd discovery, so the
+          # exemptions stay visible here and in review. See .trivyignore
+          # for the justification of each entry.
+          trivyignores: .trivyignore
 
       - name: Upload Trivy scan results to GitHub Security tab
         if: always()
