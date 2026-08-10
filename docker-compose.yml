@@ -18,7 +18,15 @@ services:
       - ./data/photos:/app/public/photos
       - ./portrait.jpg:/app/public/portrait.jpg:ro
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      # 127.0.0.1, NOT localhost. Inside this container `localhost` resolves to
+      # the IPv6 address ::1 (musl returns the ::1 entry from /etc/hosts first),
+      # while Next.js binds IPv4 only — see `ENV HOSTNAME="0.0.0.0"` in the
+      # Dockerfile, which is deliberate. So a probe asking for `localhost` was
+      # refused every 30s and the container reported `unhealthy` continuously,
+      # with a failing streak past 650, while photos.votte.eu served fine the
+      # whole time — Caddy reaches the container over caddy-net, never through
+      # localhost, so the serving path and the probe path are different.
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000"]
       interval: 30s
       timeout: 10s
       retries: 3
