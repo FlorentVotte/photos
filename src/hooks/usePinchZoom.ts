@@ -22,6 +22,14 @@ interface UsePinchZoomReturn {
   position: Position;
   /** Whether currently zoomed in */
   isZoomed: boolean;
+  /**
+   * Whether the transform should animate. False while a finger is driving
+   * the transform (a transition there lags the finger) and false for the
+   * snap-to-1 that happens when the photo changes.
+   */
+  shouldAnimate: boolean;
+  /** CSS transform-origin for the zoom, e.g. "42% 61%". */
+  transformOrigin: string;
   /** Touch start handler */
   handleTouchStart: (e: React.TouchEvent) => void;
   /** Touch move handler */
@@ -43,6 +51,11 @@ export function usePinchZoom({
 }: UsePinchZoomOptions = {}): UsePinchZoomReturn {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
+  // True only while a finger is actively driving the transform.
+  const [isGesturing, setIsGesturing] = useState(false);
+  // True for the one frame in which we jump back to scale 1 on photo change.
+  const [isSnapping, setIsSnapping] = useState(false);
+  const [transformOrigin, setTransformOrigin] = useState("center center");
 
   // Touch tracking refs
   const lastTapTime = useRef<number>(0);
@@ -58,22 +71,33 @@ export function usePinchZoom({
     return Math.sqrt(dx * dx + dy * dy);
   };
 
-  // Reset zoom when resetKey changes
+  // Reset zoom when resetKey changes. This is a hard snap, not an animation:
+  // the photo is being swapped underneath, and an animated zoom-out layered
+  // on top of the image crossfade reads as broken rather than smooth.
   useEffect(() => {
+    setIsSnapping(true);
     setScale(1);
     setPosition({ x: 0, y: 0 });
+    setTransformOrigin("center center");
+
+    const raf = requestAnimationFrame(() => setIsSnapping(false));
+    return () => cancelAnimationFrame(raf);
   }, [resetKey]);
 
   const resetZoom = useCallback(() => {
     setScale(1);
     setPosition({ x: 0, y: 0 });
+    setTransformOrigin("center center");
   }, []);
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
       if (e.touches.length === 2) {
-        // Pinch start
+        // Pinch start. Only a two-finger touch marks the gesture as active
+        // here — a single tap must NOT, or the double-tap zoom below would
+        // have its own transition disabled and snap instead of animating.
         isPinching.current = true;
+        setIsGesturing(true);
         initialPinchDistance.current = getTouchDistance(e.touches);
         initialScale.current = scale;
       } else if (e.touches.length === 1) {
@@ -90,9 +114,22 @@ export function usePinchZoom({
         if (now - lastTapTime.current < UI.DOUBLE_TAP_WINDOW_MS) {
           // Double tap - toggle zoom
           if (scale > 1) {
+            // Keep the existing origin so it animates back out about the
+            // same point it zoomed in on.
             setScale(1);
             setPosition({ x: 0, y: 0 });
           } else {
+            // Zoom toward whatever was tapped rather than the centre.
+            // Only safe to move the origin from a resting scale of 1 —
+            // changing it mid-zoom would make the image jump.
+            const rect = e.currentTarget.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+              const originX =
+                ((e.touches[0].clientX - rect.left) / rect.width) * 100;
+              const originY =
+                ((e.touches[0].clientY - rect.top) / rect.height) * 100;
+              setTransformOrigin(`${originX.toFixed(2)}% ${originY.toFixed(2)}%`);
+            }
             setScale(doubleTapScale);
           }
           lastTapTime.current = 0;
@@ -121,8 +158,10 @@ export function usePinchZoom({
           setPosition({ x: 0, y: 0 });
         }
       } else if (e.touches.length === 1 && scale > 1 && lastPanPosition.current) {
-        // Pan when zoomed
+        // Pan when zoomed. The gesture only counts as active once the finger
+        // actually moves, so a stationary tap keeps its animation.
         e.preventDefault();
+        setIsGesturing(true);
         const deltaX = e.touches[0].clientX - lastPanPosition.current.x;
         const deltaY = e.touches[0].clientY - lastPanPosition.current.y;
 
@@ -146,12 +185,15 @@ export function usePinchZoom({
       initialPinchDistance.current = null;
     }
     lastPanPosition.current = null;
+    setIsGesturing(false);
   }, []);
 
   return {
     scale,
     position,
     isZoomed: scale > 1,
+    shouldAnimate: !isGesturing && !isSnapping,
+    transformOrigin,
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,

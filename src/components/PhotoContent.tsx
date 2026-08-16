@@ -8,6 +8,7 @@ import PhotoLocationMap from "./PhotoLocationMap";
 import PhotoKeyboardNav from "./PhotoKeyboardNav";
 import Lightbox from "./Lightbox";
 import { useLocale } from "@/lib/LocaleContext";
+import { usePresence } from "@/hooks";
 import { formatPhotoTitle } from "@/lib/photo-display";
 import type { Photo, Album } from "@/lib/types";
 
@@ -47,6 +48,8 @@ export default function PhotoContent({
   const displayTitle = formatPhotoTitle(photo, album, currentIndex);
 
   const [showCopied, setShowCopied] = useState(false);
+  // Keeps the badge mounted long enough to fade back out.
+  const copiedToast = usePresence(showCopied, 150);
   const [isDownloading, setIsDownloading] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(currentIndex);
@@ -283,7 +286,7 @@ export default function PhotoContent({
                 <button
                   onClick={handleDownload}
                   disabled={isDownloading}
-                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 hover:border-primary hover:bg-primary/10 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t("photo", "download")}
                 >
                   <span aria-hidden="true" className="material-symbols-outlined !text-[16px]">
@@ -293,22 +296,28 @@ export default function PhotoContent({
                 </button>
                 <button
                   onClick={handleShare}
-                  className="relative inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="relative inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t("photo", "share")}
                 >
                   <span aria-hidden="true" className="material-symbols-outlined !text-[16px]">
                     share
                   </span>
                   <span>{t("photo", "share")}</span>
-                  {showCopied && (
-                    <span className="absolute -top-9 left-0 whitespace-nowrap rounded-full bg-foreground px-3 py-1 font-sans text-[10px] uppercase tracking-[0.24em] text-background-dark">
+                  {copiedToast.shouldRender && (
+                    <span
+                      className={`absolute -top-9 left-0 whitespace-nowrap rounded-full bg-foreground px-3 py-1 font-sans text-[10px] uppercase tracking-[0.24em] text-background-dark transition-[opacity,transform] duration-150 ease-out motion-reduce:translate-y-0 ${
+                        copiedToast.isVisible
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-1"
+                      }`}
+                    >
                       {t("photo", "linkCopied")}
                     </span>
                   )}
                 </button>
                 <button
                   onClick={openLightbox}
-                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <span aria-hidden="true" className="material-symbols-outlined !text-[16px]">
                     slideshow

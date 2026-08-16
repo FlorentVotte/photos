@@ -21,6 +21,13 @@
   --font-display: var(--font-display);
   --font-sans: var(--font-sans);
 
+  /* Motion curves. Tailwind v4 generates ease-* utilities from this
+     namespace, so these are used as `ease-out-soft` / `ease-settle`.
+     Durations stay as Tailwind duration-* literals to match the rest
+     of the codebase. */
+  --ease-out-soft: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-settle: cubic-bezier(0.32, 0.72, 0, 1);
+
   /* Custom border radius */
   --radius-DEFAULT: 0.25rem;
   --radius-lg: 0.5rem;
@@ -76,9 +83,21 @@ img {
   -ms-user-select: none;
 }
 
-/* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
+/* Smooth scroll behavior — opt-out for users who ask for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Elements whose transition is set via inline style (composed transforms that
+   Tailwind can't express) opt into reduced motion with this class. Shortened
+   rather than removed — the motion still explains the state change, it just
+   gets out of the way faster. */
+@media (prefers-reduced-motion: reduce) {
+  .motion-aware {
+    transition-duration: 120ms !important;
+  }
 }
 
 /* Theme-tinted focus ring for keyboard navigation. */

@@ -7,9 +7,13 @@ import {
   useBodyScrollLock,
   useLightboxKeyboard,
   usePinchZoom,
+  usePresence,
   useSlideshow,
   useSwipeNavigation,
 } from "@/hooks";
+
+/** Must cover the longest exit transition below. */
+const EXIT_DURATION_MS = 200;
 
 interface Photo {
   id: string;
@@ -74,12 +78,20 @@ export default function Lightbox({
     scale,
     position,
     isZoomed,
+    shouldAnimate,
+    transformOrigin,
     handleTouchStart: handleZoomTouchStart,
-    handleTouchMove,
+    handleTouchMove: handleZoomTouchMove,
     handleTouchEnd: handleZoomTouchEnd,
   } = usePinchZoom({ resetKey: currentIndex });
 
-  const { handleSwipeStart, handleSwipeEnd } = useSwipeNavigation({
+  const {
+    handleSwipeStart,
+    handleSwipeMove,
+    handleSwipeEnd,
+    dragOffset,
+    shouldAnimateOffset,
+  } = useSwipeNavigation({
     enabled: !isZoomed,
     onNext: goNext,
     onPrev: goPrev,
@@ -108,6 +120,14 @@ export default function Lightbox({
     [handleZoomTouchStart, handleSwipeStart]
   );
 
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      handleZoomTouchMove(e);
+      handleSwipeMove(e);
+    },
+    [handleZoomTouchMove, handleSwipeMove]
+  );
+
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
       handleZoomTouchEnd(e);
@@ -120,12 +140,19 @@ export default function Lightbox({
     setIsLoading(true);
   }, [currentIndex]);
 
-  if (!isOpen || !currentPhoto) return null;
+  // Stays mounted through the exit animation; `isVisible` drives the state.
+  const { shouldRender, isVisible } = usePresence(isOpen, EXIT_DURATION_MS);
+
+  if (!shouldRender || !currentPhoto) return null;
 
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[100] bg-black/97 flex items-center justify-center"
+      className={`fixed inset-0 z-[100] bg-black/97 flex items-center justify-center transition-opacity motion-reduce:duration-100 ${
+        isVisible
+          ? "opacity-100 duration-200 ease-out"
+          : "opacity-0 duration-150 ease-in"
+      }`}
       onClick={onClose}
     >
       {/* Top controls */}
@@ -193,7 +220,16 @@ export default function Lightbox({
 
       {/* Image */}
       <div
-        className="relative max-w-[92vw] max-h-[85vh] flex items-center justify-center touch-none"
+        className="motion-aware relative max-w-[92vw] max-h-[85vh] flex items-center justify-center touch-none"
+        style={{
+          // Enter/exit scale and the live drag offset share one transform.
+          // Transitions are off while a finger is down so the photo tracks
+          // it 1:1, and off for the post-commit reset.
+          transform: `translateX(${dragOffset}px) scale(${isVisible ? 1 : 0.97})`,
+          transition: shouldAnimateOffset
+            ? `transform ${isVisible ? 300 : 150}ms var(--ease-settle)`
+            : "none",
+        }}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -208,12 +244,17 @@ export default function Lightbox({
           ref={imageRef}
           src={currentPhoto.src.full}
           alt={currentPhoto.title || "Photo"}
-          className={`max-w-full max-h-[85vh] object-contain select-none transition-opacity duration-300 ${
+          className={`motion-aware max-w-full max-h-[85vh] object-contain select-none ${
             isLoading ? "opacity-0" : "opacity-100"
           }`}
           style={{
             transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
-            transformOrigin: "center center",
+            transformOrigin,
+            // Opacity always animates (the load crossfade). Transform only
+            // when no finger is driving it — a transition mid-pinch lags.
+            transition: shouldAnimate
+              ? "opacity 300ms ease-out, transform 250ms var(--ease-out-soft)"
+              : "opacity 300ms ease-out",
           }}
           onLoad={() => setIsLoading(false)}
           onContextMenu={(e) => e.preventDefault()}

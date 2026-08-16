@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import FadeInImage from "./FadeInImage";
 
 // Check if title looks like a filename (e.g., DSCF0678.raf, IMG_1234.jpg)
 function isFilename(title: string): boolean {
@@ -103,11 +103,12 @@ export default function PhotoGrid({
             }`}
             onContextMenu={(e) => e.preventDefault()}
           >
-            <Image
+            <FadeInImage
               src={photo.src.medium}
               alt={photo.title || "Photo"}
               fill
               sizes={variant === "chapter" ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : "(max-width: 768px) 50vw, 25vw"}
+              wrapperClassName="absolute inset-0 block"
               className="object-cover transition-transform duration-700 group-hover:scale-105 select-none"
               draggable={false}
               priority={index < 4}

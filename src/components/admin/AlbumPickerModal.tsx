@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePresence } from "@/hooks";
 import FocusTrap from "./FocusTrap";
 
 export interface LightroomAlbum {
@@ -31,6 +32,8 @@ export default function AlbumPickerModal({
   loading = false,
 }: AlbumPickerModalProps) {
   const titleId = "album-picker-title";
+  // Stays mounted through the exit animation.
+  const { shouldRender, isVisible } = usePresence(open, 200);
 
   useEffect(() => {
     if (open) {
@@ -43,17 +46,25 @@ export default function AlbumPickerModal({
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!shouldRender) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-12"
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-12 transition-opacity motion-reduce:duration-100 ${
+        isVisible
+          ? "opacity-100 duration-200 ease-out"
+          : "opacity-0 duration-150 ease-in"
+      }`}
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
     >
       <FocusTrap active={open} onEscape={onClose} initialFocus="close">
-        <div className="flex max-h-[80vh] w-full max-w-2xl flex-col overflow-hidden border border-surface-border bg-background-dark">
+        <div
+          className={`flex max-h-[80vh] w-full max-w-2xl flex-col overflow-hidden border border-surface-border bg-background-dark transition-transform ease-out-soft motion-reduce:transform-none ${
+            isVisible ? "scale-100 duration-200" : "scale-[0.97] duration-150"
+          }`}
+        >
           <header className="flex items-center justify-between gap-6 border-b border-surface-border px-8 py-6">
             <div className="flex flex-col gap-1">
               <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
