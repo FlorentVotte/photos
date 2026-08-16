@@ -90,16 +90,6 @@ img {
   }
 }
 
-/* Elements whose transition is set via inline style (composed transforms that
-   Tailwind can't express) opt into reduced motion with this class. Shortened
-   rather than removed — the motion still explains the state change, it just
-   gets out of the way faster. */
-@media (prefers-reduced-motion: reduce) {
-  .motion-aware {
-    transition-duration: 120ms !important;
-  }
-}
-
 /* Theme-tinted focus ring for keyboard navigation. */
 :focus-visible {
   outline: 2px solid var(--color-primary);
