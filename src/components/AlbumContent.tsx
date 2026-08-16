@@ -127,7 +127,7 @@ export default function AlbumContent({
           }}
         >
           <div className="flex max-w-3xl flex-col gap-4">
-            <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-white/70">
+            <p className="font-sans text-eyebrow uppercase text-white/70">
               {t("album", "travelDiary")}
             </p>
 
@@ -141,7 +141,7 @@ export default function AlbumContent({
               </p>
             )}
 
-            <p className="mt-2 font-sans text-[12px] uppercase tracking-[0.32em] text-white/60">
+            <p className="mt-2 font-sans text-eyebrow uppercase text-white/60">
               {album.date} <span className="mx-2 text-white/30">·</span>{" "}
               {album.location}
             </p>
@@ -184,7 +184,7 @@ export default function AlbumContent({
               )}
 
               <header className="flex flex-col items-center gap-3 text-center">
-                <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                <p className="font-sans text-eyebrow uppercase text-text-muted">
                   {t("album", "chapter")} {chapterIndex + 1}
                 </p>
                 <h2 className="font-display text-3xl md:text-4xl font-semibold leading-tight tracking-tight text-foreground">
@@ -228,7 +228,7 @@ export default function AlbumContent({
         {chapters.length === 0 && photos.length > 0 && (
           <section className="flex w-full flex-col gap-10">
             <header className="text-center">
-              <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+              <p className="font-sans text-eyebrow uppercase text-text-muted">
                 {t("album", "gallery")}
               </p>
             </header>
@@ -254,7 +254,7 @@ export default function AlbumContent({
               />
               <div className="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/70 to-background-dark/30" />
               <div className="relative flex min-h-[280px] flex-col justify-center gap-4 px-8 py-16 md:min-h-[360px] md:px-16">
-                <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                <p className="font-sans text-eyebrow uppercase text-text-muted">
                   {t("album", "nextJourney")}
                 </p>
                 <h3 className="font-display text-3xl md:text-5xl font-semibold leading-tight tracking-tight text-foreground">

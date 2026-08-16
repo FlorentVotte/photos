@@ -163,7 +163,7 @@ export default function Header({ transparent = false }: HeaderProps) {
               toggleLocale();
               setMobileMenuOpen(false);
             }}
-            className="mt-4 font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted hover:text-foreground transition-colors"
+            className="mt-4 font-sans text-eyebrow uppercase text-text-muted hover:text-foreground transition-colors"
           >
             {locale === "en" ? "FR — Français" : "EN — English"}
           </button>

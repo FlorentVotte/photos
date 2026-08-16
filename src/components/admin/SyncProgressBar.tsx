@@ -30,7 +30,7 @@ export default function SyncProgressBar({ progress }: SyncProgressBarProps) {
     >
       {progress.status === "syncing" && (
         <div className="mb-3">
-          <div className="mb-2 flex items-baseline justify-between gap-4 font-sans text-[12px] uppercase tracking-[0.24em]">
+          <div className="mb-2 flex items-baseline justify-between gap-4 font-sans text-label uppercase">
             <span className="text-text-muted truncate">
               {progress.currentGalleryName || "Initializing…"}
             </span>

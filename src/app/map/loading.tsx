@@ -13,7 +13,7 @@ export default function MapLoading() {
           </header>
 
           <div className="w-full h-[70vh] bg-surface-dark flex items-center justify-center border-y border-surface-border">
-            <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+            <p className="font-sans text-eyebrow uppercase text-text-muted animate-pulse">
               Loading map
             </p>
           </div>

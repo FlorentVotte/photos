@@ -31,7 +31,7 @@ export default function HomeContent({ recentAlbums }: HomeContentProps) {
         <p className="font-display text-2xl md:text-[2rem] leading-snug tracking-tight italic max-w-2xl mx-auto text-white/90">
           &ldquo;{t("home", "quote")}&rdquo;
         </p>
-        <p className="mt-6 font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+        <p className="mt-6 font-sans text-eyebrow uppercase text-text-muted">
           {t("home", "quoteAuthor")}
         </p>
         <p className="mt-10 font-sans text-sm text-white/50 max-w-xl mx-auto">

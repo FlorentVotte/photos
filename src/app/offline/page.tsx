@@ -8,7 +8,7 @@ export default function OfflinePage() {
       <Header />
       <main className="flex-1 flex items-center justify-center px-6">
         <div className="max-w-md text-center">
-          <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+          <p className="font-sans text-eyebrow uppercase text-text-muted">
             Offline
           </p>
           <h1 className="mt-4 font-display text-4xl md:text-5xl font-semibold leading-tight tracking-tight text-foreground">
@@ -20,7 +20,7 @@ export default function OfflinePage() {
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="group/cta mt-10 inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+            className="group/cta mt-10 inline-flex items-center gap-3 font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
           >
             <span>Try again</span>
             <span

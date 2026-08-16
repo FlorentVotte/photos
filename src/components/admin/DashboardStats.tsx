@@ -27,7 +27,7 @@ function Stat({ label, value, subtext, state = "neutral" }: StatProps) {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted">
+      <span className="font-sans text-label uppercase text-text-muted">
         {label}
       </span>
       <span className={`font-display text-2xl md:text-3xl font-semibold tabular-nums leading-none ${stateClass}`}>
@@ -108,7 +108,7 @@ export default function DashboardStats({
       <Stat label="Photos" value={totalPhotos.toLocaleString()} />
       <Stat label="Last sync" value={formatLastSync()} />
       <div className="flex flex-col gap-1.5">
-        <span className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted">
+        <span className="font-sans text-label uppercase text-text-muted">
           Adobe API
         </span>
         <div className="flex items-baseline gap-3">
@@ -127,7 +127,7 @@ export default function DashboardStats({
           </span>
           <a
             href="/api/auth/adobe"
-            className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+            className="font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
             title={adobeStatus?.connected ? "Reconnect" : "Connect"}
           >
             {adobeStatus?.connected ? "Reconnect" : "Connect"}

@@ -26,7 +26,7 @@ export default function ChapterLocationSummary({
   }
 
   return (
-    <p className="text-center font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+    <p className="text-center font-sans text-eyebrow uppercase text-text-muted">
       {places.join(" · ")}
       {cities.length > 0 && countries.length > 0 && (
         <>

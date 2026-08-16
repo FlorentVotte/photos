@@ -81,7 +81,7 @@ export default function ChapterRouteMap({
         className="w-full bg-surface-dark flex items-center justify-center"
         style={{ height }}
       >
-        <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+        <p className="font-sans text-eyebrow uppercase text-text-muted animate-pulse">
           Loading map
         </p>
       </div>
@@ -121,11 +121,11 @@ export default function ChapterRouteMap({
     if (isFirst || isLast) {
       const letter = isFirst ? "A" : "B";
       iconHtml = `<div class="w-6 h-6 rounded-full bg-primary ring-4 ring-primary/30 flex items-center justify-center">
-        <span class="text-[10px] font-semibold text-background-dark tracking-wider">${letter}</span>
+        <span class="text-[0.625rem] font-semibold text-background-dark tracking-wider">${letter}</span>
       </div>`;
     } else {
       iconHtml = `<div class="w-4 h-4 rounded-full bg-primary/70 ring-2 ring-primary/20 flex items-center justify-center">
-        <span class="text-[8px] font-semibold text-background-dark">${index + 1}</span>
+        <span class="text-[0.5rem] font-semibold text-background-dark">${index + 1}</span>
       </div>`;
     }
 
@@ -229,7 +229,7 @@ export default function ChapterRouteMap({
             ))}
         </MapContainer>
       </div>
-      <p className="text-center font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted mt-6">
+      <p className="text-center font-sans text-eyebrow uppercase text-text-muted mt-6">
         {geoPhotos.length} locations along the route
       </p>
     </>

@@ -36,7 +36,7 @@ export default function AlbumCard({
 
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-5 md:p-6 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)]">
         {isLarge && featuredLabel && (
-          <p className="mb-1 inline-flex w-fit items-center gap-2 font-sans text-[11px] uppercase tracking-[0.32em] text-primary">
+          <p className="mb-1 inline-flex w-fit items-center gap-2 font-sans text-[0.6875rem] uppercase tracking-[0.32em] text-primary">
             <span aria-hidden="true" className="h-px w-6 bg-primary" />
             {featuredLabel}
           </p>
@@ -48,7 +48,7 @@ export default function AlbumCard({
         >
           {album.title}
         </h3>
-        <p className="font-sans text-[12px] uppercase tracking-[0.22em] text-white/80">
+        <p className="font-sans text-label uppercase tracking-[0.22em] text-white/80">
           {album.location} <span className="text-white/40">·</span> {album.date}
         </p>
       </div>

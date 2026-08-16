@@ -21,6 +21,28 @@
   --font-display: var(--font-display);
   --font-sans: var(--font-sans);
 
+  /* Type scale.
+
+     Size, leading and tracking travel together as one named style. Tracking
+     is size-specific — a single value applied at every size is wrong
+     somewhere — so binding them prevents the pairs drifting apart, which is
+     what happened when they were written out by hand at each call site.
+
+     Sizes are rem, not px, so the scale honours the reader's browser text
+     size instead of ignoring it. The values are the exact rem equivalents of
+     the px sizes they replace, so rendering is unchanged at the default. */
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.5;
+  --text-eyebrow--letter-spacing: 0.32em;
+
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.5;
+  --text-label--letter-spacing: 0.24em;
+
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 1.5;
+  --text-micro--letter-spacing: 0.24em;
+
   /* Motion curves. Tailwind v4 generates ease-* utilities from this
      namespace, so these are used as `ease-out-soft` / `ease-settle`.
      Durations stay as Tailwind duration-* literals to match the rest

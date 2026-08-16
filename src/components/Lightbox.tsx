@@ -185,7 +185,7 @@ export default function Lightbox({
                   e.stopPropagation();
                   togglePlay();
                 }}
-                className="font-sans text-[12px] uppercase tracking-[0.32em] text-white/60 hover:text-white transition-colors"
+                className="font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors"
                 aria-label={isPlaying ? t("lightbox", "pause") : t("lightbox", "play")}
               >
                 {isPlaying ? "❚❚ " : "▶ "}
@@ -193,14 +193,14 @@ export default function Lightbox({
               </button>
             </div>
 
-            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 font-sans text-[12px] uppercase tracking-[0.32em] text-white/60 tabular-nums">
+            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 font-sans text-eyebrow uppercase text-white/60 tabular-nums">
               {String(currentIndex + 1).padStart(2, "0")} / {String(photos.length).padStart(2, "0")}
             </div>
 
             <div className="absolute top-6 right-6 z-10 flex items-center gap-5">
               <Link
                 href={`/photo/${currentPhoto.id}`}
-                className="font-sans text-[12px] uppercase tracking-[0.32em] text-white/60 hover:text-white transition-colors"
+                className="font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors"
                 aria-label={t("lightbox", "viewDetails")}
                 onClick={(e) => e.stopPropagation()}
               >
@@ -211,7 +211,7 @@ export default function Lightbox({
                   e.stopPropagation();
                   onClose();
                 }}
-                className="font-sans text-[12px] uppercase tracking-[0.32em] text-white/60 hover:text-white transition-colors"
+                className="font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors"
                 aria-label={t("lightbox", "close")}
               >
                 {t("lightbox", "close")}
@@ -261,7 +261,7 @@ export default function Lightbox({
               onTouchEnd={handleTouchEnd}
             >
               {isLoading && (
-                <p className="absolute inset-0 flex items-center justify-center font-sans text-[12px] uppercase tracking-[0.32em] text-white/40 animate-pulse">
+                <p className="absolute inset-0 flex items-center justify-center font-sans text-eyebrow uppercase text-white/40 animate-pulse">
                   Loading
                 </p>
               )}
@@ -298,7 +298,7 @@ export default function Lightbox({
               {(currentPhoto.metadata?.date ||
                 (currentPhoto.metadata?.location &&
                   currentPhoto.metadata.location !== "Unknown")) && (
-                <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-white/50">
+                <p className="font-sans text-eyebrow uppercase text-white/50">
                   {currentPhoto.metadata?.date}
                   {currentPhoto.metadata?.date &&
                     currentPhoto.metadata?.location &&

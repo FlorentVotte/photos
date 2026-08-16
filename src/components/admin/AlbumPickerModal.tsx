@@ -67,7 +67,7 @@ export default function AlbumPickerModal({
         >
           <header className="flex items-center justify-between gap-6 border-b border-surface-border px-8 py-6">
             <div className="flex flex-col gap-1">
-              <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+              <p className="font-sans text-eyebrow uppercase text-text-muted">
                 Lightroom
               </p>
               <h2
@@ -81,14 +81,14 @@ export default function AlbumPickerModal({
               <button
                 onClick={onRefresh}
                 disabled={loading}
-                className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-50"
+                className="font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors disabled:opacity-50"
                 aria-label="Refresh album list"
               >
                 {loading ? "Refreshing…" : "Refresh"}
               </button>
               <button
                 onClick={onClose}
-                className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                className="font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
                 aria-label="Close modal"
               >
                 Close
@@ -123,7 +123,7 @@ export default function AlbumPickerModal({
                             {album.name}
                           </span>
                           {isAdded && (
-                            <span className="font-sans text-[10px] uppercase tracking-[0.24em] text-text-muted shrink-0">
+                            <span className="font-sans text-micro uppercase text-text-muted shrink-0">
                               Added
                             </span>
                           )}
@@ -136,7 +136,7 @@ export default function AlbumPickerModal({
                       {!isAdded && (
                         <button
                           onClick={() => onAdd(album)}
-                          className="group/cta inline-flex shrink-0 items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                          className="group/cta inline-flex shrink-0 items-center gap-3 font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
                           aria-label={`Add ${album.name} to galleries`}
                         >
                           <span>Add</span>
@@ -156,7 +156,7 @@ export default function AlbumPickerModal({
           <footer className="border-t border-surface-border px-8 py-5">
             <button
               onClick={onClose}
-              className="group/cta inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+              className="group/cta inline-flex items-center gap-3 font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
             >
               <span>Done</span>
               <span

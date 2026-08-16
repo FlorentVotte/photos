@@ -33,7 +33,7 @@ export default function Hero({
       <div className="mx-auto flex min-h-[70vh] max-w-[1200px] flex-col justify-end px-6 pb-16 pt-40 md:px-12 lg:min-h-[80vh] lg:pb-24">
         <div className="flex max-w-2xl flex-col gap-4 text-left">
           {kicker && (
-            <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-white/70">
+            <p className="font-sans text-eyebrow uppercase text-white/70">
               {kicker}
             </p>
           )}
