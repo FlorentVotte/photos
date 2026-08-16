@@ -51,7 +51,8 @@
     "sharp": "$sharp",
     "@emnapi/wasi-threads": "^1.2.3",
     "@emnapi/core": "^1.11.3",
-    "@emnapi/runtime": "^1.11.3"
+    "@emnapi/runtime": "^1.11.3",
+    "nanoid": "^3.3.18"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.8",
