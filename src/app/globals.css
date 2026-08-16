@@ -90,6 +90,79 @@ img {
   }
 }
 
+/* Translucent chrome that content scrolls underneath.
+   Marked with a class rather than styled here, so the two accessibility
+   opt-outs below have a single place to override. */
+.material {
+  background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* A bigger surface should read as thicker glass. */
+.material-thick {
+  background-color: color-mix(in srgb, var(--color-background) 92%, transparent);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  backdrop-filter: blur(32px) saturate(180%);
+}
+
+/* Reduced transparency: make the glass frosty rather than see-through.
+   Dropping the blur as well, since a blur with no translucency just costs
+   compositing for no visual result. */
+@media (prefers-reduced-transparency: reduce) {
+  .material,
+  .material-thick {
+    background-color: var(--color-background);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Increased contrast: solid background plus a defined, contrasting edge. */
+@media (prefers-contrast: more) {
+  .material,
+  .material-thick {
+    background-color: var(--color-background);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-color: var(--color-text-primary);
+  }
+}
+
+/* Scroll edge effect — a soft gradient where content passes under floating
+   chrome, instead of a hard 1px rule that is always drawn whether or not
+   anything is actually underneath it. */
+.scroll-edge::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  height: 1.5rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-background) 70%, transparent),
+    transparent
+  );
+}
+
+.scroll-edge[data-scrolled="true"]::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  /* With a solid bar there is nothing showing through, so the soft edge
+     stops doing any work — fall back to a defined line. */
+  .scroll-edge::after {
+    display: none;
+  }
+  .scroll-edge[data-scrolled="true"] {
+    border-bottom-color: var(--color-surface-border);
+  }
+}
+
 /* Theme-tinted focus ring for keyboard navigation. */
 :focus-visible {
   outline: 2px solid var(--color-primary);

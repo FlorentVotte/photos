@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useLocale } from "@/lib/LocaleContext";
+import { useScrolled } from "@/hooks";
 
 interface HeaderProps {
   transparent?: boolean;
@@ -11,6 +12,7 @@ interface HeaderProps {
 export default function Header({ transparent = false }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t, locale, setLocale } = useLocale();
+  const scrolled = useScrolled();
 
   const toggleLocale = () => {
     setLocale(locale === "en" ? "fr" : "en");
@@ -41,10 +43,10 @@ export default function Header({ transparent = false }: HeaderProps) {
 
   return (
     <header
-      className={`sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-surface-border px-4 py-3 md:px-6 md:py-4 lg:px-16 transition-all duration-300 ${
-        transparent
-          ? "bg-background-dark/80 backdrop-blur-md"
-          : "bg-background-dark/95 backdrop-blur-md"
+      data-scrolled={scrolled}
+      className={`scroll-edge sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-transparent px-4 py-3 md:px-6 md:py-4 lg:px-16 ${
+        // Lighter material over a hero image, thicker over ordinary content.
+        transparent ? "material" : "material-thick"
       }`}
     >
       <Link href="/" className="group flex items-baseline gap-2">
@@ -113,7 +115,7 @@ export default function Header({ transparent = false }: HeaderProps) {
 
       {/* Mobile menu — full-viewport overlay with scroll lock */}
       <div
-        className={`md:hidden fixed inset-0 z-40 bg-background-dark/95 backdrop-blur-lg transition-opacity duration-300 ${
+        className={`material-thick md:hidden fixed inset-0 z-40 transition-opacity duration-300 ${
           mobileMenuOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
