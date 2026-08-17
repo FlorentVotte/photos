@@ -13,6 +13,19 @@ updates:
       # against that, and the failure aborts the whole npm update run.
       - dependency-name: "nanoid"
         update-types: ["version-update:semver-major"]
+      # better-sqlite3 is never imported directly — every call site goes through
+      # @prisma/adapter-better-sqlite3, which hard-depends on ^12.6.0. Our ^12
+      # range dedupes with it to a single copy; bumping to 13 installs a second
+      # native build while the adapter keeps using 12. Revisit when the adapter
+      # supports 13.
+      - dependency-name: "better-sqlite3"
+        update-types: ["version-update:semver-major"]
+      # eslint 10 removed context.getFilename(), which eslint-plugin-react
+      # (bundled by eslint-config-next) still calls, so every lint run throws.
+      # 7.37.5 is the latest release and peers at eslint ^9.7. Revisit when
+      # eslint-plugin-react supports 10.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
     groups:
       # Group minor and patch updates together
       production-dependencies:
