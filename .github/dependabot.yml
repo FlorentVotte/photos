@@ -26,6 +26,14 @@ updates:
       # eslint-plugin-react supports 10.
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
+      # typescript-eslint (bundled by eslint-config-next) rejects TS 7 outright
+      # with "typescript-eslint does not support TS 7.0" and peers at
+      # <6.1.0. 8.67.0 is the latest release, so lint cannot run on TS 7 yet.
+      # TS 7 also removes moduleResolution=node10, which tsconfig.sync.json
+      # relies on — setting module+moduleResolution to node16 fixes that part
+      # and still emits CommonJS. Revisit when typescript-eslint supports 7.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     groups:
       # Group minor and patch updates together
       production-dependencies:
