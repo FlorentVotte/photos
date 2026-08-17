@@ -151,6 +151,23 @@ img {
   }
 }
 
+/* When a full-screen overlay is open behind the header, the bar would be a
+   second translucent layer stacked on the overlay's own material — two sheets
+   of glass muddy each other and leave a visible seam where the bar ends. The
+   bar drops its material and lets the single surface behind it show through.
+   Declared after .material so it wins on order.
+
+   Scoped below Tailwind's md breakpoint: the overlay only exists there, and
+   without the bound a viewport widened while the menu was open would leave
+   the desktop bar with no material at all. */
+@media (width < 48rem) {
+  .material-passthrough {
+    background-color: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 /* Scroll edge effect — a soft gradient where content passes under floating
    chrome, instead of a hard 1px rule that is always drawn whether or not
    anything is actually underneath it. */
