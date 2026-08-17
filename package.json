@@ -20,7 +20,7 @@
     "build": "next build",
     "build:sync": "tsc -p tsconfig.sync.json",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

@@ -35,7 +35,7 @@ const prisma = new PrismaClient({ adapter });
 
 // Cache for authenticated catalog data
 let catalogId: string | null = null;
-let catalogAssets: Map<string, { title?: string; caption?: string }> = new Map();
+const catalogAssets: Map<string, { title?: string; caption?: string }> = new Map();
 
 /**
  * Load metadata from authenticated Adobe API if available
