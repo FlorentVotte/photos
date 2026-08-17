@@ -23,6 +23,8 @@ function createPhoto(overrides: Partial<Photo> = {}): Photo {
       ...overrides.metadata,
     },
     ...overrides,
+    // Spread last would widen the required albumId back to `string | undefined`.
+    albumId: overrides.albumId || "album-1",
   };
 }
 
