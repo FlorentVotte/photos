@@ -1,5 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { UI } from "@/lib/constants";
+import { rubberband } from "@/lib/gesture-utils";
+
+/** Resting scale. Pinching below this rubber-bands and springs back. */
+const MIN_SCALE = 1;
 
 interface Position {
   x: number;
@@ -22,6 +26,11 @@ interface UsePinchZoomReturn {
   position: Position;
   /** Whether currently zoomed in */
   isZoomed: boolean;
+  /**
+   * Whether fingers are currently driving the transform. Consumers use this
+   * to stand down competing gesture recognisers.
+   */
+  isGesturing: boolean;
   /**
    * Whether the transform should animate. False while a finger is driving
    * the transform (a transition there lags the finger) and false for the
@@ -148,13 +157,20 @@ export function usePinchZoom({
         e.preventDefault();
         const currentDistance = getTouchDistance(e.touches);
         const scaleChange = currentDistance / initialPinchDistance.current;
-        const newScale = Math.min(
-          Math.max(initialScale.current * scaleChange, 1),
-          maxScale
-        );
+        const raw = initialScale.current * scaleChange;
+
+        // Rubber-band past the limits instead of clamping dead. A hard stop
+        // reads as "frozen"; progressive resistance reads as "responsive, but
+        // there is nothing more here". Released, it springs back to the bound.
+        let newScale = raw;
+        if (raw > maxScale) {
+          newScale = maxScale + rubberband(raw - maxScale, maxScale);
+        } else if (raw < MIN_SCALE) {
+          newScale = MIN_SCALE - rubberband(MIN_SCALE - raw, MIN_SCALE);
+        }
         setScale(newScale);
 
-        if (newScale === 1) {
+        if (newScale <= MIN_SCALE) {
           setPosition({ x: 0, y: 0 });
         }
       } else if (e.touches.length === 1 && scale > 1 && lastPanPosition.current) {
@@ -183,15 +199,24 @@ export function usePinchZoom({
     if (isPinching.current) {
       isPinching.current = false;
       initialPinchDistance.current = null;
+
+      // Settle back inside the bounds. Clearing isGesturing on the same tick
+      // re-enables the spring, so this springs home rather than snapping.
+      setScale((current) => {
+        const settled = Math.min(Math.max(current, MIN_SCALE), maxScale);
+        if (settled <= MIN_SCALE) setPosition({ x: 0, y: 0 });
+        return settled;
+      });
     }
     lastPanPosition.current = null;
     setIsGesturing(false);
-  }, []);
+  }, [maxScale]);
 
   return {
     scale,
     position,
     isZoomed: scale > 1,
+    isGesturing,
     shouldAnimate: !isGesturing && !isSnapping,
     transformOrigin,
     handleTouchStart,

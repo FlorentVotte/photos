@@ -1,94 +1,94 @@
 import { describe, it, expect } from "vitest";
-import {
-  computeRecentVelocity,
-  resolveSwipe,
-  type SwipeSample,
-} from "./gesture-utils";
+import { project, resolveProjectedSwipe, rubberband } from "./gesture-utils";
 
-describe("computeRecentVelocity", () => {
-  it("returns 0 with fewer than two samples", () => {
-    expect(computeRecentVelocity([])).toBe(0);
-    expect(computeRecentVelocity([{ x: 10, t: 0 }])).toBe(0);
+describe("project", () => {
+  it("returns 0 for no velocity", () => {
+    expect(project(0)).toBe(0);
   });
 
-  it("computes px/ms across the sample window", () => {
-    const samples: SwipeSample[] = [
-      { x: 0, t: 0 },
-      { x: 50, t: 100 },
-    ];
-    expect(computeRecentVelocity(samples)).toBeCloseTo(0.5);
+  it("projects further the faster the flick", () => {
+    const slow = project(300);
+    const fast = project(1200);
+    expect(fast).toBeGreaterThan(slow);
+    expect(slow).toBeGreaterThan(0);
   });
 
-  it("keeps the sign of the movement direction", () => {
-    const samples: SwipeSample[] = [
-      { x: 0, t: 0 },
-      { x: -30, t: 100 },
-    ];
-    expect(computeRecentVelocity(samples)).toBeCloseTo(-0.3);
+  it("keeps the sign of the velocity", () => {
+    expect(project(-800)).toBeLessThan(0);
+    expect(project(800)).toBeGreaterThan(0);
   });
 
-  it("only measures the recent window, so a drag-hold-flick still reads fast", () => {
-    // Finger travels slowly, pauses a long time, then flicks at the very end.
-    // Whole-gesture velocity would be ~0.06 px/ms; the recent window is ~0.4.
-    const samples: SwipeSample[] = [
-      { x: 0, t: 0 },
-      { x: 20, t: 500 },
-      { x: 20, t: 1400 }, // held still
-      { x: 60, t: 1500 }, // flick
-    ];
-    const wholeGesture = 60 / 1500;
-    expect(wholeGesture).toBeLessThan(0.11);
-    expect(computeRecentVelocity(samples, 100)).toBeCloseTo(0.4);
+  it("matches Apple's exponential-decay formula, not v^2/2a", () => {
+    // (v / 1000) * d / (1 - d) with d = 0.998 → v * 0.499
+    expect(project(1000, 0.998)).toBeCloseTo(499, 0);
+    expect(project(500, 0.998)).toBeCloseTo(249.5, 0);
   });
 
-  it("returns 0 when the recent window has no elapsed time", () => {
-    const samples: SwipeSample[] = [
-      { x: 0, t: 200 },
-      { x: 40, t: 200 },
-    ];
-    expect(computeRecentVelocity(samples, 100)).toBe(0);
-  });
-
-  it("ignores samples older than the window", () => {
-    const samples: SwipeSample[] = [
-      { x: 1000, t: 0 }, // ancient outlier, must not skew the result
-      { x: 0, t: 900 },
-      { x: 10, t: 1000 },
-    ];
-    expect(computeRecentVelocity(samples, 100)).toBeCloseTo(0.1);
+  it("projects a shorter distance with a snappier deceleration rate", () => {
+    expect(project(1000, 0.99)).toBeLessThan(project(1000, 0.998));
   });
 });
 
-describe("resolveSwipe", () => {
-  const opts = { minDistance: 50, minVelocity: 0.11 };
+describe("resolveProjectedSwipe", () => {
+  const base = { commitDistance: 120 };
 
-  it("commits to next when dragged far enough to the left", () => {
-    expect(resolveSwipe({ distance: -80, velocity: 0, ...opts })).toBe("next");
+  it("does nothing for a small, slow drag", () => {
+    expect(resolveProjectedSwipe({ offset: -20, velocity: 0, ...base })).toBe("none");
   });
 
-  it("commits to prev when dragged far enough to the right", () => {
-    expect(resolveSwipe({ distance: 80, velocity: 0, ...opts })).toBe("prev");
+  it("commits when the drag alone clears the threshold", () => {
+    expect(resolveProjectedSwipe({ offset: -140, velocity: 0, ...base })).toBe("next");
+    expect(resolveProjectedSwipe({ offset: 140, velocity: 0, ...base })).toBe("prev");
   });
 
-  it("does nothing for a short, slow drag", () => {
-    expect(resolveSwipe({ distance: -20, velocity: 0.02, ...opts })).toBe("none");
+  it("commits a short flick because momentum carries it past the threshold", () => {
+    // 30px dragged, but thrown at 800px/s → projects ~430px total.
+    expect(resolveProjectedSwipe({ offset: -30, velocity: -800, ...base })).toBe("next");
   });
 
-  it("commits on a fast flick that never reached the distance threshold", () => {
-    expect(resolveSwipe({ distance: -18, velocity: -0.4, ...opts })).toBe("next");
+  it("does not commit a short drag released at rest", () => {
+    expect(resolveProjectedSwipe({ offset: -30, velocity: 0, ...base })).toBe("none");
   });
 
-  it("lets velocity direction win over a small opposite offset", () => {
-    // User overshot right, then flicked left: intent is 'next'.
-    expect(resolveSwipe({ distance: 12, velocity: -0.5, ...opts })).toBe("next");
+  it("lets a reversing flick beat the raw offset", () => {
+    // Dragged right, but flicked hard left at release — intent is 'next'.
+    expect(resolveProjectedSwipe({ offset: 40, velocity: -900, ...base })).toBe("next");
   });
 
-  it("falls back to distance when the flick is below the velocity threshold", () => {
-    expect(resolveSwipe({ distance: -70, velocity: -0.01, ...opts })).toBe("next");
+  it("cancels when a moderate flick opposes a drag that would otherwise commit", () => {
+    // Dragged past the threshold, then eased back toward centre: the
+    // projection lands inside the dead zone, so nothing happens.
+    expect(resolveProjectedSwipe({ offset: -130, velocity: 300, ...base })).toBe("none");
   });
 
-  it("treats the thresholds as inclusive", () => {
-    expect(resolveSwipe({ distance: -50, velocity: 0, ...opts })).toBe("next");
-    expect(resolveSwipe({ distance: 0, velocity: -0.11, ...opts })).toBe("next");
+  it("reverses when the opposing flick is hard enough to carry past centre", () => {
+    // Same drag, thrown back three times as fast. Velocity sign wins over
+    // position — the user changed their mind and threw it the other way.
+    expect(resolveProjectedSwipe({ offset: -130, velocity: 900, ...base })).toBe("prev");
+  });
+});
+
+describe("rubberband", () => {
+  it("returns 0 with no overshoot", () => {
+    expect(rubberband(0, 400)).toBe(0);
+  });
+
+  it("resists — always travels less than the raw overshoot", () => {
+    expect(rubberband(100, 400)).toBeLessThan(100);
+    expect(rubberband(300, 400)).toBeLessThan(300);
+  });
+
+  it("resists progressively: each extra pixel of pull yields less movement", () => {
+    const first = rubberband(50, 400) - rubberband(0, 400);
+    const later = rubberband(300, 400) - rubberband(250, 400);
+    expect(later).toBeLessThan(first);
+  });
+
+  it("is symmetric about zero", () => {
+    expect(rubberband(-120, 400)).toBeCloseTo(-rubberband(120, 400));
+  });
+
+  it("never hard-stops — keeps yielding movement even far past the bound", () => {
+    expect(rubberband(5000, 400)).toBeGreaterThan(rubberband(2000, 400));
   });
 });

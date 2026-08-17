@@ -133,7 +133,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                 <button
                   key={type}
                   onClick={() => setFilterType(type)}
-                  className={`relative font-sans text-[12px] uppercase tracking-[0.32em] transition-colors ${
+                  className={`relative font-sans text-eyebrow uppercase transition-colors ${
                     filterType === type
                       ? "text-foreground after:absolute after:-bottom-2 after:left-0 after:right-0 after:h-px after:bg-foreground"
                       : "text-text-muted hover:text-foreground"
@@ -145,7 +145,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
             </div>
           </div>
 
-          <p className="mb-12 font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+          <p className="mb-12 font-sans text-eyebrow uppercase text-text-muted">
             {totalResults}{" "}
             {totalResults !== 1 ? t("search", "results") : t("search", "result")}
             {query && (
@@ -158,7 +158,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
 
           {filteredAlbums.length > 0 && (
             <section className="mb-20">
-              <h2 className="mb-8 font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+              <h2 className="mb-8 font-sans text-eyebrow uppercase text-text-muted">
                 Albums ({filteredAlbums.length})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -177,7 +177,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                       <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight text-foreground">
                         {album.title}
                       </h3>
-                      <p className="font-sans text-[12px] uppercase tracking-[0.22em] text-white/70">
+                      <p className="font-sans text-label uppercase tracking-[0.22em] text-white/70">
                         {album.location} <span className="text-white/40">·</span>{" "}
                         {album.date}
                       </p>
@@ -190,7 +190,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
 
           {filteredPhotos.length > 0 && (
             <section>
-              <h2 className="mb-8 font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+              <h2 className="mb-8 font-sans text-eyebrow uppercase text-text-muted">
                 Photos ({filteredPhotos.length})
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
@@ -209,7 +209,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                 ))}
               </div>
               {filteredPhotos.length > 50 && (
-                <p className="mt-10 text-center font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                <p className="mt-10 text-center font-sans text-eyebrow uppercase text-text-muted">
                   {t("search", "showingFirst")} {filteredPhotos.length}{" "}
                   {t("search", "photos")}
                 </p>

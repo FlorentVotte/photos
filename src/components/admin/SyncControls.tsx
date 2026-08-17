@@ -32,7 +32,7 @@ export default function SyncControls({
           disabled={disabled || isSyncing}
           aria-busy={isSyncing}
           aria-describedby={isSyncing ? "sync-progress" : undefined}
-          className="group/cta inline-flex items-center gap-3 self-start font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="group/cta inline-flex items-center gap-3 self-start font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span>{isSyncing ? "Syncing…" : "Sync now"}</span>
           <span

@@ -24,7 +24,7 @@ interface PhotoContentProps {
 function MetaRow({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-surface-border/60 py-3 last:border-b-0">
-      <span className="font-sans text-[12px] uppercase tracking-[0.22em] text-text-muted">
+      <span className="font-sans text-label uppercase tracking-[0.22em] text-text-muted">
         {label}
       </span>
       <span className="font-sans text-sm tabular-nums text-foreground">
@@ -169,7 +169,7 @@ export default function PhotoContent({
         <div className="flex w-full max-w-[1200px] flex-col">
           {/* Breadcrumbs */}
           <nav
-            className="mb-6 flex flex-wrap items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em]"
+            className="mb-6 flex flex-wrap items-center gap-3 font-sans text-label uppercase"
             aria-label="Breadcrumb"
           >
             <Link
@@ -236,7 +236,7 @@ export default function PhotoContent({
             </div>
 
             {/* Counter — quiet caption, not a backdrop pill */}
-            <p className="absolute top-4 left-4 z-10 font-sans text-[12px] uppercase tracking-[0.32em] text-white/60 tabular-nums">
+            <p className="absolute top-4 left-4 z-10 font-sans text-eyebrow uppercase text-white/60 tabular-nums">
               {String(currentIndex + 1).padStart(2, "0")} /{" "}
               {String(albumPhotos.length).padStart(2, "0")}
             </p>
@@ -286,26 +286,26 @@ export default function PhotoContent({
                 <button
                   onClick={handleDownload}
                   disabled={isDownloading}
-                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t("photo", "download")}
                 >
-                  <span aria-hidden="true" className="material-symbols-outlined !text-[16px]">
+                  <span aria-hidden="true" className="material-symbols-outlined !text-base">
                     download
                   </span>
                   <span>{isDownloading ? "…" : t("photo", "download")}</span>
                 </button>
                 <button
                   onClick={handleShare}
-                  className="relative inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="relative inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t("photo", "share")}
                 >
-                  <span aria-hidden="true" className="material-symbols-outlined !text-[16px]">
+                  <span aria-hidden="true" className="material-symbols-outlined !text-base">
                     share
                   </span>
                   <span>{t("photo", "share")}</span>
                   {copiedToast.shouldRender && (
                     <span
-                      className={`absolute -top-9 left-0 whitespace-nowrap rounded-full bg-foreground px-3 py-1 font-sans text-[10px] uppercase tracking-[0.24em] text-background-dark transition-[opacity,transform] duration-150 ease-out motion-reduce:translate-y-0 ${
+                      className={`absolute -top-9 left-0 whitespace-nowrap rounded-full bg-foreground px-3 py-1 font-sans text-micro uppercase text-background-dark transition-[opacity,transform] duration-150 ease-out motion-reduce:translate-y-0 ${
                         copiedToast.isVisible
                           ? "opacity-100 translate-y-0"
                           : "opacity-0 translate-y-1"
@@ -317,9 +317,9 @@ export default function PhotoContent({
                 </button>
                 <button
                   onClick={openLightbox}
-                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-[12px] uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
-                  <span aria-hidden="true" className="material-symbols-outlined !text-[16px]">
+                  <span aria-hidden="true" className="material-symbols-outlined !text-base">
                     slideshow
                   </span>
                   <span>{t("photo", "slideshow")}</span>
@@ -331,7 +331,7 @@ export default function PhotoContent({
                 <div className="mt-8 border-t border-surface-border pt-8">
                   <Link
                     href={`/album/${album.slug}`}
-                    className="group/cta inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                    className="group/cta inline-flex items-center gap-3 font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
                   >
                     <span
                       aria-hidden="true"
@@ -350,7 +350,7 @@ export default function PhotoContent({
               {/* Location */}
               <section className="flex flex-col gap-4">
                 <header className="flex flex-col gap-1">
-                  <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                  <p className="font-sans text-eyebrow uppercase text-text-muted">
                     Location
                   </p>
                   <p className="font-display text-base text-foreground">
@@ -383,7 +383,7 @@ export default function PhotoContent({
               {/* EXIF */}
               <section className="flex flex-col gap-4">
                 <header className="flex flex-col gap-1">
-                  <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                  <p className="font-sans text-eyebrow uppercase text-text-muted">
                     Capture
                   </p>
                   <p className="font-display text-base text-foreground">

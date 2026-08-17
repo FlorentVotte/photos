@@ -21,6 +21,28 @@
   --font-display: var(--font-display);
   --font-sans: var(--font-sans);
 
+  /* Type scale.
+
+     Size, leading and tracking travel together as one named style. Tracking
+     is size-specific — a single value applied at every size is wrong
+     somewhere — so binding them prevents the pairs drifting apart, which is
+     what happened when they were written out by hand at each call site.
+
+     Sizes are rem, not px, so the scale honours the reader's browser text
+     size instead of ignoring it. The values are the exact rem equivalents of
+     the px sizes they replace, so rendering is unchanged at the default. */
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.5;
+  --text-eyebrow--letter-spacing: 0.32em;
+
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.5;
+  --text-label--letter-spacing: 0.24em;
+
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 1.5;
+  --text-micro--letter-spacing: 0.24em;
+
   /* Motion curves. Tailwind v4 generates ease-* utilities from this
      namespace, so these are used as `ease-out-soft` / `ease-settle`.
      Durations stay as Tailwind duration-* literals to match the rest
@@ -90,13 +112,93 @@ img {
   }
 }
 
-/* Elements whose transition is set via inline style (composed transforms that
-   Tailwind can't express) opt into reduced motion with this class. Shortened
-   rather than removed — the motion still explains the state change, it just
-   gets out of the way faster. */
-@media (prefers-reduced-motion: reduce) {
-  .motion-aware {
-    transition-duration: 120ms !important;
+/* Translucent chrome that content scrolls underneath.
+   Marked with a class rather than styled here, so the two accessibility
+   opt-outs below have a single place to override. */
+.material {
+  background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* A bigger surface should read as thicker glass. */
+.material-thick {
+  background-color: color-mix(in srgb, var(--color-background) 92%, transparent);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  backdrop-filter: blur(32px) saturate(180%);
+}
+
+/* Reduced transparency: make the glass frosty rather than see-through.
+   Dropping the blur as well, since a blur with no translucency just costs
+   compositing for no visual result. */
+@media (prefers-reduced-transparency: reduce) {
+  .material,
+  .material-thick {
+    background-color: var(--color-background);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Increased contrast: solid background plus a defined, contrasting edge. */
+@media (prefers-contrast: more) {
+  .material,
+  .material-thick {
+    background-color: var(--color-background);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-color: var(--color-text-primary);
+  }
+}
+
+/* When a full-screen overlay is open behind the header, the bar would be a
+   second translucent layer stacked on the overlay's own material — two sheets
+   of glass muddy each other and leave a visible seam where the bar ends. The
+   bar drops its material and lets the single surface behind it show through.
+   Declared after .material so it wins on order.
+
+   Scoped below Tailwind's md breakpoint: the overlay only exists there, and
+   without the bound a viewport widened while the menu was open would leave
+   the desktop bar with no material at all. */
+@media (width < 48rem) {
+  .material-passthrough {
+    background-color: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Scroll edge effect — a soft gradient where content passes under floating
+   chrome, instead of a hard 1px rule that is always drawn whether or not
+   anything is actually underneath it. */
+.scroll-edge::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  height: 1.5rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-background) 70%, transparent),
+    transparent
+  );
+}
+
+.scroll-edge[data-scrolled="true"]::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  /* With a solid bar there is nothing showing through, so the soft edge
+     stops doing any work — fall back to a defined line. */
+  .scroll-edge::after {
+    display: none;
+  }
+  .scroll-edge[data-scrolled="true"] {
+    border-bottom-color: var(--color-surface-border);
   }
 }
 

@@ -2,18 +2,45 @@
 
 import { useEffect, useCallback, useState, useRef } from "react";
 import Link from "next/link";
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useMotionValue,
+  animate,
+  type PanInfo,
+} from "motion/react";
 import { useLocale } from "@/lib/LocaleContext";
 import {
   useBodyScrollLock,
   useLightboxKeyboard,
   usePinchZoom,
-  usePresence,
   useSlideshow,
-  useSwipeNavigation,
 } from "@/hooks";
+import { resolveProjectedSwipe } from "@/lib/gesture-utils";
 
-/** Must cover the longest exit transition below. */
-const EXIT_DURATION_MS = 200;
+/**
+ * Apple's "move" spring: critically damped, response 0.4. No overshoot,
+ * because nothing here was thrown — it's the default for UI that just needs
+ * to get somewhere gracefully.
+ */
+const SETTLE = { type: "spring", bounce: 0, duration: 0.4 } as const;
+
+/**
+ * Apple's "drawer" spring. A little overshoot, earned only because the
+ * gesture that triggered it carried momentum.
+ */
+const THROW = { type: "spring", bounce: 0.2, duration: 0.4 } as const;
+
+/**
+ * Exits beat entrances. A spring's settle tail runs well past its perceptual
+ * duration, which is right for something arriving and too slow for something
+ * being dismissed — so dismissal uses a short tween instead.
+ */
+const DISMISS = { duration: 0.2, ease: "easeIn" } as const;
+
+/** Fraction of the frame a projected flick must cross to change photo. */
+const COMMIT_FRACTION = 0.25;
 
 interface Photo {
   id: string;
@@ -45,8 +72,12 @@ export default function Lightbox({
 }: LightboxProps) {
   const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(true);
-  const imageRef = useRef<HTMLImageElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<HTMLDivElement>(null);
+
+  // The live horizontal offset. Motion writes to this 1:1 during a drag, and
+  // we animate it home afterwards — so drag and animation share one value and
+  // there is no seam between them.
+  const x = useMotionValue(0);
 
   const currentPhoto = photos[currentIndex];
 
@@ -78,24 +109,13 @@ export default function Lightbox({
     scale,
     position,
     isZoomed,
+    isGesturing,
     shouldAnimate,
     transformOrigin,
-    handleTouchStart: handleZoomTouchStart,
-    handleTouchMove: handleZoomTouchMove,
-    handleTouchEnd: handleZoomTouchEnd,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
   } = usePinchZoom({ resetKey: currentIndex });
-
-  const {
-    handleSwipeStart,
-    handleSwipeMove,
-    handleSwipeEnd,
-    dragOffset,
-    shouldAnimateOffset,
-  } = useSwipeNavigation({
-    enabled: !isZoomed,
-    onNext: goNext,
-    onPrev: goPrev,
-  });
 
   const handleViewDetails = useCallback(() => {
     if (photos[currentIndex]) {
@@ -112,178 +132,187 @@ export default function Lightbox({
     onViewDetails: handleViewDetails,
   });
 
-  const handleTouchStart = useCallback(
-    (e: React.TouchEvent) => {
-      handleZoomTouchStart(e);
-      handleSwipeStart(e);
-    },
-    [handleZoomTouchStart, handleSwipeStart]
-  );
+  const handleDragEnd = useCallback(
+    (_event: PointerEvent | MouseEvent | TouchEvent, info: PanInfo) => {
+      const width = dragRef.current?.offsetWidth ?? window.innerWidth;
+      const resolution = resolveProjectedSwipe({
+        offset: info.offset.x,
+        velocity: info.velocity.x,
+        commitDistance: width * COMMIT_FRACTION,
+      });
 
-  const handleTouchMove = useCallback(
-    (e: React.TouchEvent) => {
-      handleZoomTouchMove(e);
-      handleSwipeMove(e);
-    },
-    [handleZoomTouchMove, handleSwipeMove]
-  );
+      if (resolution === "none") {
+        // Hand the finger's exact release velocity to the spring, so the
+        // photo keeps moving at the speed it was let go at.
+        animate(x, 0, { ...THROW, velocity: info.velocity.x });
+        return;
+      }
 
-  const handleTouchEnd = useCallback(
-    (e: React.TouchEvent) => {
-      handleZoomTouchEnd(e);
-      handleSwipeEnd(e);
+      // Committing: the photo underneath is swapped and drops to opacity 0
+      // (see the load crossfade below), so resetting the offset is invisible.
+      x.set(0);
+      if (resolution === "next") goNext();
+      else goPrev();
     },
-    [handleZoomTouchEnd, handleSwipeEnd]
+    [x, goNext, goPrev]
   );
 
   useEffect(() => {
     setIsLoading(true);
   }, [currentIndex]);
 
-  // Stays mounted through the exit animation; `isVisible` drives the state.
-  const { shouldRender, isVisible } = usePresence(isOpen, EXIT_DURATION_MS);
-
-  if (!shouldRender || !currentPhoto) return null;
+  // A pinch owns both fingers; letting the drag recogniser run at the same
+  // time would be two gesture systems fighting over one element.
+  const canDrag = !isZoomed && !isGesturing;
 
   return (
-    <div
-      ref={containerRef}
-      className={`fixed inset-0 z-[100] bg-black/97 flex items-center justify-center transition-opacity motion-reduce:duration-100 ${
-        isVisible
-          ? "opacity-100 duration-200 ease-out"
-          : "opacity-0 duration-150 ease-in"
-      }`}
-      onClick={onClose}
-    >
-      {/* Top controls */}
-      <div className="absolute top-6 left-6 z-10 flex items-center gap-5">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            togglePlay();
-          }}
-          className="font-sans text-[12px] uppercase tracking-[0.32em] text-white/60 hover:text-white transition-colors"
-          aria-label={isPlaying ? t("lightbox", "pause") : t("lightbox", "play")}
-        >
-          {isPlaying ? "❚❚ " : "▶ "}
-          {isPlaying ? t("lightbox", "pause") : t("photo", "slideshow")}
-        </button>
-      </div>
+    <MotionConfig reducedMotion="user">
+      <AnimatePresence>
+        {isOpen && currentPhoto && (
+          <motion.div
+            key="lightbox"
+            className="fixed inset-0 z-[100] bg-black/97 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: DISMISS }}
+            transition={SETTLE}
+            onClick={onClose}
+          >
+            {/* Top controls */}
+            <div className="absolute top-6 left-6 z-10 flex items-center gap-5">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  togglePlay();
+                }}
+                className="font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors"
+                aria-label={isPlaying ? t("lightbox", "pause") : t("lightbox", "play")}
+              >
+                {isPlaying ? "❚❚ " : "▶ "}
+                {isPlaying ? t("lightbox", "pause") : t("photo", "slideshow")}
+              </button>
+            </div>
 
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 font-sans text-[12px] uppercase tracking-[0.32em] text-white/60 tabular-nums">
-        {String(currentIndex + 1).padStart(2, "0")} / {String(photos.length).padStart(2, "0")}
-      </div>
+            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 font-sans text-eyebrow uppercase text-white/60 tabular-nums">
+              {String(currentIndex + 1).padStart(2, "0")} / {String(photos.length).padStart(2, "0")}
+            </div>
 
-      <div className="absolute top-6 right-6 z-10 flex items-center gap-5">
-        <Link
-          href={`/photo/${currentPhoto.id}`}
-          className="font-sans text-[12px] uppercase tracking-[0.32em] text-white/60 hover:text-white transition-colors"
-          aria-label={t("lightbox", "viewDetails")}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {t("lightbox", "viewDetails")}
-        </Link>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-          }}
-          className="font-sans text-[12px] uppercase tracking-[0.32em] text-white/60 hover:text-white transition-colors"
-          aria-label={t("lightbox", "close")}
-        >
-          {t("lightbox", "close")}
-        </button>
-      </div>
+            <div className="absolute top-6 right-6 z-10 flex items-center gap-5">
+              <Link
+                href={`/photo/${currentPhoto.id}`}
+                className="font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors"
+                aria-label={t("lightbox", "viewDetails")}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {t("lightbox", "viewDetails")}
+              </Link>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClose();
+                }}
+                className="font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors"
+                aria-label={t("lightbox", "close")}
+              >
+                {t("lightbox", "close")}
+              </button>
+            </div>
 
-      {/* Nav controls — minimal chevrons */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          goPrev();
-        }}
-        className="absolute left-6 top-1/2 -translate-y-1/2 z-10 p-3 text-white/40 hover:text-white transition-colors text-3xl font-thin"
-        aria-label={t("lightbox", "previous")}
-      >
-        ←
-      </button>
+            {/* Nav controls — minimal chevrons. Deliberately un-animated:
+                these are hammered during browsing and via the arrow keys. */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                goPrev();
+              }}
+              className="absolute left-6 top-1/2 -translate-y-1/2 z-10 p-3 text-white/40 hover:text-white transition-colors text-3xl font-thin"
+              aria-label={t("lightbox", "previous")}
+            >
+              ←
+            </button>
 
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          goNext();
-        }}
-        className="absolute right-6 top-1/2 -translate-y-1/2 z-10 p-3 text-white/40 hover:text-white transition-colors text-3xl font-thin"
-        aria-label={t("lightbox", "next")}
-      >
-        →
-      </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                goNext();
+              }}
+              className="absolute right-6 top-1/2 -translate-y-1/2 z-10 p-3 text-white/40 hover:text-white transition-colors text-3xl font-thin"
+              aria-label={t("lightbox", "next")}
+            >
+              →
+            </button>
 
-      {/* Image */}
-      <div
-        className="motion-aware relative max-w-[92vw] max-h-[85vh] flex items-center justify-center touch-none"
-        style={{
-          // Enter/exit scale and the live drag offset share one transform.
-          // Transitions are off while a finger is down so the photo tracks
-          // it 1:1, and off for the post-commit reset.
-          transform: `translateX(${dragOffset}px) scale(${isVisible ? 1 : 0.97})`,
-          transition: shouldAnimateOffset
-            ? `transform ${isVisible ? 300 : 150}ms var(--ease-settle)`
-            : "none",
-        }}
-        onClick={(e) => e.stopPropagation()}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {isLoading && (
-          <p className="absolute inset-0 flex items-center justify-center font-sans text-[12px] uppercase tracking-[0.32em] text-white/40 animate-pulse">
-            Loading
-          </p>
-        )}
-        <img
-          ref={imageRef}
-          src={currentPhoto.src.full}
-          alt={currentPhoto.title || "Photo"}
-          className={`motion-aware max-w-full max-h-[85vh] object-contain select-none ${
-            isLoading ? "opacity-0" : "opacity-100"
-          }`}
-          style={{
-            transform: `scale(${scale}) translate(${position.x / scale}px, ${position.y / scale}px)`,
-            transformOrigin,
-            // Opacity always animates (the load crossfade). Transform only
-            // when no finger is driving it — a transition mid-pinch lags.
-            transition: shouldAnimate
-              ? "opacity 300ms ease-out, transform 250ms var(--ease-out-soft)"
-              : "opacity 300ms ease-out",
-          }}
-          onLoad={() => setIsLoading(false)}
-          onContextMenu={(e) => e.preventDefault()}
-          draggable={false}
-        />
-      </div>
-
-      {/* Photo caption */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-center">
-        {currentPhoto.title && (
-          <p className="font-display text-base text-white mb-1">
-            {currentPhoto.title}
-          </p>
-        )}
-        {(currentPhoto.metadata?.date ||
-          (currentPhoto.metadata?.location &&
-            currentPhoto.metadata.location !== "Unknown")) && (
-          <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-white/50">
-            {currentPhoto.metadata?.date}
-            {currentPhoto.metadata?.date &&
-              currentPhoto.metadata?.location &&
-              currentPhoto.metadata.location !== "Unknown" && (
-                <span className="mx-3 text-white/30">·</span>
+            {/* Image */}
+            <motion.div
+              ref={dragRef}
+              className="relative max-w-[92vw] max-h-[85vh] flex items-center justify-center touch-none"
+              style={{ x }}
+              drag={canDrag ? "x" : false}
+              dragDirectionLock
+              dragMomentum={false}
+              onDragEnd={handleDragEnd}
+              initial={{ scale: 0.97 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.97, transition: DISMISS }}
+              transition={SETTLE}
+              onClick={(e) => e.stopPropagation()}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {isLoading && (
+                <p className="absolute inset-0 flex items-center justify-center font-sans text-eyebrow uppercase text-white/40 animate-pulse">
+                  Loading
+                </p>
               )}
-            {currentPhoto.metadata?.location !== "Unknown" &&
-              currentPhoto.metadata?.location}
-          </p>
+              <motion.img
+                src={currentPhoto.src.full}
+                alt={currentPhoto.title || "Photo"}
+                className="max-w-full max-h-[85vh] object-contain select-none"
+                style={{ transformOrigin }}
+                animate={{
+                  scale,
+                  x: position.x,
+                  y: position.y,
+                  opacity: isLoading ? 0 : 1,
+                }}
+                transition={{
+                  // No transition while fingers drive the transform — a
+                  // spring there would lag behind the pinch.
+                  default: shouldAnimate ? SETTLE : { duration: 0 },
+                  opacity: { duration: 0.3, ease: "easeOut" },
+                }}
+                onLoad={() => setIsLoading(false)}
+                onContextMenu={(e) => e.preventDefault()}
+                draggable={false}
+              />
+            </motion.div>
+
+            {/* Photo caption */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 text-center">
+              {currentPhoto.title && (
+                <p className="font-display text-base text-white mb-1">
+                  {currentPhoto.title}
+                </p>
+              )}
+              {(currentPhoto.metadata?.date ||
+                (currentPhoto.metadata?.location &&
+                  currentPhoto.metadata.location !== "Unknown")) && (
+                <p className="font-sans text-eyebrow uppercase text-white/50">
+                  {currentPhoto.metadata?.date}
+                  {currentPhoto.metadata?.date &&
+                    currentPhoto.metadata?.location &&
+                    currentPhoto.metadata.location !== "Unknown" && (
+                      <span className="mx-3 text-white/30">·</span>
+                    )}
+                  {currentPhoto.metadata?.location !== "Unknown" &&
+                    currentPhoto.metadata?.location}
+                </p>
+              )}
+            </div>
+          </motion.div>
         )}
-      </div>
-    </div>
+      </AnimatePresence>
+    </MotionConfig>
   );
 }

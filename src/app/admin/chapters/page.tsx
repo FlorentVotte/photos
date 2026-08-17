@@ -187,7 +187,7 @@ function ChaptersEditorContent() {
   const inputClass =
     "w-full border-b border-surface-border bg-transparent py-2 font-sans text-foreground placeholder-text-muted/40 focus:border-foreground focus:outline-none transition-colors";
   const labelClass =
-    "block mb-2 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted";
+    "block mb-2 font-sans text-label uppercase text-text-muted";
 
   return (
     <main id="main-content" className="flex-1 px-6 pt-16 pb-20 md:px-12 md:pt-20">
@@ -201,7 +201,7 @@ function ChaptersEditorContent() {
 
         <header className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-2 max-w-2xl">
-            <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+            <p className="font-sans text-eyebrow uppercase text-text-muted">
               Admin
             </p>
             <h1 className="font-display text-4xl md:text-5xl font-semibold tracking-tight text-foreground">
@@ -212,7 +212,7 @@ function ChaptersEditorContent() {
             <button
               onClick={saveChapters}
               disabled={saving}
-              className="group/cta inline-flex items-center gap-3 self-start font-sans text-[12px] uppercase tracking-[0.24em] text-foreground hover:text-foreground transition-colors disabled:opacity-40"
+              className="group/cta inline-flex items-center gap-3 self-start font-sans text-label uppercase text-foreground hover:text-foreground transition-colors disabled:opacity-40"
             >
               <span>{saving ? "Saving…" : "Save chapters"}</span>
               <span
@@ -257,7 +257,7 @@ function ChaptersEditorContent() {
                 >
                   <div className="flex items-start justify-between gap-6">
                     <div className="flex-1">
-                      <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                      <p className="font-sans text-eyebrow uppercase text-text-muted">
                         Chapter {String(index + 1).padStart(2, "0")}
                       </p>
                       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
@@ -309,7 +309,7 @@ function ChaptersEditorContent() {
                     </div>
                     <button
                       onClick={() => removeChapter(index)}
-                      className="shrink-0 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-red-400 transition-colors"
+                      className="shrink-0 font-sans text-label uppercase text-text-muted hover:text-red-400 transition-colors"
                       aria-label="Remove chapter"
                     >
                       Remove
@@ -319,7 +319,7 @@ function ChaptersEditorContent() {
                   {/* Photos */}
                   <div className="flex flex-col gap-3">
                     <div className="flex items-baseline justify-between gap-4">
-                      <h4 className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                      <h4 className="font-sans text-eyebrow uppercase text-text-muted">
                         Photos · {chapter.photoIds.length}
                       </h4>
                       {chapter.photoIds.length > 1 && (
@@ -327,7 +327,7 @@ function ChaptersEditorContent() {
                           onClick={() =>
                             setReorderMode(reorderMode === index ? null : index)
                           }
-                          className={`font-sans text-[12px] uppercase tracking-[0.24em] transition-colors ${
+                          className={`font-sans text-label uppercase transition-colors ${
                             reorderMode === index
                               ? "text-foreground"
                               : "text-text-muted hover:text-foreground"
@@ -360,7 +360,7 @@ function ChaptersEditorContent() {
                                 alt={photo.title}
                                 className="w-full h-full object-cover pointer-events-none"
                               />
-                              <span className="absolute top-1 left-1 bg-background-dark/80 px-1.5 py-0.5 font-sans text-[10px] tabular-nums text-foreground">
+                              <span className="absolute top-1 left-1 bg-background-dark/80 px-1.5 py-0.5 font-sans text-[0.625rem] tabular-nums text-foreground">
                                 {String(photoIndex + 1).padStart(2, "0")}
                               </span>
                               <div className="absolute bottom-1 right-1 flex gap-1">
@@ -412,7 +412,7 @@ function ChaptersEditorContent() {
                                 className="w-full h-full object-cover"
                               />
                               {isSelected && (
-                                <span className="absolute top-1 left-1 bg-background-dark/80 px-1.5 py-0.5 font-sans text-[10px] tabular-nums text-foreground">
+                                <span className="absolute top-1 left-1 bg-background-dark/80 px-1.5 py-0.5 font-sans text-[0.625rem] tabular-nums text-foreground">
                                   {String(photoIndex + 1).padStart(2, "0")}
                                 </span>
                               )}
@@ -426,7 +426,7 @@ function ChaptersEditorContent() {
                   {/* Cover photo */}
                   {chapter.photoIds.length > 0 && (
                     <div className="flex flex-col gap-3 border-t border-surface-border pt-6">
-                      <h4 className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                      <h4 className="font-sans text-eyebrow uppercase text-text-muted">
                         Cover photo
                       </h4>
                       <div className="flex gap-2 overflow-x-auto pb-2">
@@ -455,7 +455,7 @@ function ChaptersEditorContent() {
                               />
                               {isCover && (
                                 <div className="absolute inset-0 bg-background-dark/40 flex items-center justify-center">
-                                  <span className="font-sans text-[9px] uppercase tracking-[0.24em] text-foreground">
+                                  <span className="font-sans text-[0.5625rem] uppercase tracking-[0.24em] text-foreground">
                                     Cover
                                   </span>
                                 </div>
@@ -475,7 +475,7 @@ function ChaptersEditorContent() {
                   {/* Featured photos */}
                   {chapter.photoIds.length > 0 && (
                     <div className="flex flex-col gap-3 border-t border-surface-border pt-6">
-                      <h4 className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                      <h4 className="font-sans text-eyebrow uppercase text-text-muted">
                         Featured photos (large display)
                         {(chapter.featuredPhotoIds?.length || 0) > 0 && (
                           <span className="ml-3 text-foreground">
@@ -511,7 +511,7 @@ function ChaptersEditorContent() {
                                 className="w-full h-full object-cover"
                               />
                               {isFeatured && (
-                                <span className="absolute top-1 left-1 bg-yellow-500/90 px-1.5 py-0.5 font-sans text-[10px] tabular-nums text-background-dark">
+                                <span className="absolute top-1 left-1 bg-yellow-500/90 px-1.5 py-0.5 font-sans text-[0.625rem] tabular-nums text-background-dark">
                                   ★ {featuredIndex + 1}
                                 </span>
                               )}
@@ -528,7 +528,7 @@ function ChaptersEditorContent() {
             {/* Add chapter */}
             <button
               onClick={addChapter}
-              className="group/cta inline-flex w-full items-center justify-center gap-3 border-t border-b border-dashed border-surface-border py-6 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground hover:border-foreground/40 transition-colors"
+              className="group/cta inline-flex w-full items-center justify-center gap-3 border-t border-b border-dashed border-surface-border py-6 font-sans text-label uppercase text-text-muted hover:text-foreground hover:border-foreground/40 transition-colors"
             >
               <span>+ Add chapter</span>
             </button>
@@ -537,7 +537,7 @@ function ChaptersEditorContent() {
             {getUnassignedPhotos().length > 0 && (
               <section className="mt-16 flex flex-col gap-4 border-t border-surface-border pt-8">
                 <div className="flex flex-col gap-1">
-                  <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                  <p className="font-sans text-eyebrow uppercase text-text-muted">
                     Unassigned · {getUnassignedPhotos().length}
                   </p>
                   <p className="font-sans text-sm text-text-muted">
@@ -565,7 +565,7 @@ function ChaptersEditorContent() {
         )}
 
         {loading && selectedAlbum && (
-          <p className="py-12 text-center font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+          <p className="py-12 text-center font-sans text-eyebrow uppercase text-text-muted animate-pulse">
             Loading
           </p>
         )}
@@ -582,7 +582,7 @@ export default function ChaptersEditorPage() {
       <Suspense
         fallback={
           <div className="flex-1 flex items-center justify-center">
-            <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted animate-pulse">
+            <p className="font-sans text-eyebrow uppercase text-text-muted animate-pulse">
               Loading
             </p>
           </div>

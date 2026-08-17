@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useLocale } from "@/lib/LocaleContext";
+import { useScrolled } from "@/hooks";
 
 interface HeaderProps {
   transparent?: boolean;
@@ -11,6 +12,7 @@ interface HeaderProps {
 export default function Header({ transparent = false }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t, locale, setLocale } = useLocale();
+  const scrolled = useScrolled();
 
   const toggleLocale = () => {
     setLocale(locale === "en" ? "fr" : "en");
@@ -40,80 +42,90 @@ export default function Header({ transparent = false }: HeaderProps) {
     "font-display text-3xl font-semibold tracking-tight text-foreground/85 hover:text-foreground transition-colors";
 
   return (
-    <header
-      className={`sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-surface-border px-4 py-3 md:px-6 md:py-4 lg:px-16 transition-all duration-300 ${
-        transparent
-          ? "bg-background-dark/80 backdrop-blur-md"
-          : "bg-background-dark/95 backdrop-blur-md"
-      }`}
-    >
-      <Link href="/" className="group flex items-baseline gap-2">
-        <h2 className="text-base sm:text-lg font-semibold leading-none tracking-[0.18em] uppercase">
-          Regards
-        </h2>
-        <span className="text-base sm:text-lg font-light leading-none tracking-[0.18em] uppercase text-text-muted group-hover:text-foreground transition-colors">
-          Perdus
-        </span>
-      </Link>
-
-      <div className="flex flex-1 justify-end gap-8">
-        <nav className="hidden md:flex items-center gap-9">
-          <Link
-            href="/"
-            className="text-sm font-medium leading-normal hover:text-primary transition-colors"
-          >
-            {t("nav", "home")}
-          </Link>
-          <Link
-            href="/albums"
-            className="text-sm font-medium leading-normal hover:text-primary transition-colors"
-          >
-            {t("nav", "albums")}
-          </Link>
-          <Link
-            href="/search"
-            className="text-sm font-medium leading-normal hover:text-primary transition-colors"
-          >
-            {t("nav", "search")}
-          </Link>
-          <Link
-            href="/map"
-            className="text-sm font-medium leading-normal hover:text-primary transition-colors"
-          >
-            {t("nav", "map")}
-          </Link>
-          <Link
-            href="/about"
-            className="text-sm font-medium leading-normal hover:text-primary transition-colors"
-          >
-            {t("nav", "about")}
-          </Link>
-          <button
-            onClick={toggleLocale}
-            className="text-sm font-medium leading-normal hover:text-primary transition-colors uppercase"
-            title={locale === "en" ? "Switch to French" : "Passer en anglais"}
-            aria-label={locale === "en" ? "Switch to French" : "Passer en anglais"}
-          >
-            {locale === "en" ? "FR" : "EN"}
-          </button>
-        </nav>
-
-        {/* Mobile menu button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden flex items-center justify-center size-10 text-foreground hover:text-primary transition-colors relative z-[60]"
-          aria-label={mobileMenuOpen ? t("nav", "closeMenu") : t("nav", "openMenu")}
-          aria-expanded={mobileMenuOpen}
-        >
-          <span className="material-symbols-outlined">
-            {mobileMenuOpen ? "close" : "menu"}
+    <>
+      <header
+        data-scrolled={scrolled}
+        className={`scroll-edge sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-transparent px-4 py-3 md:px-6 md:py-4 lg:px-16 ${
+          // Lighter material over a hero image, thicker over ordinary content.
+          transparent ? "material" : "material-thick"
+        } ${
+          // The open menu already provides the surface; a second glass layer
+          // here would stack on it and band the top of the screen.
+          mobileMenuOpen ? "material-passthrough" : ""
+        }`}
+      >
+        <Link href="/" className="group flex items-baseline gap-2">
+          <h2 className="text-base sm:text-lg font-semibold leading-none tracking-[0.18em] uppercase">
+            Regards
+          </h2>
+          <span className="text-base sm:text-lg font-light leading-none tracking-[0.18em] uppercase text-text-muted group-hover:text-foreground transition-colors">
+            Perdus
           </span>
-        </button>
-      </div>
+        </Link>
 
-      {/* Mobile menu — full-viewport overlay with scroll lock */}
+        <div className="flex flex-1 justify-end gap-8">
+          <nav className="hidden md:flex items-center gap-9">
+            <Link
+              href="/"
+              className="text-sm font-medium leading-normal hover:text-primary transition-colors"
+            >
+              {t("nav", "home")}
+            </Link>
+            <Link
+              href="/albums"
+              className="text-sm font-medium leading-normal hover:text-primary transition-colors"
+            >
+              {t("nav", "albums")}
+            </Link>
+            <Link
+              href="/search"
+              className="text-sm font-medium leading-normal hover:text-primary transition-colors"
+            >
+              {t("nav", "search")}
+            </Link>
+            <Link
+              href="/map"
+              className="text-sm font-medium leading-normal hover:text-primary transition-colors"
+            >
+              {t("nav", "map")}
+            </Link>
+            <Link
+              href="/about"
+              className="text-sm font-medium leading-normal hover:text-primary transition-colors"
+            >
+              {t("nav", "about")}
+            </Link>
+            <button
+              onClick={toggleLocale}
+              className="text-sm font-medium leading-normal hover:text-primary transition-colors uppercase"
+              title={locale === "en" ? "Switch to French" : "Passer en anglais"}
+              aria-label={locale === "en" ? "Switch to French" : "Passer en anglais"}
+            >
+              {locale === "en" ? "FR" : "EN"}
+            </button>
+          </nav>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden flex items-center justify-center size-10 text-foreground hover:text-primary transition-colors relative z-[60]"
+            aria-label={mobileMenuOpen ? t("nav", "closeMenu") : t("nav", "openMenu")}
+            aria-expanded={mobileMenuOpen}
+          >
+            <span className="material-symbols-outlined">
+              {mobileMenuOpen ? "close" : "menu"}
+            </span>
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile menu — a full-viewport overlay, and deliberately a sibling of
+          <header> rather than a child. The header carries backdrop-filter,
+          which makes it a containing block for position:fixed descendants, so
+          nested here `inset-0` resolved against the 64px header instead of the
+          viewport and the menu rendered as a strip under the bar. */}
       <div
-        className={`md:hidden fixed inset-0 z-40 bg-background-dark/95 backdrop-blur-lg transition-opacity duration-300 ${
+        className={`material-thick md:hidden fixed inset-0 z-40 transition-opacity duration-300 ${
           mobileMenuOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -161,12 +173,12 @@ export default function Header({ transparent = false }: HeaderProps) {
               toggleLocale();
               setMobileMenuOpen(false);
             }}
-            className="mt-4 font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted hover:text-foreground transition-colors"
+            className="mt-4 font-sans text-eyebrow uppercase text-text-muted hover:text-foreground transition-colors"
           >
             {locale === "en" ? "FR — Français" : "EN — English"}
           </button>
         </nav>
       </div>
-    </header>
+    </>
   );
 }

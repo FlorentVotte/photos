@@ -47,7 +47,7 @@ function Stat({ value, label }: { value: string; label: string }) {
       <span className="font-display text-3xl md:text-4xl font-semibold tabular-nums leading-none text-foreground">
         {value}
       </span>
-      <span className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted">
+      <span className="font-sans text-label uppercase text-text-muted">
         {label}
       </span>
     </div>
@@ -72,7 +72,7 @@ export default function AboutContent({
         {/* Header — name, role, bio, portrait */}
         <section className="grid grid-cols-1 gap-12 md:grid-cols-[1fr_280px] md:gap-16">
           <div className="flex flex-col gap-6">
-            <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+            <p className="font-sans text-eyebrow uppercase text-text-muted">
               {t("about", "title")}
             </p>
             <h1 className="font-display text-4xl md:text-6xl font-semibold leading-[1.05] tracking-tight text-foreground">
@@ -126,7 +126,7 @@ export default function AboutContent({
               {t("about", "myJourney")}
             </h2>
             {journeyStats.dateRange && (
-              <p className="font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted">
+              <p className="font-sans text-label uppercase text-text-muted">
                 {t("about", "since")} {journeyStats.dateRange.first}
               </p>
             )}
@@ -171,7 +171,7 @@ export default function AboutContent({
               <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16">
                 {gear.cameras.length > 0 && (
                   <div className="flex flex-col gap-6">
-                    <h3 className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                    <h3 className="font-sans text-eyebrow uppercase text-text-muted">
                       {t("about", "cameras")}
                     </h3>
                     <ul className="flex flex-col divide-y divide-surface-border/60">
@@ -183,7 +183,7 @@ export default function AboutContent({
                           <span className="font-sans text-sm md:text-base text-foreground">
                             {camera.name}
                           </span>
-                          <span className="font-sans text-[12px] uppercase tracking-[0.2em] tabular-nums text-text-muted">
+                          <span className="font-sans text-label uppercase tracking-[0.2em] tabular-nums text-text-muted">
                             {camera.count} {t("about", "photos")}
                           </span>
                         </li>
@@ -194,7 +194,7 @@ export default function AboutContent({
 
                 {gear.lenses.length > 0 && (
                   <div className="flex flex-col gap-6">
-                    <h3 className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                    <h3 className="font-sans text-eyebrow uppercase text-text-muted">
                       {t("about", "lenses")}
                     </h3>
                     <ul className="flex flex-col divide-y divide-surface-border/60">
@@ -206,7 +206,7 @@ export default function AboutContent({
                           <span className="font-sans text-sm md:text-base text-foreground truncate">
                             {lens.name}
                           </span>
-                          <span className="whitespace-nowrap font-sans text-[12px] uppercase tracking-[0.2em] tabular-nums text-text-muted">
+                          <span className="whitespace-nowrap font-sans text-label uppercase tracking-[0.2em] tabular-nums text-text-muted">
                             {lens.count} {t("about", "photos")}
                           </span>
                         </li>

@@ -1,84 +1,80 @@
 /**
- * Pure decision logic for touch gestures.
+ * Pure gesture physics, following Apple's *Designing Fluid Interfaces*.
  *
- * Kept out of the hooks so it can be unit tested in the node test
- * environment — the hooks themselves need a DOM.
+ * Kept out of the components so it can be unit tested in the node test
+ * environment — the gesture wiring itself needs a DOM.
  */
 
-/** A single position sample taken during a drag. */
-export interface SwipeSample {
-  /** Horizontal position in px. */
-  x: number;
-  /** Timestamp in ms. */
-  t: number;
-}
-
-/** Default window used to measure release velocity. */
-export const VELOCITY_WINDOW_MS = 100;
+/** Normal scroll feel. Use ~0.99 for a snappier, shorter throw. */
+export const DECELERATION_RATE = 0.998;
 
 /**
- * Velocity in px/ms over the most recent `windowMs` of a drag.
+ * Where a flick would come to rest, given its release velocity.
  *
- * Deliberately *not* measured across the whole gesture: a drag-hold-flick
- * has a near-zero whole-gesture velocity and would never register as a
- * flick, even though the user clearly threw it at the end.
+ * This is the exponential-decay form Apple actually ships, *not* the
+ * physics-textbook `v² / 2a`. Using it means a flick animates to where the
+ * gesture was going rather than snapping back from where the finger happened
+ * to leave the screen.
  *
- * Positive is rightward.
+ * @param initialVelocity  Release velocity in px/s.
+ * @returns Distance in px, carrying the sign of the velocity.
  */
-export function computeRecentVelocity(
-  samples: SwipeSample[],
-  windowMs: number = VELOCITY_WINDOW_MS
+export function project(
+  initialVelocity: number,
+  decelerationRate: number = DECELERATION_RATE
 ): number {
-  if (samples.length < 2) return 0;
-
-  const last = samples[samples.length - 1];
-
-  // Walk back to the oldest sample still inside the window. Starting from
-  // the end means samples older than the window can never skew the result.
-  let oldest = last;
-  for (let i = samples.length - 2; i >= 0; i--) {
-    if (last.t - samples[i].t > windowMs) break;
-    oldest = samples[i];
-  }
-
-  const elapsed = last.t - oldest.t;
-  if (elapsed <= 0) return 0;
-
-  return (last.x - oldest.x) / elapsed;
+  return ((initialVelocity / 1000) * decelerationRate) / (1 - decelerationRate);
 }
 
 export type SwipeResolution = "next" | "prev" | "none";
 
-interface ResolveSwipeInput {
-  /** Total horizontal offset in px. Negative is leftward. */
-  distance: number;
-  /** Release velocity in px/ms. Negative is leftward. */
+interface ResolveProjectedSwipeInput {
+  /** Horizontal drag offset in px. Negative is leftward. */
+  offset: number;
+  /** Release velocity in px/s. Negative is leftward. */
   velocity: number;
-  /** Minimum offset that commits a slow drag. */
-  minDistance: number;
-  /** Minimum speed that commits a short flick. */
-  minVelocity: number;
+  /** How far the projected resting point must reach to commit. */
+  commitDistance: number;
+  decelerationRate?: number;
 }
 
 /**
- * Decide what a released drag should do.
+ * Decide what a released drag should do, based on where its momentum is
+ * heading rather than where it was let go.
  *
- * A flick wins over the raw offset, so overshooting one way and flicking
- * back resolves to the direction the finger was actually moving at release.
+ * Because the projection is added to the offset, a hard flick back toward
+ * centre correctly *cancels* a drag that had already passed the threshold —
+ * the user changed their mind mid-gesture and the interface should agree.
  */
-export function resolveSwipe({
-  distance,
+export function resolveProjectedSwipe({
+  offset,
   velocity,
-  minDistance,
-  minVelocity,
-}: ResolveSwipeInput): SwipeResolution {
-  if (Math.abs(velocity) >= minVelocity) {
-    return velocity < 0 ? "next" : "prev";
-  }
+  commitDistance,
+  decelerationRate = DECELERATION_RATE,
+}: ResolveProjectedSwipeInput): SwipeResolution {
+  const projected = offset + project(velocity, decelerationRate);
 
-  if (Math.abs(distance) >= minDistance) {
-    return distance < 0 ? "next" : "prev";
-  }
+  if (Math.abs(projected) < commitDistance) return "none";
+  return projected < 0 ? "next" : "prev";
+}
 
-  return "none";
+/**
+ * Progressive resistance past a boundary.
+ *
+ * A hard stop reads as "frozen"; continuous resistance reads as "responsive,
+ * but there is nothing more here". The further past the bound the user pulls,
+ * the less the element follows — and it never stops following entirely.
+ *
+ * @param overshoot  How far past the boundary the raw gesture went.
+ * @param dimension  The size of the axis being resisted against.
+ */
+export function rubberband(
+  overshoot: number,
+  dimension: number,
+  constant: number = 0.55
+): number {
+  return (
+    (overshoot * dimension * constant) /
+    (dimension + constant * Math.abs(overshoot))
+  );
 }

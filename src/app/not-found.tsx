@@ -13,7 +13,7 @@ export default function NotFound() {
 
       <main className="flex flex-1 items-center justify-center px-6 py-24 md:px-12">
         <div className="flex max-w-xl flex-col items-start gap-8">
-          <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+          <p className="font-sans text-eyebrow uppercase text-text-muted">
             {t("notFound", "label")}
           </p>
           <h1 className="font-display text-4xl md:text-6xl font-semibold leading-[1.05] tracking-tight text-foreground">
@@ -26,7 +26,7 @@ export default function NotFound() {
           <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-3">
             <Link
               href="/"
-              className="group/cta inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+              className="group/cta inline-flex items-center gap-3 font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
             >
               <span
                 aria-hidden="true"
@@ -36,7 +36,7 @@ export default function NotFound() {
             </Link>
             <Link
               href="/albums"
-              className="group/cta inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+              className="group/cta inline-flex items-center gap-3 font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
             >
               <span>{t("notFound", "browseAlbums")}</span>
               <span

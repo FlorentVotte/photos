@@ -282,7 +282,7 @@ export default function AdminPage() {
             {/* Header */}
             <header className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div className="flex flex-col gap-2">
-                <p className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                <p className="font-sans text-eyebrow uppercase text-text-muted">
                   Admin
                 </p>
                 <h1 className="font-display text-4xl md:text-5xl font-semibold tracking-tight text-foreground">
@@ -291,7 +291,7 @@ export default function AdminPage() {
               </div>
               <button
                 onClick={handleLogout}
-                className="group/cta inline-flex items-center gap-3 self-start font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors"
+                className="group/cta inline-flex items-center gap-3 self-start font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
                 aria-label="Logout from admin"
               >
                 <span>Logout</span>
@@ -319,7 +319,7 @@ export default function AdminPage() {
                     <button
                       onClick={fetchLightroomAlbums}
                       disabled={loadingAlbums}
-                      className="group/cta inline-flex items-center gap-3 self-start font-sans text-[12px] uppercase tracking-[0.24em] text-text-muted hover:text-foreground transition-colors disabled:opacity-50"
+                      className="group/cta inline-flex items-center gap-3 self-start font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors disabled:opacity-50"
                       aria-label="Browse your Lightroom albums"
                     >
                       <span>
@@ -339,7 +339,7 @@ export default function AdminPage() {
                       </p>
                       <a
                         href="/api/auth/adobe"
-                        className="group/cta inline-flex shrink-0 items-center gap-3 font-sans text-[12px] uppercase tracking-[0.24em] text-foreground hover:text-foreground transition-colors"
+                        className="group/cta inline-flex shrink-0 items-center gap-3 font-sans text-label uppercase text-foreground hover:text-foreground transition-colors"
                       >
                         <span>Connect</span>
                         <span
@@ -353,7 +353,7 @@ export default function AdminPage() {
                   {/* Divider */}
                   <div className="flex items-center gap-6 py-2">
                     <div className="h-px flex-1 bg-surface-border" />
-                    <span className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                    <span className="font-sans text-eyebrow uppercase text-text-muted">
                       or add by URL
                     </span>
                     <div className="h-px flex-1 bg-surface-border" />
@@ -367,7 +367,7 @@ export default function AdminPage() {
 
             {/* Quick links */}
             <div className="mb-16">
-              <p className="mb-2 font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+              <p className="mb-2 font-sans text-eyebrow uppercase text-text-muted">
                 More
               </p>
               <div className="flex flex-col">

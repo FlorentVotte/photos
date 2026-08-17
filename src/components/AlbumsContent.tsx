@@ -60,7 +60,7 @@ export default function AlbumsContent({ albums }: AlbumsContentProps) {
           return (
             <section key={year} className="mb-20 last:mb-0">
               <div className="mb-8 flex items-baseline gap-6">
-                <h2 className="font-sans text-[12px] uppercase tracking-[0.32em] text-text-muted">
+                <h2 className="font-sans text-eyebrow uppercase text-text-muted">
                   {year}
                 </h2>
                 <div className="h-px flex-1 bg-surface-border" />
