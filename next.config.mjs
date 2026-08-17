@@ -1,25 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
-  webpack: (config, { dev }) => {
-    if (dev) {
-      config.watchOptions = {
-        ...(config.watchOptions || {}),
-        ignored: [
-          "**/.git/**",
-          "**/node_modules/**",
-          "**/.next/**",
-          "**/.playwright-mcp/**",
-          "**/.stitch/**",
-          "**/test-results/**",
-          "**/*.png",
-          "**/*.jpg",
-          "**/*.jpeg",
-        ],
-      };
-    }
-    return config;
-  },
+  // Turbopack is the default builder as of Next 16. It watches the module graph
+  // rather than the whole tree, so the dev watch-ignore list the old webpack
+  // config carried (photos, test-results, .next) is no longer needed.
+  turbopack: {},
   images: {
     remotePatterns: [
       {
