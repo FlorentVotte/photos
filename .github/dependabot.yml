@@ -7,6 +7,12 @@ updates:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 10
+    ignore:
+      # nanoid is only pulled in by postcss, which requires ^3.3.17, and our
+      # `overrides` entry pins the same 3.x line. A major bump can't resolve
+      # against that, and the failure aborts the whole npm update run.
+      - dependency-name: "nanoid"
+        update-types: ["version-update:semver-major"]
     groups:
       # Group minor and patch updates together
       production-dependencies:
