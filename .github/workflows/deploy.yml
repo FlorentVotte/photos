@@ -97,6 +97,10 @@ jobs:
           format: sarif
           output: trivy-results.sarif
           severity: HIGH,CRITICAL
+          # Without this, the action builds the SARIF report "with all
+          # severities" — its own words — and ignores `severity` above, while
+          # still applying `exit-code`. Any LOW finding then fails the build.
+          limit-severities-for-sarif: true
           ignore-unfixed: true
           exit-code: '1'
           # Explicit rather than relying on Trivy's cwd discovery, so the
