@@ -15,3 +15,23 @@
 # absent rather than suppressed. Suppression only held until the scanner's
 # vulnerability database updated and flagged a different CVE in the same
 # package, which is exactly what happened here.
+
+# --- Active exemptions ---
+
+# CVE-2026-14456 — openssl DoS via unbounded memory growth in the QUIC server.
+# Present as libssl3/libcrypto3 3.5.7-r0 in the node:26-alpine base image.
+#
+# Reason: no fixed package exists to install. Trivy reports a fixed version of
+# 3.5.8-r0 from Alpine's secdb, but that build has not been published: on
+# 2026-08-29 both Alpine 3.24 (the base image's branch) and alpine:edge still
+# offered 3.5.7-r0 as the only candidate. `ignore-unfixed: true` does not filter
+# it because secdb announces the fix ahead of the package. No dependency bump,
+# `apk upgrade` or base image change can reach it, and nothing here imports
+# openssl from package.json. The site is served behind a reverse proxy and does
+# not expose an openssl QUIC server.
+#
+# Re-check trigger: the expiry below. Once it passes, Trivy stops honouring this
+# line and the build fails again. By then Alpine should carry 3.5.8-r0, in which
+# case delete this entry — do not extend it without re-verifying that the
+# package is still genuinely unavailable.
+CVE-2026-14456 exp:2026-09-30
