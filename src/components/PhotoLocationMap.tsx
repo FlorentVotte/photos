@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import BasemapAttribution from "./BasemapAttribution";
 import type * as LeafletTypes from "leaflet";
 
 interface PhotoLocationMapProps {
@@ -91,6 +92,9 @@ export default function PhotoLocationMap({ latitude, longitude, title }: PhotoLo
       <p className="text-xs text-text-muted mt-2 text-center">
         {latitude.toFixed(5)}, {longitude.toFixed(5)}
       </p>
+      {/* This map runs without Leaflet's attribution control — too heavy for a
+          thumbnail — so the basemap credit sits under it instead. */}
+      <BasemapAttribution className="mt-1 text-center" />
     </div>
   );
 }

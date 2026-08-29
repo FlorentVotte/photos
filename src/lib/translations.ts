@@ -199,7 +199,7 @@ export const translations = {
   privacy: {
     title: { en: "Privacy", fr: "Politique de" },
     titleAccent: { en: "Policy", fr: "confidentialité" },
-    lastUpdated: { en: "Last updated: December 2024", fr: "Dernière mise à jour : décembre 2024" },
+    lastUpdated: { en: "Last updated: August 2026", fr: "Dernière mise à jour : août 2026" },
     overviewTitle: { en: "Overview", fr: "Aperçu" },
     overviewText: {
       en: "This website is a personal photography portfolio. We are committed to protecting your privacy and processing your data in accordance with the General Data Protection Regulation (GDPR) and other applicable data protection laws.",
@@ -245,6 +245,14 @@ export const translations = {
     thirdPartyEnd: {
       en: "for information on how they handle data. We do not share any of your personal data with third parties for marketing or advertising purposes.",
       fr: "pour plus d'informations sur la gestion de vos données. Nous ne partageons aucune de vos données personnelles avec des tiers à des fins marketing ou publicitaires.",
+    },
+    mapTiles: {
+      en: "Map backgrounds are loaded from",
+      fr: "Les fonds de carte sont chargés depuis",
+    },
+    mapTilesEnd: {
+      en: ", a free tile service built on OpenStreetMap data. Your IP address is visible to that service whenever a map is displayed. No account, cookie or tracking identifier is involved.",
+      fr: ", un service de tuiles gratuit fondé sur les données OpenStreetMap. Votre adresse IP est visible par ce service lorsqu'une carte s'affiche. Aucun compte, cookie ou identifiant de suivi n'est utilisé.",
     },
     rightsTitle: { en: "Your Rights", fr: "Vos droits" },
     rightsIntro: { en: "Under the GDPR, you have the following rights:", fr: "En vertu du RGPD, vous disposez des droits suivants :" },

@@ -119,6 +119,18 @@ export default function PrivacyContent() {
             </a>{" "}
             {t("privacy", "thirdPartyEnd", locale)}
           </p>
+          <p className="text-text-muted leading-relaxed mb-6">
+            {t("privacy", "mapTiles", locale)}{" "}
+            <a
+              href="https://openfreemap.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              OpenFreeMap
+            </a>
+            {t("privacy", "mapTilesEnd", locale)}
+          </p>
 
           <h2 className="text-2xl font-bold text-foreground mb-4">
             {t("privacy", "rightsTitle", locale)}
