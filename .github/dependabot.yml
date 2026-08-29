@@ -34,6 +34,13 @@ updates:
       # and still emits CommonJS. Revisit when typescript-eslint supports 7.
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
+      # maplibre-gl 6 renamed the Style internals that
+      # @maplibre/maplibre-gl-leaflet 0.1.4 reaches into, despite the plugin
+      # declaring ^6.0.0 as a valid peer. On 6.x the style parses but the layer
+      # never requests a single tile, so every Leaflet map renders blank with no
+      # console error. Held at 5.x until the plugin supports 6.
+      - dependency-name: "maplibre-gl"
+        update-types: ["version-update:semver-major"]
     groups:
       # Group minor and patch updates together
       production-dependencies:

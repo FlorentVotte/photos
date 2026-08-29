@@ -18,10 +18,6 @@ const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false }
 );
-const TileLayer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.TileLayer),
-  { ssr: false }
-);
 const Marker = dynamic(
   () => import("react-leaflet").then((mod) => mod.Marker),
   { ssr: false }
@@ -39,6 +35,8 @@ const Polyline = dynamic(
 const FitBoundsComponent = dynamic(() => import("./MapFitBounds"), {
   ssr: false,
 });
+
+const BasemapLayer = dynamic(() => import("./BasemapLayer"), { ssr: false });
 
 export default function ChapterRouteMap({
   photos,
@@ -176,10 +174,7 @@ export default function ChapterRouteMap({
           dragging={interactive}
         >
           <FitBoundsComponent bounds={bounds} />
-          <TileLayer
-            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          />
+          <BasemapLayer />
 
           {/* Route line */}
           {routeCoordinates.length > 1 && (

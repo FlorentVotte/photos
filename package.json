@@ -29,6 +29,7 @@
     "sync:watch": "tsx sync/index.ts --watch"
   },
   "dependencies": {
+    "@maplibre/maplibre-gl-leaflet": "^0.1.4",
     "@prisma/adapter-better-sqlite3": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@react-three/drei": "^10.7.8",
@@ -37,6 +38,7 @@
     "better-sqlite3": "^12.5.0",
     "exifreader": "^4.33.1",
     "leaflet": "^1.9.4",
+    "maplibre-gl": "~5.24.0",
     "motion": "^13.1.0",
     "next": "^16.3.1",
     "prisma": "^7.8.0",

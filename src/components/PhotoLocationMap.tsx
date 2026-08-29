@@ -14,14 +14,12 @@ const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false }
 );
-const TileLayer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.TileLayer),
-  { ssr: false }
-);
 const Marker = dynamic(
   () => import("react-leaflet").then((mod) => mod.Marker),
   { ssr: false }
 );
+
+const BasemapLayer = dynamic(() => import("./BasemapLayer"), { ssr: false });
 
 export default function PhotoLocationMap({ latitude, longitude, title }: PhotoLocationMapProps) {
   const [isClient, setIsClient] = useState(false);
@@ -84,9 +82,7 @@ export default function PhotoLocationMap({ latitude, longitude, title }: PhotoLo
         doubleClickZoom={false}
         attributionControl={false}
       >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        />
+        <BasemapLayer />
         <Marker
           position={[latitude, longitude]}
           icon={customIcon}
