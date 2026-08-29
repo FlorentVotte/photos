@@ -3,6 +3,10 @@
 import { useEffect } from "react";
 import { useMap } from "react-leaflet";
 import type { Layer } from "leaflet";
+// Both stylesheets ship from node_modules rather than a CDN. Leaflet's used to
+// be a <link> to unpkg.com in each map component, which sent a visitor's IP to
+// a third party on every map view.
+import "leaflet/dist/leaflet.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 // OpenFreeMap serves OpenStreetMap-derived vector tiles with no API key and no

@@ -147,10 +147,6 @@ export default async function RootLayout({
         <style dangerouslySetInnerHTML={{
           __html: `:root { ${initialCSSVars} }`
         }} />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-          rel="stylesheet"
-        />
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png" />

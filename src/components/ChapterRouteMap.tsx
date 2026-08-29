@@ -60,16 +60,6 @@ export default function ChapterRouteMap({
     setIsClient(true);
     import("leaflet").then((leaflet) => {
       setL(leaflet.default);
-      // Clear webpack-bundled icon URLs to use custom ones
-      delete (leaflet.default.Icon.Default.prototype as LeafletTypes.Icon.Default & { _getIconUrl?: unknown })._getIconUrl;
-      leaflet.default.Icon.Default.mergeOptions({
-        iconRetinaUrl:
-          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-        iconUrl:
-          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-        shadowUrl:
-          "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-      });
     });
   }, []);
 
@@ -138,12 +128,6 @@ export default function ChapterRouteMap({
 
   return (
     <>
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossOrigin=""
-      />
       <style jsx global>{`
         .custom-marker {
           background: transparent !important;

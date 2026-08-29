@@ -217,3 +217,35 @@ img {
 .aspect-4-3 {
   aspect-ratio: 4 / 3;
 }
+
+/* Material Symbols icon font, self-hosted from public/fonts/ so no request
+   reaches fonts.googleapis.com or fonts.gstatic.com. The file is a subset
+   holding only the icons the app uses — regenerate it with
+   `node scripts/fetch-icon-font.mjs` after adding a new icon, and add the
+   icon's name to the list in that script or it will render as blank space.
+
+   The rules below are Google's own .material-symbols-outlined declarations,
+   which previously arrived with the remote stylesheet. */
+@font-face {
+  font-family: "Material Symbols Outlined";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("/fonts/material-symbols-outlined.woff2") format("woff2");
+}
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
