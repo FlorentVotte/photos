@@ -1,4 +1,11 @@
-import type { Photo, ChapterStats, LocationSummary, GeoPoint } from "./types";
+import type {
+  Album,
+  AlbumMarker,
+  ChapterStats,
+  GeoPoint,
+  LocationSummary,
+  Photo,
+} from "./types";
 
 /**
  * Convert degrees to radians
@@ -125,4 +132,49 @@ export function formatDistance(km: number): string {
     return `${Math.round(km * 1000)} m`;
   }
   return `${km.toLocaleString()} km`;
+}
+
+/**
+ * Build one globe marker per album, positioned at the mean coordinate of that
+ * album's geotagged photos. Albums without a geotagged photo or without a cover
+ * image are dropped, and the album order is preserved.
+ *
+ * Note: the mean is computed on raw degrees, so an album straddling the
+ * antimeridian would land on the wrong side of the globe. No album in this
+ * archive does, and handling it would cost more than it buys.
+ */
+export function albumMarkers(photos: Photo[], albums: Album[]): AlbumMarker[] {
+  const sums = new Map<string, { lat: number; lng: number; count: number }>();
+
+  for (const photo of photos) {
+    const { latitude, longitude } = photo.metadata;
+    // Explicit finite check rather than truthiness: lat/lng of exactly 0 is a
+    // real place, not a missing value.
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) continue;
+
+    const sum = sums.get(photo.albumId) ?? { lat: 0, lng: 0, count: 0 };
+    sum.lat += latitude!;
+    sum.lng += longitude!;
+    sum.count += 1;
+    sums.set(photo.albumId, sum);
+  }
+
+  return albums.flatMap((album) => {
+    const sum = sums.get(album.id);
+    if (!sum) return [];
+    // transformAlbum turns a null coverImage into "". A marker is nothing but
+    // its thumbnail, so pin only albums that have one.
+    if (!album.coverImage) return [];
+
+    return [
+      {
+        lat: sum.lat / sum.count,
+        lng: sum.lng / sum.count,
+        src: album.coverImage,
+        label: album.title,
+        slug: album.slug,
+        photoCount: album.photoCount,
+      },
+    ];
+  });
 }

@@ -111,6 +111,14 @@ export const translations = {
       fr: "Les coordonnées GPS sont extraites des données EXIF lors de la synchronisation",
     },
     photosWithGps: { en: "photos with GPS data", fr: "photos avec données GPS" },
+    viewMap: { en: "Map", fr: "Carte" },
+    viewGlobe: { en: "Globe", fr: "Globe" },
+    viewLabel: { en: "View", fr: "Vue" },
+    albumsOnGlobe: { en: "albums on the globe", fr: "albums sur le globe" },
+    noGeoAlbums: {
+      en: "No album has GPS data yet",
+      fr: "Aucun album ne dispose encore de données GPS",
+    },
   },
 
   // About page
@@ -213,6 +221,11 @@ export const translations = {
     languagePrefDesc: {
       en: "Stores your language choice (English/French) in localStorage.",
       fr: "Enregistre votre choix de langue (anglais/français) dans le stockage local.",
+    },
+    mapViewPref: { en: "Map view preference:", fr: "Préférence d'affichage de la carte :" },
+    mapViewPrefDesc: {
+      en: "Stores whether you last viewed the archive as a map or a globe in localStorage.",
+      fr: "Enregistre dans le stockage local si vous avez consulté les archives en mode carte ou globe.",
     },
     serviceWorker: { en: "Service Worker / Cache:", fr: "Service Worker / Cache :" },
     serviceWorkerDesc: {

@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MapContent from "@/components/MapContent";
 import { BreadcrumbStructuredData } from "@/components/StructuredData";
-import { getAllPhotos } from "@/lib/data";
+import { getAlbums, getAllPhotos } from "@/lib/data";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
@@ -17,8 +17,9 @@ export const metadata: Metadata = {
 
 export default async function MapPage() {
   let photos: Awaited<ReturnType<typeof getAllPhotos>> = [];
+  let albums: Awaited<ReturnType<typeof getAlbums>> = [];
   try {
-    photos = await getAllPhotos();
+    [photos, albums] = await Promise.all([getAllPhotos(), getAlbums()]);
   } catch {
     // Database may not exist during build
   }
@@ -32,7 +33,7 @@ export default async function MapPage() {
         ]}
       />
       <Header />
-      <MapContent photos={photos} />
+      <MapContent photos={photos} albums={albums} />
       <Footer />
     </div>
   );

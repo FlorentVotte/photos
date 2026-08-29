@@ -31,6 +31,8 @@
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
     "@types/leaflet": "^1.9.21",
     "better-sqlite3": "^12.5.0",
     "exifreader": "^4.33.1",
@@ -41,7 +43,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-leaflet": "^5.0.0",
-    "sharp": "^0.35.0"
+    "sharp": "^0.35.0",
+    "three": "^0.185.1"
   },
   "overrides": {
     "hono": "^4.12.25",
@@ -59,6 +62,7 @@
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^26.2.0",
     "@types/react": "^19.2.7",
+    "@types/three": "^0.185.4",
     "@vitest/coverage-v8": "^4.0.16",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.3.1",

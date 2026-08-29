@@ -53,6 +53,18 @@ export interface Album {
   chapters?: Chapter[];
 }
 
+/** One globe marker: an album pinned at the mean location of its photos. */
+export interface AlbumMarker {
+  lat: number;
+  lng: number;
+  /** Album cover, shown as the marker thumbnail. */
+  src: string;
+  /** Album title. */
+  label: string;
+  slug: string;
+  photoCount: number;
+}
+
 export interface Chapter {
   id: string;
   title: string;

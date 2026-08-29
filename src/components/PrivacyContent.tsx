@@ -89,6 +89,12 @@ export default function PrivacyContent() {
             </li>
             <li>
               <strong className="text-foreground">
+                {t("privacy", "mapViewPref", locale)}
+              </strong>{" "}
+              {t("privacy", "mapViewPrefDesc", locale)}
+            </li>
+            <li>
+              <strong className="text-foreground">
                 {t("privacy", "serviceWorker", locale)}
               </strong>{" "}
               {t("privacy", "serviceWorkerDesc", locale)}

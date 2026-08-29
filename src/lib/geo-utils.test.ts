@@ -5,8 +5,9 @@ import {
   extractLocations,
   computeChapterStats,
   formatDistance,
+  albumMarkers,
 } from "./geo-utils";
-import type { Photo } from "./types";
+import type { Album, Photo } from "./types";
 
 // Helper to create a mock photo with GPS data
 function createPhoto(overrides: Partial<Photo> = {}): Photo {
@@ -25,6 +26,20 @@ function createPhoto(overrides: Partial<Photo> = {}): Photo {
     ...overrides,
     // Spread last would widen the required albumId back to `string | undefined`.
     albumId: overrides.albumId || "album-1",
+  };
+}
+
+// Helper to create a mock album
+function createAlbum(overrides: Partial<Album> = {}): Album {
+  return {
+    id: "album-1",
+    slug: "album-1",
+    title: "Test Album",
+    location: "Somewhere",
+    date: "2024-01-15",
+    coverImage: "/photos/cover.jpg",
+    photoCount: 0,
+    ...overrides,
   };
 }
 
@@ -394,6 +409,133 @@ describe("geo-utils", () => {
 
     it("should round meter values", () => {
       expect(formatDistance(0.5555)).toBe("556 m");
+    });
+  });
+  describe("albumMarkers", () => {
+    it("should return one marker per album with geotagged photos", () => {
+      const albums = [
+        createAlbum({ id: "a", slug: "paris", title: "Paris", photoCount: 2 }),
+        createAlbum({ id: "b", slug: "london", title: "London", photoCount: 1 }),
+      ];
+      const photos = [
+        createPhoto({ id: "1", albumId: "a", metadata: { date: "2024-01-01", latitude: 48.85, longitude: 2.35 } }),
+        createPhoto({ id: "2", albumId: "a", metadata: { date: "2024-01-02", latitude: 48.87, longitude: 2.37 } }),
+        createPhoto({ id: "3", albumId: "b", metadata: { date: "2024-01-03", latitude: 51.5, longitude: -0.12 } }),
+      ];
+
+      const markers = albumMarkers(photos, albums);
+
+      expect(markers).toHaveLength(2);
+      expect(markers.map((m) => m.slug)).toEqual(["paris", "london"]);
+    });
+
+    it("should place the marker at the mean coordinate of the album's photos", () => {
+      const albums = [createAlbum({ id: "a", slug: "paris" })];
+      const photos = [
+        createPhoto({ id: "1", albumId: "a", metadata: { date: "2024-01-01", latitude: 10, longitude: 20 } }),
+        createPhoto({ id: "2", albumId: "a", metadata: { date: "2024-01-02", latitude: 20, longitude: 40 } }),
+      ];
+
+      const [marker] = albumMarkers(photos, albums);
+
+      expect(marker.lat).toBeCloseTo(15, 10);
+      expect(marker.lng).toBeCloseTo(30, 10);
+    });
+
+    it("should carry the album cover, title and photo count", () => {
+      const albums = [
+        createAlbum({
+          id: "a",
+          slug: "paris",
+          title: "Paris in Winter",
+          coverImage: "/photos/paris-cover.jpg",
+          photoCount: 42,
+        }),
+      ];
+      const photos = [
+        createPhoto({ id: "1", albumId: "a", metadata: { date: "2024-01-01", latitude: 48.85, longitude: 2.35 } }),
+      ];
+
+      const [marker] = albumMarkers(photos, albums);
+
+      expect(marker.src).toBe("/photos/paris-cover.jpg");
+      expect(marker.label).toBe("Paris in Winter");
+      expect(marker.photoCount).toBe(42);
+    });
+
+    it("should drop albums with no geotagged photos", () => {
+      const albums = [
+        createAlbum({ id: "a", slug: "paris" }),
+        createAlbum({ id: "b", slug: "studio" }),
+      ];
+      const photos = [
+        createPhoto({ id: "1", albumId: "a", metadata: { date: "2024-01-01", latitude: 48.85, longitude: 2.35 } }),
+        createPhoto({ id: "2", albumId: "b", metadata: { date: "2024-01-02" } }),
+      ];
+
+      const markers = albumMarkers(photos, albums);
+
+      expect(markers).toHaveLength(1);
+      expect(markers[0].slug).toBe("paris");
+    });
+
+    it("should ignore photos missing one half of the coordinate pair", () => {
+      const albums = [createAlbum({ id: "a", slug: "paris" })];
+      const photos = [
+        createPhoto({ id: "1", albumId: "a", metadata: { date: "2024-01-01", latitude: 10, longitude: 20 } }),
+        createPhoto({ id: "2", albumId: "a", metadata: { date: "2024-01-02", latitude: 90 } }),
+        createPhoto({ id: "3", albumId: "a", metadata: { date: "2024-01-03", longitude: 90 } }),
+      ];
+
+      const [marker] = albumMarkers(photos, albums);
+
+      expect(marker.lat).toBeCloseTo(10, 10);
+      expect(marker.lng).toBeCloseTo(20, 10);
+    });
+
+    it("should keep photos sitting exactly on the equator or prime meridian", () => {
+      const albums = [createAlbum({ id: "a", slug: "null-island" })];
+      const photos = [
+        createPhoto({ id: "1", albumId: "a", metadata: { date: "2024-01-01", latitude: 0, longitude: 0 } }),
+      ];
+
+      const markers = albumMarkers(photos, albums);
+
+      expect(markers).toHaveLength(1);
+      expect(markers[0].lat).toBe(0);
+      expect(markers[0].lng).toBe(0);
+    });
+
+    it("should drop albums without a cover image", () => {
+      // transformAlbum turns a null coverImage into "", which would render as a
+      // broken thumbnail — and a marker is nothing but its thumbnail.
+      const albums = [
+        createAlbum({ id: "a", slug: "paris" }),
+        createAlbum({ id: "b", slug: "coverless", coverImage: "" }),
+      ];
+      const photos = [
+        createPhoto({ id: "1", albumId: "a", metadata: { date: "2024-01-01", latitude: 10, longitude: 20 } }),
+        createPhoto({ id: "2", albumId: "b", metadata: { date: "2024-01-02", latitude: 30, longitude: 40 } }),
+      ];
+
+      const markers = albumMarkers(photos, albums);
+
+      expect(markers).toHaveLength(1);
+      expect(markers[0].slug).toBe("paris");
+    });
+
+    it("should ignore photos referencing an unknown album", () => {
+      const albums = [createAlbum({ id: "a", slug: "paris" })];
+      const photos = [
+        createPhoto({ id: "1", albumId: "ghost", metadata: { date: "2024-01-01", latitude: 10, longitude: 20 } }),
+      ];
+
+      expect(albumMarkers(photos, albums)).toEqual([]);
+    });
+
+    it("should return an empty array for empty input", () => {
+      expect(albumMarkers([], [])).toEqual([]);
+      expect(albumMarkers([], [createAlbum()])).toEqual([]);
     });
   });
 });
