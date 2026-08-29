@@ -2,8 +2,9 @@
 // (https://ui.aceternity.com/components/3d-globe), adapted for this project:
 // the `cn` import is inlined, the Earth textures are self-hosted, `markerSize`
 // is expressed in CSS pixels so the knob actually does something, the texture
-// setup moved into useTexture's callback, and the wrapper no longer hardcodes
-// a height. Re-apply these when pulling a newer upstream version.
+// setup moved into useTexture's callback, the wrapper no longer hardcodes a
+// height, and markers are projected rather than transformed so they stay one
+// size and stay sharp. Re-apply these when pulling a newer upstream version.
 "use client";
 import React, { useRef, useMemo, useState, useCallback, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -59,7 +60,7 @@ export interface Globe3DConfig {
   maxDistance?: number;
   /** Initial rotation */
   initialRotation?: { x: number; y: number };
-  /** Marker diameter in CSS pixels, before perspective scaling */
+  /** Marker diameter in CSS pixels. Constant at every zoom level. */
   markerSize?: number;
   /** Show wireframe overlay */
   showWireframe?: boolean;
@@ -221,11 +222,15 @@ function Marker({
 
       {/* Circular image at the top */}
       <group ref={imageGroupRef} position={topPosition}>
+        {/* Projected rather than `transform`: upstream used
+            `transform sprite distanceFactor`, which renders the marker into a
+            CSS 3D matrix and magnifies it as the camera nears. That both
+            resized the markers on zoom and resampled a small element upwards,
+            which is what made the thumbnails blurry. Plain Html places the
+            element at the projected screen point at its native DOM size, so it
+            stays crisp and keeps one size at every zoom level. */}
         <Html
-          transform
           center
-          sprite
-          distanceFactor={10}
           style={{
             pointerEvents: isVisible ? "auto" : "none",
             opacity: isVisible ? 1 : 0,
@@ -240,6 +245,11 @@ function Marker({
             style={{
               width: `${marker.size ?? defaultSize}px`,
               height: `${marker.size ?? defaultSize}px`,
+              // Set here rather than inherited: drei's own wrapper carries
+              // `pointer-events: none`, and since the property inherits, a
+              // marker that did not restate it stayed transparent to hit
+              // testing and every click fell through to the canvas.
+              pointerEvents: isVisible ? "auto" : "none",
             }}
             onMouseEnter={handlePointerEnter}
             onMouseLeave={handlePointerLeave}
@@ -506,7 +516,7 @@ const defaultConfig: Required<Globe3DConfig> = {
   minDistance: 5,
   maxDistance: 15,
   initialRotation: { x: 0, y: 0 },
-  markerSize: 10,
+  markerSize: 32,
   showWireframe: false,
   wireframeColor: "#4a9eff",
   ambientIntensity: 0.6,

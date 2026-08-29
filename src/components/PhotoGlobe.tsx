@@ -55,7 +55,7 @@ export default function PhotoGlobe({ photos, albums }: PhotoGlobeProps) {
       enableZoom: true,
       minDistance: 4,
       maxDistance: 12,
-      markerSize: 18,
+      markerSize: 40,
     }),
     [pointerOver]
   );
