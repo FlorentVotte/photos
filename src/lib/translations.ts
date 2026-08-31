@@ -24,6 +24,10 @@ export const translations = {
       en: "— Henri Cartier-Bresson",
       fr: "— Henri Cartier-Bresson",
     },
+    globeHint: {
+      en: "Drag the globe · tap a marker",
+      fr: "Faites tourner le globe · touchez un marqueur",
+    },
     recentAlbums: { en: "Recent Albums", fr: "Albums récents" },
     viewArchive: { en: "View Archive", fr: "Voir les archives" },
     tagline: {

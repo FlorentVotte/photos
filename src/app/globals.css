@@ -249,3 +249,170 @@ img {
   -webkit-font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased;
 }
+
+/* ---------------------------------------------------------------------------
+   Globe hero
+
+   The hero's radial gradient wants two stops the theme does not define — a
+   lifted mid-tone and a deeper outer edge. Deriving them with color-mix from
+   the theme's own background and accent keeps the hero correct under every
+   theme instead of hardcoding Ocean Blue's #14283a / #0b1219.
+   --------------------------------------------------------------------------- */
+:root {
+  --globe-hero-mid: color-mix(in srgb, var(--color-primary) 14%, var(--color-background));
+  --globe-hero-deep: color-mix(in srgb, #000000 22%, var(--color-background));
+}
+
+.globe-hero-surface {
+  background: radial-gradient(
+    90% 80% at 78% 45%,
+    var(--globe-hero-mid) 0%,
+    var(--color-background) 62%,
+    var(--globe-hero-deep) 100%
+  );
+}
+
+@media (max-width: 1023px) {
+  .globe-hero-surface {
+    background: radial-gradient(
+      100% 60% at 50% 32%,
+      var(--globe-hero-mid) 0%,
+      var(--color-background) 62%,
+      var(--globe-hero-deep) 100%
+    );
+  }
+}
+
+/* Keeps the hero copy legible where it crosses the globe. */
+.globe-hero-scrim {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-background) 90%, transparent) 0%,
+    color-mix(in srgb, var(--color-background) 35%, transparent) 38%,
+    transparent 60%
+  );
+}
+
+/* Fades the globe into the copy on the stacked mobile layout. */
+.globe-hero-fade {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--color-background) 95%, transparent)
+  );
+}
+
+/* Marker label. Built in JS by GlobeHero, so it needs a real class rather than
+   utilities Tailwind would never see. */
+.globe-hero-label {
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  transform: translate(-50%, -100%);
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  background: color-mix(in srgb, var(--color-background) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
+  padding: 5px 10px;
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+  transition: opacity 160ms ease-out, transform 160ms ease-out;
+}
+
+.globe-hero-label[data-shown] {
+  opacity: 1;
+  transform: translate(-50%, -100%) translateY(-4px);
+}
+
+/* ---------------------------------------------------------------------------
+   Home page motion
+
+   Entrance keyframes and scroll reveals from the design handoff. All of it is
+   switched off under prefers-reduced-motion, which the prototype did not
+   handle.
+   --------------------------------------------------------------------------- */
+@keyframes ghGlobeIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes ghRise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ghFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gh-globe-in {
+  animation: ghGlobeIn 1400ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.gh-rise {
+  animation: ghRise 1000ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.gh-fade {
+  animation: ghFade 1200ms ease-out both;
+}
+
+.gh-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 900ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 900ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.gh-reveal[data-revealed] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.gh-rule {
+  width: 0;
+  transition: width 900ms cubic-bezier(0.23, 1, 0.32, 1) 250ms;
+}
+
+.gh-reveal[data-revealed] .gh-rule,
+.gh-rule[data-revealed] {
+  width: 56px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gh-globe-in,
+  .gh-rise,
+  .gh-fade {
+    animation: none;
+  }
+
+  .gh-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .gh-rule {
+    width: 56px;
+    transition: none;
+  }
+
+  .globe-hero-label {
+    transition: none;
+  }
+}
+
+/* Inner glow on a home-page card while the globe points at its album. Kept as a
+   class so the colour follows the theme's accent rather than being frozen to
+   Ocean Blue's slate. */
+.gh-card-glow {
+  box-shadow: inset 0 0 60px color-mix(in srgb, var(--color-primary) 25%, transparent);
+}

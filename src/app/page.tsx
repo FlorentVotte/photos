@@ -1,9 +1,9 @@
 import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import HomeContent from "@/components/HomeContent";
+import HomeExperience from "@/components/HomeExperience";
 import Footer from "@/components/Footer";
 import { WebsiteStructuredData } from "@/components/StructuredData";
-import { getAlbums, getFeaturedAlbum } from "@/lib/data";
+import { getAlbums, getAllPhotos, getFeaturedAlbum } from "@/lib/data";
+import { albumMarkers, sortMarkersByDate } from "@/lib/geo-utils";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 
@@ -13,19 +13,23 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   let featuredAlbum: Awaited<ReturnType<typeof getFeaturedAlbum>> = undefined;
   let albums: Awaited<ReturnType<typeof getAlbums>> = [];
+  let photos: Awaited<ReturnType<typeof getAllPhotos>> = [];
 
   try {
-    featuredAlbum = await getFeaturedAlbum();
-    albums = await getAlbums();
+    [featuredAlbum, albums, photos] = await Promise.all([
+      getFeaturedAlbum(),
+      getAlbums(),
+      getAllPhotos(),
+    ]);
   } catch {
     // Database may not exist during build
   }
 
   const recentAlbums = albums.filter((a) => a.id !== featuredAlbum?.id);
 
-  const heroKicker = featuredAlbum
-    ? [featuredAlbum.location, featuredAlbum.date].filter(Boolean).join(" — ")
-    : undefined;
+  // The globe plots one marker per album that has geotagged photos, oldest
+  // first so the travel arcs read chronologically.
+  const markers = sortMarkersByDate(albumMarkers(photos, albums));
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
@@ -36,22 +40,11 @@ export default async function Home() {
       />
       <Header />
 
-      {featuredAlbum && (
-        <Hero
-          title={featuredAlbum.title}
-          subtitle={featuredAlbum.subtitle}
-          description={featuredAlbum.description}
-          backgroundImage={featuredAlbum.coverImage}
-          kicker={heroKicker}
-          ctaLink={`/album/${featuredAlbum.slug}`}
-        />
-      )}
-
-      <div className="flex flex-1 justify-center">
-        <div className="flex w-full max-w-[1200px] flex-col px-4 lg:px-8">
-          <HomeContent recentAlbums={recentAlbums} />
-        </div>
-      </div>
+      <HomeExperience
+        featuredAlbum={featuredAlbum}
+        recentAlbums={recentAlbums}
+        markers={markers}
+      />
 
       <Footer />
     </div>

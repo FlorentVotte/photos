@@ -63,6 +63,10 @@ export interface AlbumMarker {
   label: string;
   slug: string;
   photoCount: number;
+  /** Four-digit year pulled out of the album's display date, or "". */
+  year: string;
+  /** The album's display date, kept for chronological ordering. */
+  date: string;
 }
 
 export interface Chapter {

@@ -6,6 +6,8 @@ import {
   computeChapterStats,
   formatDistance,
   albumMarkers,
+  albumYear,
+  sortMarkersByDate,
 } from "./geo-utils";
 import type { Album, Photo } from "./types";
 
@@ -533,9 +535,100 @@ describe("geo-utils", () => {
       expect(albumMarkers(photos, albums)).toEqual([]);
     });
 
+    it("should carry the album's year, parsed out of its display date", () => {
+      const albums = [
+        createAlbum({ id: "a", slug: "oman", date: "Nov 24, 2025" }),
+        createAlbum({ id: "b", slug: "madeira", date: "July 2026" }),
+        createAlbum({ id: "c", slug: "undated", date: "" }),
+      ];
+      const photos = ["a", "b", "c"].map((albumId, i) =>
+        createPhoto({ id: `p${i}`, albumId, metadata: { date: "2024-01-01", latitude: 10 + i, longitude: 20 } })
+      );
+
+      expect(albumMarkers(photos, albums).map((m) => m.year)).toEqual([
+        "2025",
+        "2026",
+        "",
+      ]);
+    });
+
     it("should return an empty array for empty input", () => {
       expect(albumMarkers([], [])).toEqual([]);
       expect(albumMarkers([], [createAlbum()])).toEqual([]);
+    });
+  });
+
+  describe("albumYear", () => {
+    it("should read the year out of the site's display date formats", () => {
+      expect(albumYear("Nov 24, 2025")).toBe("2025");
+      expect(albumYear("July 2026")).toBe("2026");
+      expect(albumYear("2024-03-08")).toBe("2024");
+    });
+
+    it("should return an empty string when there is no year to find", () => {
+      expect(albumYear("")).toBe("");
+      expect(albumYear("undated")).toBe("");
+      expect(albumYear(undefined)).toBe("");
+    });
+
+    it("should not mistake a longer number for a year", () => {
+      expect(albumYear("photo 123456")).toBe("");
+    });
+  });
+
+  describe("sortMarkersByDate", () => {
+    const marker = (slug: string, date: string) => ({
+      lat: 0,
+      lng: 0,
+      src: "/cover.jpg",
+      label: slug,
+      slug,
+      photoCount: 1,
+      year: albumYear(date),
+      date,
+    });
+
+    it("should order by calendar date, not alphabetically by month name", () => {
+      // Lexically: "Apr" < "Jul" < "May". Chronologically: Apr, May, Jul.
+      const sorted = sortMarkersByDate([
+        marker("jul", "Jul 18, 2025"),
+        marker("apr", "Apr 1, 2025"),
+        marker("may", "May 9, 2025"),
+      ]);
+
+      expect(sorted.map((m) => m.slug)).toEqual(["apr", "may", "jul"]);
+    });
+
+    it("should order across years and mixed formats", () => {
+      const sorted = sortMarkersByDate([
+        marker("madeira", "July 2026"),
+        marker("jersey", "Aug 3, 2024"),
+        marker("oman", "Nov 24, 2025"),
+      ]);
+
+      expect(sorted.map((m) => m.slug)).toEqual(["jersey", "oman", "madeira"]);
+    });
+
+    it("should put undated markers last while keeping their relative order", () => {
+      const sorted = sortMarkersByDate([
+        marker("nodate-1", ""),
+        marker("dated", "Jan 1, 2025"),
+        marker("nodate-2", "undated"),
+      ]);
+
+      expect(sorted.map((m) => m.slug)).toEqual([
+        "dated",
+        "nodate-1",
+        "nodate-2",
+      ]);
+    });
+
+    it("should not mutate the array it is given", () => {
+      const input = [marker("b", "Feb 1, 2025"), marker("a", "Jan 1, 2025")];
+      const sorted = sortMarkersByDate(input);
+
+      expect(input.map((m) => m.slug)).toEqual(["b", "a"]);
+      expect(sorted.map((m) => m.slug)).toEqual(["a", "b"]);
     });
   });
 });

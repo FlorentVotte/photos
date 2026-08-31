@@ -174,7 +174,39 @@ export function albumMarkers(photos: Photo[], albums: Album[]): AlbumMarker[] {
         label: album.title,
         slug: album.slug,
         photoCount: album.photoCount,
+        year: albumYear(album.date),
+        date: album.date ?? "",
       },
     ];
   });
+}
+
+/**
+ * Pull the year out of an album's display date. Sync writes these as human
+ * strings — "Nov 24, 2025", "July 2026" — so this looks for a standalone
+ * four-digit run rather than assuming a format. Returns "" when there is none.
+ */
+export function albumYear(date?: string): string {
+  return date?.match(/(?<!\d)(\d{4})(?!\d)/)?.[1] ?? "";
+}
+
+/**
+ * Order markers by when their album was shot, oldest first — the order the
+ * globe draws its travel arcs in.
+ *
+ * The dates are display strings, so sorting them as text would read "Apr" <
+ * "Jul" < "May". Date.parse handles every format sync produces; anything it
+ * cannot read sorts last, keeping the input order among those so the result
+ * stays deterministic.
+ */
+export function sortMarkersByDate(markers: AlbumMarker[]): AlbumMarker[] {
+  const key = (marker: AlbumMarker) => {
+    const parsed = Date.parse(marker.date);
+    return Number.isNaN(parsed) ? Number.POSITIVE_INFINITY : parsed;
+  };
+
+  return markers
+    .map((marker, index) => ({ marker, index }))
+    .sort((a, b) => key(a.marker) - key(b.marker) || a.index - b.index)
+    .map(({ marker }) => marker);
 }

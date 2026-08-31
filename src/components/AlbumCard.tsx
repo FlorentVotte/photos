@@ -1,16 +1,28 @@
 import Link from "next/link";
+import type { CSSProperties, Ref } from "react";
 import type { Album } from "@/lib/types";
 
 interface AlbumCardProps {
   album: Album;
   variant?: "default" | "large" | "portrait" | "square";
   featuredLabel?: string;
+  /** Lit up while this album is the one under the pointer on the home globe. */
+  highlighted?: boolean;
+  /** Forwarded so callers can observe the card itself — it is the grid item, so
+      a wrapper would take over its column span and aspect ratio. */
+  ref?: Ref<HTMLAnchorElement>;
+  className?: string;
+  style?: CSSProperties;
 }
 
 export default function AlbumCard({
   album,
   variant = "default",
   featuredLabel,
+  highlighted = false,
+  ref,
+  className = "",
+  style,
 }: AlbumCardProps) {
   const variantClasses = {
     default: "col-span-1 aspect-square",
@@ -23,8 +35,10 @@ export default function AlbumCard({
 
   return (
     <Link
+      ref={ref}
       href={`/album/${album.slug}`}
-      className={`group relative overflow-hidden cursor-pointer ${variantClasses[variant]}`}
+      style={style}
+      className={`group relative overflow-hidden cursor-pointer ${variantClasses[variant]} ${className}`}
     >
       <div
         className="absolute inset-0 bg-cover bg-center transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
@@ -33,6 +47,14 @@ export default function AlbumCard({
 
       {/* Stronger scrim for legibility on bright cover images */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/0" />
+
+      {/* Marker link: fades in when the home globe points at this album. */}
+      <div
+        aria-hidden="true"
+        className={`gh-card-glow pointer-events-none absolute inset-0 border border-primary transition-opacity duration-[250ms] ease-out ${
+          highlighted ? "opacity-100" : "opacity-0"
+        }`}
+      />
 
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-5 md:p-6 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)]">
         {isLarge && featuredLabel && (
