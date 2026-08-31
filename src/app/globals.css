@@ -253,32 +253,37 @@ img {
 /* ---------------------------------------------------------------------------
    Globe hero
 
-   The hero's radial gradient wants two stops the theme does not define — a
-   lifted mid-tone and a deeper outer edge. Deriving them with color-mix from
-   the theme's own background and accent keeps the hero correct under every
-   theme instead of hardcoding Ocean Blue's #14283a / #0b1219.
+   The hero's radial gradient needs a lifted mid-tone the theme does not
+   define. Deriving it with color-mix from the theme's own accent and
+   background keeps the hero correct under every theme instead of hardcoding
+   Ocean Blue's #14283a.
+   
+   The gradient resolves to --color-background and stops there. The handoff's
+   third stop was #0b1219, darker than the page, which works in the design file
+   because the hero sits inside a bordered artboard — on a continuous page that
+   darker edge met the lighter page background and drew a visible line across
+   the full width where the section ended. Ending on the page colour makes the
+   hero's edges identical to everything around it.
    --------------------------------------------------------------------------- */
 :root {
   --globe-hero-mid: color-mix(in srgb, var(--color-primary) 14%, var(--color-background));
-  --globe-hero-deep: color-mix(in srgb, #000000 22%, var(--color-background));
 }
 
 .globe-hero-surface {
-  background: radial-gradient(
+  background-color: var(--color-background);
+  background-image: radial-gradient(
     90% 80% at 78% 45%,
     var(--globe-hero-mid) 0%,
-    var(--color-background) 62%,
-    var(--globe-hero-deep) 100%
+    var(--color-background) 70%
   );
 }
 
 @media (max-width: 1023px) {
   .globe-hero-surface {
-    background: radial-gradient(
+    background-image: radial-gradient(
       100% 60% at 50% 32%,
       var(--globe-hero-mid) 0%,
-      var(--color-background) 62%,
-      var(--globe-hero-deep) 100%
+      var(--color-background) 70%
     );
   }
 }
