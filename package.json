@@ -51,7 +51,7 @@
   "overrides": {
     "hono": "^4.12.25",
     "@hono/node-server": "^2.0.2",
-    "fast-uri": "^3.1.5",
+    "fast-uri": "^3.1.7",
     "postcss": "^8.5.26",
     "sharp": "$sharp",
     "@emnapi/wasi-threads": "^1.2.3",
