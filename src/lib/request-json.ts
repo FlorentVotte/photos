@@ -16,11 +16,12 @@ export class JsonBodyError extends Error {
 
 export async function readJsonBody<T>(request: Request, maxBytes: number): Promise<T> {
   const contentLength = request.headers.get("content-length");
-  if (contentLength !== null) {
-    const declaredLength = Number(contentLength);
-    if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
-      throw new JsonBodyError(413, "Request body too large");
-    }
+  if (
+    contentLength !== null &&
+    /^\d+$/.test(contentLength) &&
+    BigInt(contentLength) > BigInt(maxBytes)
+  ) {
+    throw new JsonBodyError(413, "Request body too large");
   }
 
   const stream = request.body;

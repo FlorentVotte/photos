@@ -51,6 +51,56 @@ describe("readJsonBody", () => {
     ).rejects.toMatchObject({ status: 413, message: "Request body too large" });
   });
 
+  it("rejects an oversized decimal Content-Length that exceeds Number precision", async () => {
+    await expect(
+      readJsonBody(
+        new Request("https://test", {
+          method: "POST",
+          headers: { "Content-Length": "9".repeat(400) },
+          body: "{}",
+        }),
+        64
+      )
+    ).rejects.toMatchObject({ status: 413, message: "Request body too large" });
+  });
+
+  it("accepts decimal Content-Length values equal to or below the limit", async () => {
+    await expect(
+      readJsonBody(
+        new Request("https://test", {
+          method: "POST",
+          headers: { "Content-Length": "2" },
+          body: "{}",
+        }),
+        2
+      )
+    ).resolves.toEqual({});
+
+    await expect(
+      readJsonBody(
+        new Request("https://test", {
+          method: "POST",
+          headers: { "Content-Length": "2" },
+          body: "{}",
+        }),
+        3
+      )
+    ).resolves.toEqual({});
+  });
+
+  it("ignores an invalid Content-Length and enforces the streamed byte limit", async () => {
+    await expect(
+      readJsonBody(
+        new Request("https://test", {
+          method: "POST",
+          headers: { "Content-Length": "-1" },
+          body: "12345678",
+        }),
+        7
+      )
+    ).rejects.toMatchObject({ status: 413, message: "Request body too large" });
+  });
+
   it("rejects a chunked stream that crosses the limit", async () => {
     await expect(readJsonBody(chunkedRequest(["1234", "5678"]), 7)).rejects.toMatchObject({
       status: 413,
