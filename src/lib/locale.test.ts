@@ -28,4 +28,13 @@ describe("legal download terms", () => {
     );
     expect(terms).not.toHaveProperty("termNoDownload");
   });
+
+  it("does not override the download permission in its copyright notice", () => {
+    expect(translations.legal.ipText.en).toContain(
+      "Private, non-commercial downloading is permitted."
+    );
+    expect(translations.legal.ipText.fr).toContain(
+      "Le téléchargement à des fins privées et non commerciales est autorisé."
+    );
+  });
 });

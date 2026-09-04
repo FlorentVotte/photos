@@ -327,8 +327,8 @@ export const translations = {
     phone: { en: "Phone:", fr: "Téléphone :" },
     ipTitle: { en: "Intellectual Property", fr: "Propriété intellectuelle" },
     ipText: {
-      en: "All content on this website (photographs, images, texts, graphics, logos) is the exclusive property of Florent Votte unless otherwise stated. Any reproduction, distribution, modification, or use without prior written permission is strictly prohibited.",
-      fr: "Tout le contenu de ce site (photographies, images, textes, graphismes, logos) est la propriété exclusive de Florent Votte sauf mention contraire. Toute reproduction, distribution, modification ou utilisation sans autorisation écrite préalable est strictement interdite.",
+      en: "All content on this website (photographs, images, texts, graphics, logos) is the exclusive property of Florent Votte unless otherwise stated. Private, non-commercial downloading is permitted. Copying, redistribution, republication, modification, automated bulk downloading, and commercial use require explicit authorization.",
+      fr: "Tout le contenu de ce site (photographies, images, textes, graphismes, logos) est la propriété exclusive de Florent Votte sauf mention contraire. Le téléchargement à des fins privées et non commerciales est autorisé. Toute copie, redistribution, republication, modification, tout téléchargement automatisé en masse et tout usage commercial nécessitent une autorisation explicite.",
     },
     licensingText: { en: "For licensing inquiries, please contact", fr: "Pour toute demande de licence, veuillez contacter" },
     termsTitle: { en: "Terms of Use", fr: "Conditions d'utilisation" },
