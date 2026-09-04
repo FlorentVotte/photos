@@ -17,7 +17,7 @@ describe("crypto", () => {
     it.each([undefined, "short"])(
       "rejects invalid production ENCRYPTION_KEY %s",
       async (key) => {
-        process.env.NODE_ENV = "production";
+        process.env = { ...process.env, NODE_ENV: "production" };
         if (key === undefined) delete process.env.ENCRYPTION_KEY;
         else process.env.ENCRYPTION_KEY = key;
         const { encrypt: productionEncrypt } = await import("./crypto");
