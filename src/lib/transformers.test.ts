@@ -223,12 +223,12 @@ describe("transformers", () => {
   });
 
   describe("cleanLocationParts", () => {
-    it("removes blank and Unknown location parts", () => {
+    it("removes blank and case-insensitive Unknown location parts", () => {
       expect(cleanLocationParts("Paris", "Unknown", "France")).toEqual([
         "Paris",
         "France",
       ]);
-      expect(cleanLocationParts(" unknown ", undefined, "")).toEqual([]);
+      expect(cleanLocationParts(" uNkNoWn ", undefined, "")).toEqual([]);
     });
   });
 

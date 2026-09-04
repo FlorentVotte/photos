@@ -200,7 +200,11 @@ export default function ChapterRouteMap({
                 )}
               >
                 <Popup>
-                  <Link href={`/photo/${photo.id}`} className="block">
+                  <Link
+                    href={`/photo/${photo.id}`}
+                    className="block"
+                    aria-label={label}
+                  >
                     <img
                       src={photo.src.thumb}
                       alt={label}
@@ -208,7 +212,7 @@ export default function ChapterRouteMap({
                     />
                     <div className="p-2">
                       <p className="font-medium text-foreground text-sm truncate">
-                        {photo.title}
+                        {label}
                       </p>
                       {photo.metadata.city && (
                         <p className="text-xs text-primary mt-1">

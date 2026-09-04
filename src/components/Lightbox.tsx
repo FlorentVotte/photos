@@ -11,6 +11,7 @@ import {
   type PanInfo,
 } from "motion/react";
 import { useLocale } from "@/lib/LocaleContext";
+import { cleanLocationParts } from "@/lib/transformers";
 import {
   useBodyScrollLock,
   useLightboxKeyboard,
@@ -83,6 +84,7 @@ export default function Lightbox({
   const x = useMotionValue(0);
 
   const currentPhoto = photos[currentIndex];
+  const location = cleanLocationParts(currentPhoto?.metadata?.location).join(", ");
 
   const goNext = useCallback(() => {
     if (currentIndex < photos.length - 1) {
@@ -321,18 +323,13 @@ export default function Lightbox({
                   {currentPhoto.title}
                 </p>
               )}
-              {(currentPhoto.metadata?.date ||
-                (currentPhoto.metadata?.location &&
-                  currentPhoto.metadata.location !== "Unknown")) && (
+              {(currentPhoto.metadata?.date || location) && (
                 <p className="font-sans text-eyebrow uppercase text-white/50">
                   {currentPhoto.metadata?.date}
-                  {currentPhoto.metadata?.date &&
-                    currentPhoto.metadata?.location &&
-                    currentPhoto.metadata.location !== "Unknown" && (
+                  {currentPhoto.metadata?.date && location && (
                       <span className="mx-3 text-white/30">·</span>
-                    )}
-                  {currentPhoto.metadata?.location !== "Unknown" &&
-                    currentPhoto.metadata?.location}
+                  )}
+                  {location}
                 </p>
               )}
             </div>

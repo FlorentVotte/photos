@@ -8,9 +8,9 @@ import Footer from "@/components/Footer";
 import { useLocale } from "@/lib/LocaleContext";
 import {
   parseSearchState,
+  mergeSearchState,
   reduceSearchPagination,
   SEARCH_PAGE_SIZE,
-  serializeSearchState,
   type FilterType,
 } from "@/lib/search-state";
 import { formatPhotoAccessibleLabel } from "@/lib/photo-display";
@@ -107,7 +107,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
 
   const totalResults = filteredAlbums.length + filteredPhotos.length;
   const updateSearchState = (nextQuery: string, nextFilter: FilterType) => {
-    router.replace(`/search${serializeSearchState(nextQuery, nextFilter)}`, {
+    router.replace(`/search${mergeSearchState(searchParams, nextQuery, nextFilter)}`, {
       scroll: false,
     });
   };

@@ -3,6 +3,7 @@ import {
   SEARCH_PAGE_SIZE,
   parseSearchState,
   reduceSearchPagination,
+  mergeSearchState,
   serializeSearchState,
 } from "./search-state";
 
@@ -29,6 +30,16 @@ describe("search URL state", () => {
     expect(serializeSearchState("", "all")).toBe("");
     expect(serializeSearchState("café au lait", "all")).toBe("?query=caf%C3%A9+au+lait");
     expect(serializeSearchState("", "albums")).toBe("?filter=albums");
+  });
+
+  it("updates only search state while preserving unrelated URL parameters", () => {
+    const current = new URLSearchParams(
+      "view=map&query=old&filter=albums&tag=featured&tag=film"
+    );
+
+    expect(mergeSearchState(current, "coast", "all")).toBe(
+      "?view=map&query=coast&tag=featured&tag=film"
+    );
   });
 });
 

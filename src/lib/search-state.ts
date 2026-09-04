@@ -7,7 +7,7 @@ export interface SearchState {
   filter: FilterType;
 }
 
-type SearchParams = Pick<URLSearchParams, "get">;
+type SearchParams = Pick<URLSearchParams, "get" | "toString">;
 
 const FILTERS: ReadonlySet<string> = new Set(["all", "albums", "photos"]);
 
@@ -23,10 +23,25 @@ export function parseSearchState(params: SearchParams): SearchState {
 }
 
 export function serializeSearchState(query: string, filter: FilterType): string {
-  const params = new URLSearchParams();
+  return mergeSearchState(new URLSearchParams(), query, filter);
+}
+
+/**
+ * Updates the two public search parameters without dropping unrelated state
+ * that may have been added by another part of the experience.
+ */
+export function mergeSearchState(
+  current: SearchParams,
+  query: string,
+  filter: FilterType
+): string {
+  const params = new URLSearchParams(current.toString());
 
   if (query) params.set("query", query);
+  else params.delete("query");
+
   if (filter !== "all") params.set("filter", filter);
+  else params.delete("filter");
 
   const serialized = params.toString();
   return serialized ? `?${serialized}` : "";
