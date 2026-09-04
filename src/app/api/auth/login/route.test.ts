@@ -46,6 +46,20 @@ describe("POST /api/auth/login", () => {
     });
   }
 
+  function createDelayedBodyRequest(
+    body: unknown,
+    headers: Record<string, string> = {}
+  ) {
+    const request = createRequest(body, headers);
+    vi.spyOn(request, "json").mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => resolve(body), 0);
+        })
+    );
+    return request;
+  }
+
   describe("successful login", () => {
     it("should return success for correct password", async () => {
       const request = createRequest({ password: "test-password-123" });
@@ -163,6 +177,38 @@ describe("POST /api/auth/login", () => {
         createRequest({ password: "wrong-password" }, { "x-real-ip": "198.51.100.3" })
       );
       expect(response.status).toBe(429);
+    });
+
+    it("should enforce the per-client limit for concurrent body reads", async () => {
+      const responses = await Promise.all(
+        Array.from({ length: 10 }, () =>
+          POST(
+            createDelayedBodyRequest(
+              { password: "wrong-password" },
+              { "x-real-ip": "192.0.2.44" }
+            )
+          )
+        )
+      );
+
+      expect(responses.filter((response) => response.status === 401)).toHaveLength(5);
+      expect(responses.filter((response) => response.status === 429)).toHaveLength(5);
+    });
+
+    it("should enforce the global limit for concurrent body reads", async () => {
+      const responses = await Promise.all(
+        Array.from({ length: 60 }, (_, attempt) =>
+          POST(
+            createDelayedBodyRequest(
+              { password: "wrong-password" },
+              { "x-real-ip": `198.51.100.${attempt + 1}` }
+            )
+          )
+        )
+      );
+
+      expect(responses.filter((response) => response.status === 401)).toHaveLength(50);
+      expect(responses.filter((response) => response.status === 429)).toHaveLength(10);
     });
   });
 
