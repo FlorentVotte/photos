@@ -1,18 +1,19 @@
 services:
   photobook:
-    image: ghcr.io/florentvotte/photos:latest
+    image: ${PHOTOBOOK_IMAGE:?PHOTOBOOK_IMAGE must be set to an immutable image tag}
     container_name: photobook
     restart: unless-stopped
     networks:
       - caddy-net
     environment:
       - NODE_ENV=production
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - PHOTOBOOK_IMAGE=${PHOTOBOOK_IMAGE:?PHOTOBOOK_IMAGE must be set to an immutable image tag}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?ADMIN_PASSWORD must be set}
       - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://photos.votte.eu}
       - SYNC_WEBHOOK_SECRET=${SYNC_WEBHOOK_SECRET:-}
       - ADOBE_CLIENT_ID=${ADOBE_CLIENT_ID:-}
       - ADOBE_CLIENT_SECRET=${ADOBE_CLIENT_SECRET:-}
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:?ENCRYPTION_KEY must be set}
     volumes:
       - ./data:/app/data
       - ./data/photos:/app/public/photos

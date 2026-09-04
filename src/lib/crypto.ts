@@ -23,14 +23,11 @@ const KEY_DERIVATION_SALT = Buffer.from("photobook-encryption-key-salt-v1", "utf
 function getEncryptionKey(): Buffer {
   const key = process.env.ENCRYPTION_KEY;
 
+  if (process.env.NODE_ENV === "production" && (!key || key.length < 32)) {
+    throw new Error("ENCRYPTION_KEY must be at least 32 characters in production");
+  }
+
   if (!key) {
-    // In production, require ENCRYPTION_KEY
-    if (process.env.NODE_ENV === "production") {
-      console.error(
-        "CRITICAL: ENCRYPTION_KEY not set in production. " +
-        "Generate one with: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
-      );
-    }
     // Fallback for development only - derive key from admin password
     const fallback = process.env.ADMIN_PASSWORD || "default-key-change-me";
     return crypto.scryptSync(fallback, KEY_DERIVATION_SALT, 32, SCRYPT_OPTIONS);
@@ -47,10 +44,10 @@ function getEncryptionKey(): Buffer {
     }
     // Derive 32-byte key from provided string
     return crypto.scryptSync(key, KEY_DERIVATION_SALT, 32, SCRYPT_OPTIONS);
-  } else {
-    // Key too short, derive with scrypt
-    return crypto.scryptSync(key, KEY_DERIVATION_SALT, 32, SCRYPT_OPTIONS);
   }
+
+  // Key too short, derive with scrypt (development only)
+  return crypto.scryptSync(key, KEY_DERIVATION_SALT, 32, SCRYPT_OPTIONS);
 }
 
 /**

@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+./scripts/validate-production-env.sh
+
 # Apply committed migrations (production-safe; will not drop data).
 # `prisma db push` is a dev command and can silently drop columns — do not use here.
 export DATABASE_URL="file:/app/data/photobook.db"

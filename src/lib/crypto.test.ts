@@ -14,6 +14,19 @@ describe("crypto", () => {
   });
 
   describe("encrypt", () => {
+    it.each([undefined, "short"])(
+      "rejects invalid production ENCRYPTION_KEY %s",
+      async (key) => {
+        process.env.NODE_ENV = "production";
+        if (key === undefined) delete process.env.ENCRYPTION_KEY;
+        else process.env.ENCRYPTION_KEY = key;
+        const { encrypt: productionEncrypt } = await import("./crypto");
+        expect(() => productionEncrypt("token")).toThrow(
+          "ENCRYPTION_KEY must be at least 32 characters in production"
+        );
+      }
+    );
+
     it("should return encrypted string in iv:tag:ciphertext format", () => {
       process.env.ENCRYPTION_KEY = "test-encryption-key-for-testing";
       const result = encrypt("test-plaintext");
