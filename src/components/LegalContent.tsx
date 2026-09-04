@@ -93,8 +93,7 @@ export default function LegalContent() {
           </p>
           <ul className="list-disc list-inside text-text-muted mb-6 space-y-2">
             <li>{t("legal", "termBrowse", locale)}</li>
-            <li>{t("legal", "termNoDownload", locale)}</li>
-            <li>{t("legal", "termNoScrape", locale)}</li>
+            <li>{t("legal", "termDownloads", locale)}</li>
             <li>{t("legal", "termShare", locale)}</li>
           </ul>
 

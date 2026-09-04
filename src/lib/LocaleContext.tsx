@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import { Locale, translations, t as translate } from "./translations";
 
 interface LocaleContextType {
@@ -11,55 +11,25 @@ interface LocaleContextType {
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
 
-function detectBrowserLocale(): Locale {
-  if (typeof window === "undefined") return "en";
-
-  // userLanguage is non-standard but exists in older IE
-  const browserLang = navigator.language || (navigator as Navigator & { userLanguage?: string }).userLanguage;
-  if (browserLang?.startsWith("fr")) {
-    return "fr";
-  }
-  return "en";
-}
-
-export function LocaleProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>("en");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    // Check localStorage first, then browser language
-    const savedLocale = localStorage.getItem("locale") as Locale;
-    if (savedLocale && (savedLocale === "en" || savedLocale === "fr")) {
-      setLocale(savedLocale);
-    } else {
-      setLocale(detectBrowserLocale());
-    }
-    setMounted(true);
-  }, []);
+export function LocaleProvider({
+  children,
+  initialLocale,
+}: {
+  children: ReactNode;
+  initialLocale: Locale;
+}) {
+  const [locale, setLocale] = useState<Locale>(initialLocale);
 
   const handleSetLocale = (newLocale: Locale) => {
     setLocale(newLocale);
+    document.documentElement.lang = newLocale;
     localStorage.setItem("locale", newLocale);
+    document.cookie = `locale=${newLocale}; Path=/; Max-Age=31536000; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
   };
 
   const t = (section: keyof typeof translations, key: string): string => {
     return translate(section, key, locale);
   };
-
-  // Prevent hydration mismatch by using default locale until mounted
-  if (!mounted) {
-    return (
-      <LocaleContext.Provider
-        value={{
-          locale: "en",
-          setLocale: handleSetLocale,
-          t: (section, key) => translate(section, key, "en"),
-        }}
-      >
-        {children}
-      </LocaleContext.Provider>
-    );
-  }
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale: handleSetLocale, t }}>

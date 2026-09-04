@@ -213,6 +213,11 @@ export const translations = {
   privacy: {
     title: { en: "Privacy", fr: "Politique de" },
     titleAccent: { en: "Policy", fr: "confidentialité" },
+    metadataTitle: { en: "Privacy Policy", fr: "Politique de confidentialité" },
+    metadataDescription: {
+      en: "Privacy policy and data protection information for Regards Perdus.",
+      fr: "Politique de confidentialité et informations sur la protection des données de Regards Perdus.",
+    },
     lastUpdated: { en: "Last updated: August 2026", fr: "Dernière mise à jour : août 2026" },
     overviewTitle: { en: "Overview", fr: "Aperçu" },
     overviewText: {
@@ -233,8 +238,8 @@ export const translations = {
     cookiesIntro: { en: "This website uses only essential cookies:", fr: "Ce site web utilise uniquement des cookies essentiels :" },
     languagePref: { en: "Language preference:", fr: "Préférence de langue :" },
     languagePrefDesc: {
-      en: "Stores your language choice (English/French) in localStorage.",
-      fr: "Enregistre votre choix de langue (anglais/français) dans le stockage local.",
+      en: "Stores your language choice (English/French) in the locale cookie for one year and keeps a localStorage copy for compatibility.",
+      fr: "Enregistre votre choix de langue (anglais/français) dans le cookie locale pendant un an et conserve une copie dans le stockage local pour la compatibilité.",
     },
     mapViewPref: { en: "Map view preference:", fr: "Préférence d'affichage de la carte :" },
     mapViewPrefDesc: {
@@ -307,6 +312,11 @@ export const translations = {
   legal: {
     title: { en: "Legal", fr: "Mentions" },
     titleAccent: { en: "Notice", fr: "légales" },
+    metadataTitle: { en: "Legal Notice", fr: "Mentions légales" },
+    metadataDescription: {
+      en: "Legal information and terms of use for Regards Perdus.",
+      fr: "Informations légales et conditions d’utilisation de Regards Perdus.",
+    },
     lastUpdated: { en: "Last updated: December 2024", fr: "Dernière mise à jour : décembre 2024" },
     ownerTitle: { en: "Website Owner", fr: "Propriétaire du site" },
     individual: { en: "(Individual)", fr: "(Particulier)" },
@@ -327,9 +337,9 @@ export const translations = {
       en: "You may browse and view the content for personal, non-commercial purposes only.",
       fr: "Vous pouvez consulter le contenu uniquement à des fins personnelles et non commerciales.",
     },
-    termNoDownload: {
-      en: "You may not download, copy, or redistribute any images without explicit permission.",
-      fr: "Vous ne pouvez pas télécharger, copier ou redistribuer les images sans autorisation explicite.",
+    termDownloads: {
+      en: "You may download photographs for private, non-commercial viewing. Copyright remains with the photographer. Copying, redistribution, republication, modification, automated bulk downloading, and commercial use require explicit authorization.",
+      fr: "Vous pouvez télécharger les photographies pour une consultation privée et non commerciale. Les droits d’auteur restent la propriété du photographe. Toute copie, redistribution, republication, modification, tout téléchargement automatisé en masse et tout usage commercial nécessitent une autorisation explicite.",
     },
     termNoScrape: {
       en: "You may not use any automated tools to scrape or download content from this website.",

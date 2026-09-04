@@ -2,11 +2,22 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PrivacyContent from "@/components/PrivacyContent";
 import type { Metadata } from "next";
+import { cookies, headers } from "next/headers";
+import { resolveLocale } from "@/lib/locale";
+import { t } from "@/lib/translations";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy - Regards Perdus",
-  description: "Privacy policy and data protection information.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [cookieStore, requestHeaders] = await Promise.all([cookies(), headers()]);
+  const locale = resolveLocale(
+    cookieStore.get("locale")?.value,
+    requestHeaders.get("accept-language")
+  );
+
+  return {
+    title: `${t("privacy", "metadataTitle", locale)} - Regards Perdus`,
+    description: t("privacy", "metadataDescription", locale),
+  };
+}
 
 export default function PrivacyPage() {
   return (

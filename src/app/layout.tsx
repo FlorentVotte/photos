@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import {
   Noto_Serif,
   Noto_Sans,
@@ -12,6 +12,7 @@ import {
   Bodoni_Moda,
 } from "next/font/google";
 import { LocaleProvider } from "@/lib/LocaleContext";
+import { resolveLocale } from "@/lib/locale";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import prisma from "@/lib/db";
@@ -139,12 +140,17 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const requestHeaders = await headers();
+  const cookieStore = await cookies();
   const nonce = requestHeaders.get("x-nonce") ?? undefined;
+  const locale = resolveLocale(
+    cookieStore.get("locale")?.value,
+    requestHeaders.get("accept-language")
+  );
   const theme = await getTheme();
   const initialCSSVars = generateThemeCSSVars(theme);
 
   return (
-    <html lang="en" className="dark">
+    <html lang={locale} className="dark">
       <head>
         {/* Inject theme CSS variables inline for SSR - prevents flash */}
         <style nonce={nonce} dangerouslySetInnerHTML={{
@@ -162,7 +168,7 @@ export default async function RootLayout({
         className={`${fontVariableClasses} bg-background-dark text-foreground font-display antialiased overflow-x-hidden`}
       >
         <ThemeProvider initialTheme={theme}>
-          <LocaleProvider>{children}</LocaleProvider>
+          <LocaleProvider initialLocale={locale}>{children}</LocaleProvider>
         </ThemeProvider>
         <ServiceWorkerRegistration />
       </body>
