@@ -20,19 +20,25 @@ vi.mock("@/lib/security", async (importOriginal) => {
   };
 });
 
-import { POST, __resetLoginRateLimitersForTests } from "./route";
+let POST: typeof import("./route").POST;
 
 describe("POST /api/auth/login", () => {
   const originalEnv = process.env;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
-    __resetLoginRateLimitersForTests();
+    vi.resetModules();
+    ({ POST } = await import("./route"));
     process.env = { ...originalEnv, ADMIN_PASSWORD: "test-password-123" };
   });
 
   afterEach(() => {
     process.env = originalEnv;
+  });
+
+  it("exports only Next.js route handlers", async () => {
+    const loginRoute = await import("./route");
+    expect(Object.keys(loginRoute).sort()).toEqual(["POST"]);
   });
 
   function createRequest(body: unknown, headers: Record<string, string> = {}) {

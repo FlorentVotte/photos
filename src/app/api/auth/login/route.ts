@@ -19,14 +19,8 @@ function createGlobalLoginRateLimiter(): RateLimiter {
   );
 }
 
-let loginRateLimiter = createLoginRateLimiter();
-let globalLoginRateLimiter = createGlobalLoginRateLimiter();
-
-/** Internal reset hook so route tests do not share module state. */
-export function __resetLoginRateLimitersForTests(): void {
-  loginRateLimiter = createLoginRateLimiter();
-  globalLoginRateLimiter = createGlobalLoginRateLimiter();
-}
+const loginRateLimiter = createLoginRateLimiter();
+const globalLoginRateLimiter = createGlobalLoginRateLimiter();
 
 function firstNonEmptyAddress(value: string | null): string | undefined {
   return value
