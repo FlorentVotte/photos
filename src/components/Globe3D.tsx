@@ -10,6 +10,7 @@ import React, { useRef, useMemo, useState, useCallback, Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Html, useTexture } from "@react-three/drei";
 import * as THREE from "three";
+import { resolveMarkerTabIndex } from "@/lib/pagination";
 
 /** Local stand-in for the `cn` helper the upstream component imports. */
 function cn(...classes: (string | false | undefined)[]): string {
@@ -87,6 +88,10 @@ interface Globe3DProps {
   onMarkerHover?: (marker: GlobeMarker | null) => void;
   /** Fallback label for markers without an album title. */
   markerFallbackLabel?: string;
+  /** Callback when any marker gains or loses keyboard focus. */
+  onMarkerFocusChange?: (isFocused: boolean) => void;
+  /** Localized label used while globe textures are loading. */
+  loadingLabel?: string;
 }
 
 // ============================================================================
@@ -131,6 +136,7 @@ interface MarkerProps {
   onClick?: (marker: GlobeMarker) => void;
   onHover?: (marker: GlobeMarker | null) => void;
   markerFallbackLabel: string;
+  onFocusChange?: (isFocused: boolean) => void;
 }
 
 function Marker({
@@ -140,11 +146,13 @@ function Marker({
   onClick,
   onHover,
   markerFallbackLabel,
+  onFocusChange,
 }: MarkerProps) {
   const [hovered, setHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const groupRef = useRef<THREE.Group>(null);
   const imageGroupRef = useRef<THREE.Group>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const { camera } = useThree();
 
   // Surface position (where the line starts)
@@ -177,8 +185,21 @@ function Marker({
     const dot = markerDirection.dot(cameraDirection);
 
     // Show marker only if it's facing the camera (stricter threshold)
-    setIsVisible(dot > 0.1);
+    const nextIsVisible = dot > 0.1;
+    setIsVisible((current) =>
+      current === nextIsVisible ? current : nextIsVisible
+    );
   });
+
+  React.useEffect(() => {
+    if (
+      !isVisible &&
+      buttonRef.current &&
+      buttonRef.current === document.activeElement
+    ) {
+      buttonRef.current.blur();
+    }
+  }, [isVisible]);
 
   const handlePointerEnter = useCallback(() => {
     setHovered(true);
@@ -193,6 +214,14 @@ function Marker({
   const handleClick = useCallback(() => {
     onClick?.(marker);
   }, [marker, onClick]);
+
+  const handleFocus = useCallback(() => {
+    onFocusChange?.(true);
+  }, [onFocusChange]);
+
+  const handleBlur = useCallback(() => {
+    onFocusChange?.(false);
+  }, [onFocusChange]);
 
   // Calculate line center and orientation
   const { lineCenter, lineQuaternion } = useMemo(() => {
@@ -242,8 +271,11 @@ function Marker({
           }}
         >
           <button
+            ref={buttonRef}
             type="button"
             aria-label={marker.label || markerFallbackLabel}
+            tabIndex={resolveMarkerTabIndex(isVisible)}
+            disabled={!isVisible}
             className={cn(
               "cursor-pointer overflow-hidden rounded-full border-0 bg-neutral-900 p-0 shadow-lg transition-transform duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background-dark motion-reduce:transition-none",
               hovered && "scale-125 shadow-xl ring-1 ring-white/50",
@@ -259,6 +291,8 @@ function Marker({
             }}
             onPointerEnter={handlePointerEnter}
             onPointerLeave={handlePointerLeave}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             onClick={handleClick}
           >
             <img
@@ -284,6 +318,7 @@ interface RotatingGlobeProps {
   onMarkerClick?: (marker: GlobeMarker) => void;
   onMarkerHover?: (marker: GlobeMarker | null) => void;
   markerFallbackLabel: string;
+  onMarkerFocusChange?: (isFocused: boolean) => void;
 }
 
 function RotatingGlobe({
@@ -292,6 +327,7 @@ function RotatingGlobe({
   onMarkerClick,
   onMarkerHover,
   markerFallbackLabel,
+  onMarkerFocusChange,
 }: RotatingGlobeProps) {
   const groupRef = useRef<THREE.Group>(null);
 
@@ -356,6 +392,7 @@ function RotatingGlobe({
           onClick={onMarkerClick}
           onHover={onMarkerHover}
           markerFallbackLabel={markerFallbackLabel}
+          onFocusChange={onMarkerFocusChange}
         />
       ))}
     </group>
@@ -429,6 +466,7 @@ interface SceneProps {
   onMarkerClick?: (marker: GlobeMarker) => void;
   onMarkerHover?: (marker: GlobeMarker | null) => void;
   markerFallbackLabel: string;
+  onMarkerFocusChange?: (isFocused: boolean) => void;
 }
 
 function Scene({
@@ -437,6 +475,7 @@ function Scene({
   onMarkerClick,
   onMarkerHover,
   markerFallbackLabel,
+  onMarkerFocusChange,
 }: SceneProps) {
   const { camera } = useThree();
 
@@ -468,6 +507,7 @@ function Scene({
         onMarkerClick={onMarkerClick}
         onMarkerHover={onMarkerHover}
         markerFallbackLabel={markerFallbackLabel}
+        onMarkerFocusChange={onMarkerFocusChange}
       />
 
       {/* Atmosphere (static) */}
@@ -501,12 +541,12 @@ function Scene({
 // Loading Fallback
 // ============================================================================
 
-function LoadingFallback() {
+function LoadingFallback({ label }: { label: string }) {
   return (
     <Html center>
       <div className="flex shrink-0 flex-col items-center gap-3">
         <span className="font-sans text-eyebrow uppercase text-text-muted">
-          Loading globe
+          {label}
         </span>
       </div>
     </Html>
@@ -548,6 +588,8 @@ export function Globe3D({
   onMarkerClick,
   onMarkerHover,
   markerFallbackLabel = "Photo album",
+  onMarkerFocusChange,
+  loadingLabel = "Loading globe",
 }: Globe3DProps) {
   const mergedConfig = useMemo(
     () => ({ ...defaultConfig, ...config }),
@@ -576,13 +618,14 @@ export function Globe3D({
           background: mergedConfig.backgroundColor || "transparent",
         }}
       >
-        <Suspense fallback={<LoadingFallback />}>
+        <Suspense fallback={<LoadingFallback label={loadingLabel} />}>
           <Scene
             markers={markers}
             config={mergedConfig}
             onMarkerClick={onMarkerClick}
             onMarkerHover={onMarkerHover}
             markerFallbackLabel={markerFallbackLabel}
+            onMarkerFocusChange={onMarkerFocusChange}
           />
         </Suspense>
       </Canvas>

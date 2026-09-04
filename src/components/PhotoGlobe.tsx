@@ -19,6 +19,7 @@ export default function PhotoGlobe({ photos, albums }: PhotoGlobeProps) {
   const router = useRouter();
   const [hovered, setHovered] = useState<AlbumMarker | null>(null);
   const [pointerOver, setPointerOver] = useState(false);
+  const [markerFocused, setMarkerFocused] = useState(false);
   const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   const markers = useMemo(
@@ -47,20 +48,29 @@ export default function PhotoGlobe({ photos, albums }: PhotoGlobeProps) {
     [resolve]
   );
 
+  const handleMarkerFocusChange = useCallback(
+    (isFocused: boolean) => setMarkerFocused(isFocused),
+    []
+  );
+
   const config = useMemo(
     () => ({
       showAtmosphere: false,
       // The globe drifts on its own to reveal markers on the far side, but
       // freezes as soon as the pointer enters — a moving marker is a moving
       // click target.
-      autoRotateSpeed: resolveAutoRotateSpeed(pointerOver, prefersReducedMotion),
+      autoRotateSpeed: resolveAutoRotateSpeed(
+        pointerOver,
+        prefersReducedMotion,
+        markerFocused
+      ),
       ambientIntensity: 0.85,
       enableZoom: true,
       minDistance: 4,
       maxDistance: 12,
       markerSize: 40,
     }),
-    [pointerOver, prefersReducedMotion]
+    [markerFocused, pointerOver, prefersReducedMotion]
   );
 
   if (markers.length === 0) {
@@ -94,6 +104,8 @@ export default function PhotoGlobe({ photos, albums }: PhotoGlobeProps) {
           onMarkerClick={handleClick}
           onMarkerHover={handleHover}
           markerFallbackLabel={t("map", "albumMarker")}
+          onMarkerFocusChange={handleMarkerFocusChange}
+          loadingLabel={t("map", "loadingGlobe")}
         />
 
         {hovered && (
