@@ -50,6 +50,9 @@ test-results/
 # Playwright MCP output (screenshots, snapshots)
 .playwright-mcp/
 
+# Local git worktrees
+.worktrees/
+
 # Stitch design artifacts (regenerable from the Stitch project)
 .stitch/designs/
 
