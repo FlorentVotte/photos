@@ -169,6 +169,7 @@ export const translations = {
 
   // Lightbox
   lightbox: {
+    dialogLabel: { en: "Photo viewer", fr: "Visionneuse de photos" },
     close: { en: "Close", fr: "Fermer" },
     previous: { en: "Previous photo", fr: "Photo précédente" },
     next: { en: "Next photo", fr: "Photo suivante" },

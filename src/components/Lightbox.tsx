@@ -14,6 +14,7 @@ import { useLocale } from "@/lib/LocaleContext";
 import {
   useBodyScrollLock,
   useLightboxKeyboard,
+  useModalFocus,
   usePinchZoom,
   useSlideshow,
 } from "@/hooks";
@@ -73,6 +74,8 @@ export default function Lightbox({
   const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(true);
   const dragRef = useRef<HTMLDivElement>(null);
+  const lightboxRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   // The live horizontal offset. Motion writes to this 1:1 during a drag, and
   // we animate it home afterwards — so drag and animation share one value and
@@ -99,6 +102,13 @@ export default function Lightbox({
 
   useBodyScrollLock(isOpen);
 
+  useModalFocus({
+    isOpen,
+    containerRef: lightboxRef,
+    initialFocusRef: closeButtonRef,
+    onClose,
+  });
+
   const { isPlaying, togglePlay } = useSlideshow({
     isActive: isOpen,
     interval: slideshowInterval,
@@ -119,6 +129,9 @@ export default function Lightbox({
 
   const handleViewDetails = useCallback(() => {
     if (photos[currentIndex]) {
+      // The shortcut intentionally keeps the browser-navigation behavior of
+      // the pre-existing lightbox control.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.href = `/photo/${photos[currentIndex].id}`;
     }
   }, [photos, currentIndex]);
@@ -158,6 +171,8 @@ export default function Lightbox({
   );
 
   useEffect(() => {
+    // Loading must reset before the new image can be announced or displayed.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
   }, [currentIndex]);
 
@@ -171,50 +186,61 @@ export default function Lightbox({
         {isOpen && currentPhoto && (
           <motion.div
             key="lightbox"
+            ref={lightboxRef}
             className="fixed inset-0 z-[100] bg-black/97 flex items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: DISMISS }}
             transition={SETTLE}
             onClick={onClose}
+            role="dialog"
+            aria-modal="true"
+            aria-label={currentPhoto.title || t("lightbox", "dialogLabel")}
+            tabIndex={-1}
           >
             {/* Top controls */}
-            <div className="absolute top-6 left-6 z-10 flex items-center gap-5">
+            <div className="absolute top-3 left-3 z-10 flex items-center gap-2 sm:top-6 sm:left-6 sm:gap-5">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   togglePlay();
                 }}
-                className="font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors"
+                className="inline-flex size-11 items-center justify-center font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors sm:size-auto"
                 aria-label={isPlaying ? t("lightbox", "pause") : t("lightbox", "play")}
               >
-                {isPlaying ? "❚❚ " : "▶ "}
-                {isPlaying ? t("lightbox", "pause") : t("photo", "slideshow")}
+                <span aria-hidden="true" className="sm:hidden">{isPlaying ? "❚❚" : "▶"}</span>
+                <span className="hidden sm:inline">
+                  {isPlaying ? "❚❚ " : "▶ "}
+                  {isPlaying ? t("lightbox", "pause") : t("photo", "slideshow")}
+                </span>
               </button>
             </div>
 
-            <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 font-sans text-eyebrow uppercase text-white/60 tabular-nums">
+            <div className="absolute top-5 left-1/2 -translate-x-1/2 z-10 font-sans text-xs uppercase text-white/60 tabular-nums sm:top-6 sm:text-eyebrow">
               {String(currentIndex + 1).padStart(2, "0")} / {String(photos.length).padStart(2, "0")}
             </div>
 
-            <div className="absolute top-6 right-6 z-10 flex items-center gap-5">
+            <div className="absolute top-3 right-3 z-10 flex items-center gap-1 sm:top-6 sm:right-6 sm:gap-5">
               <Link
                 href={`/photo/${currentPhoto.id}`}
-                className="font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors"
+                className="inline-flex size-11 items-center justify-center font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors sm:size-auto"
                 aria-label={t("lightbox", "viewDetails")}
                 onClick={(e) => e.stopPropagation()}
               >
-                {t("lightbox", "viewDetails")}
+                <span aria-hidden="true" className="material-symbols-outlined sm:hidden">info</span>
+                <span className="hidden sm:inline">{t("lightbox", "viewDetails")}</span>
               </Link>
               <button
+                ref={closeButtonRef}
                 onClick={(e) => {
                   e.stopPropagation();
                   onClose();
                 }}
-                className="font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors"
+                className="inline-flex size-11 items-center justify-center font-sans text-eyebrow uppercase text-white/60 hover:text-white transition-colors sm:size-auto"
                 aria-label={t("lightbox", "close")}
               >
-                {t("lightbox", "close")}
+                <span aria-hidden="true" className="material-symbols-outlined sm:hidden">close</span>
+                <span className="hidden sm:inline">{t("lightbox", "close")}</span>
               </button>
             </div>
 
@@ -225,7 +251,7 @@ export default function Lightbox({
                 e.stopPropagation();
                 goPrev();
               }}
-              className="absolute left-6 top-1/2 -translate-y-1/2 z-10 p-3 text-white/40 hover:text-white transition-colors text-3xl font-thin"
+              className="absolute left-2 top-1/2 z-10 size-11 -translate-y-1/2 text-white/40 hover:text-white transition-colors text-3xl font-thin sm:left-6"
               aria-label={t("lightbox", "previous")}
             >
               ←
@@ -236,7 +262,7 @@ export default function Lightbox({
                 e.stopPropagation();
                 goNext();
               }}
-              className="absolute right-6 top-1/2 -translate-y-1/2 z-10 p-3 text-white/40 hover:text-white transition-colors text-3xl font-thin"
+              className="absolute right-2 top-1/2 z-10 size-11 -translate-y-1/2 text-white/40 hover:text-white transition-colors text-3xl font-thin sm:right-6"
               aria-label={t("lightbox", "next")}
             >
               →

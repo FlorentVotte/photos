@@ -1,5 +1,6 @@
 export { useBodyScrollLock } from "./useBodyScrollLock";
 export { useLightboxKeyboard } from "./useLightboxKeyboard";
+export { useModalFocus } from "./useModalFocus";
 export { usePinchZoom } from "./usePinchZoom";
 export { usePresence } from "./usePresence";
 export { useScrolled } from "./useScrolled";
