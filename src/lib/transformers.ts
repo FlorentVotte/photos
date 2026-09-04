@@ -6,6 +6,16 @@
 import type { Album as PrismaAlbum, Photo as PrismaPhoto } from "@prisma/client";
 import type { Album, Photo } from "./types";
 
+/** Removes empty and placeholder location values before they reach UI copy. */
+export function cleanLocationParts(
+  ...parts: Array<string | null | undefined>
+): string[] {
+  return parts.flatMap((part) => {
+    const value = part?.trim();
+    return value && value.toLowerCase() !== "unknown" ? [value] : [];
+  });
+}
+
 /**
  * Transform a Prisma Album record to the app Album type.
  */
@@ -16,7 +26,7 @@ export function transformAlbum(album: PrismaAlbum): Album {
     title: album.title,
     subtitle: album.subtitle || undefined,
     description: album.description || undefined,
-    location: album.location || "Unknown",
+    location: album.location || "",
     date: album.date || "",
     coverImage: album.coverImage || "",
     photoCount: album.photoCount,
@@ -47,7 +57,7 @@ export function transformPhoto(
     },
     metadata: {
       date: photo.date || "",
-      location: photo.location || "Unknown",
+      location: photo.location || undefined,
       city: photo.city || undefined,
       width: photo.width || 0,
       height: photo.height || 0,

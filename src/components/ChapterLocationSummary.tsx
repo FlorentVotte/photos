@@ -1,4 +1,8 @@
+"use client";
+
 import type { LocationSummary } from "@/lib/types";
+import { useLocale } from "@/lib/LocaleContext";
+import { cleanLocationParts } from "@/lib/transformers";
 
 interface ChapterLocationSummaryProps {
   locations: LocationSummary;
@@ -9,10 +13,16 @@ export default function ChapterLocationSummary({
   locations,
   compact = false,
 }: ChapterLocationSummaryProps) {
-  const { cities, countries } = locations;
+  const { t } = useLocale();
+  const cities = cleanLocationParts(...locations.cities);
+  const countries = cleanLocationParts(...locations.countries);
 
   if (cities.length === 0 && countries.length === 0) {
-    return null;
+    return (
+      <p className="font-sans text-sm text-text-muted">
+        {t("photo", "unknownLocation")}
+      </p>
+    );
   }
 
   const places = cities.length > 0 ? cities : countries;

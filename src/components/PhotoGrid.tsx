@@ -3,6 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import FadeInImage from "./FadeInImage";
+import { useLocale } from "@/lib/LocaleContext";
+import { formatPhotoAccessibleLabel } from "@/lib/photo-display";
+import type { Photo as PhotoModel } from "@/lib/types";
 
 // Check if title looks like a filename (e.g., DSCF0678.raf, IMG_1234.jpg)
 function isFilename(title: string): boolean {
@@ -10,16 +13,10 @@ function isFilename(title: string): boolean {
   return /\.(jpe?g|png|gif|webp|raw|raf|cr2|nef|arw|dng|heic)$/i.test(title);
 }
 
-interface Photo {
-  id: string;
-  title: string;
-  src: { thumb: string; medium: string; full: string };
-  metadata: {
-    date?: string;
-    location?: string;
-    locationDetail?: string;
-  };
-}
+type Photo = Pick<
+  PhotoModel,
+  "id" | "title" | "caption" | "src" | "metadata" | "albumTitle"
+>;
 
 interface PhotoGridProps {
   photos: Photo[];
@@ -28,6 +25,7 @@ interface PhotoGridProps {
   initialCount?: number;
   incrementCount?: number;
   featuredPhotoIds?: string[];
+  albumTitle?: string;
 }
 
 export default function PhotoGrid({
@@ -37,7 +35,9 @@ export default function PhotoGrid({
   initialCount = 12,
   incrementCount = 12,
   featuredPhotoIds,
+  albumTitle,
 }: PhotoGridProps) {
+  const { locale, t } = useLocale();
   const [displayCount, setDisplayCount] = useState(
     enableInfiniteScroll ? Math.min(initialCount, photos.length) : photos.length
   );
@@ -94,7 +94,15 @@ export default function PhotoGrid({
             : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[250px]"
         }`}
       >
-        {displayedPhotos.map((photo, index) => (
+        {displayedPhotos.map((photo, index) => {
+          const label = formatPhotoAccessibleLabel(
+            photo,
+            photo.albumTitle ?? albumTitle,
+            index,
+            locale
+          );
+
+          return (
           <Link
             key={photo.id}
             href={`/photo/${photo.id}`}
@@ -102,10 +110,11 @@ export default function PhotoGrid({
               getFeaturedClass(photo, index)
             }`}
             onContextMenu={(e) => e.preventDefault()}
+            aria-label={label}
           >
             <FadeInImage
               src={photo.src.medium}
-              alt={photo.title || "Photo"}
+              alt={label}
               fill
               sizes={variant === "chapter" ? "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" : "(max-width: 768px) 50vw, 25vw"}
               wrapperClassName="absolute inset-0 block"
@@ -128,7 +137,8 @@ export default function PhotoGrid({
               )}
             </div>
           </Link>
-        ))}
+          );
+        })}
       </div>
 
       {/* Infinite scroll loader */}
@@ -143,7 +153,7 @@ export default function PhotoGrid({
       {/* Load more counter */}
       {enableInfiniteScroll && displayCount < photos.length && (
         <p className="text-center text-text-muted text-sm mt-4">
-          Showing {displayCount} of {photos.length} photos
+          {t("common", "showing")} {displayCount} {t("common", "of")} {photos.length} {t("search", "photos")}
         </p>
       )}
     </>

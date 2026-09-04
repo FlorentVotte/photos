@@ -33,6 +33,7 @@ export default function AlbumContent({
 }: AlbumContentProps) {
   const { t, locale } = useLocale();
   const heroRef = useRef<HTMLDivElement>(null);
+  const [heroHeight, setHeroHeight] = useState(600);
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
@@ -49,7 +50,18 @@ export default function AlbumContent({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const heroHeight = heroRef.current?.offsetHeight || 600;
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      setHeroHeight(entry.contentRect.height);
+    });
+
+    resizeObserver.observe(hero);
+    return () => resizeObserver.disconnect();
+  }, []);
+
   const parallaxOffset = scrollY * 0.35;
   const textOpacity = Math.max(0, 1 - scrollY / (heroHeight * 0.6));
   const textTranslate = scrollY * 0.18;
@@ -219,6 +231,7 @@ export default function AlbumContent({
                 variant="chapter"
                 enableInfiniteScroll={false}
                 featuredPhotoIds={chapter.featuredPhotoIds}
+                albumTitle={album.title}
               />
             </section>
           );
@@ -237,6 +250,7 @@ export default function AlbumContent({
               variant="chapter"
               enableInfiniteScroll={true}
               initialCount={12}
+              albumTitle={album.title}
             />
           </section>
         )}

@@ -5,6 +5,7 @@ import {
   transformAlbums,
   transformPhotos,
   transformPhotosWithAlbum,
+  cleanLocationParts,
 } from "./transformers";
 import type { Album as PrismaAlbum, Photo as PrismaPhoto } from "@prisma/client";
 
@@ -49,10 +50,10 @@ describe("transformers", () => {
       });
     });
 
-    it("should use 'Unknown' for null location", () => {
+    it("keeps a missing location blank instead of injecting a literal", () => {
       const album = { ...basePrismaAlbum, location: null };
       const result = transformAlbum(album);
-      expect(result.location).toBe("Unknown");
+      expect(result.location).toBe("");
     });
 
     it("should use undefined for null optional fields", () => {
@@ -182,10 +183,10 @@ describe("transformers", () => {
       expect(result.src.original).toBe("");
     });
 
-    it("should use 'Unknown' for null location in metadata", () => {
+    it("keeps a missing metadata location undefined", () => {
       const photo = { ...basePrismaPhoto, location: null };
       const result = transformPhoto(photo);
-      expect(result.metadata.location).toBe("Unknown");
+      expect(result.metadata.location).toBeUndefined();
     });
 
     it("should use 0 for null dimensions", () => {
@@ -218,6 +219,16 @@ describe("transformers", () => {
       expect(result.metadata.focalLength).toBeUndefined();
       expect(result.metadata.latitude).toBeUndefined();
       expect(result.metadata.longitude).toBeUndefined();
+    });
+  });
+
+  describe("cleanLocationParts", () => {
+    it("removes blank and Unknown location parts", () => {
+      expect(cleanLocationParts("Paris", "Unknown", "France")).toEqual([
+        "Paris",
+        "France",
+      ]);
+      expect(cleanLocationParts(" unknown ", undefined, "")).toEqual([]);
     });
   });
 

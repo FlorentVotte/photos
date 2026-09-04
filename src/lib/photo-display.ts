@@ -1,4 +1,6 @@
 import type { Album, Photo } from "@/lib/types";
+import { t } from "@/lib/translations";
+import type { Locale } from "@/lib/translations";
 
 const FILENAME_PREFIX_RE = /^(DSC|DSCF|DSCN|IMG|MOV|GOPR|P\d|_DSC)/i;
 const FILE_EXTENSION_RE = /\.[a-z0-9]{2,5}$/i;
@@ -40,4 +42,24 @@ export function formatPhotoTitle(
   if (place) return `${place}${positional}`;
 
   return photo.title || "Untitled";
+}
+
+/** Provides a useful photo name without exposing camera filenames as link text. */
+export function formatPhotoAccessibleLabel(
+  photo: Pick<Photo, "title" | "caption">,
+  album: Pick<Album, "title"> | string | null | undefined,
+  index: number,
+  locale: Locale
+): string {
+  const caption = photo.caption?.trim();
+  if (caption) return caption;
+
+  const title = photo.title?.trim();
+  if (!looksLikeCameraFilename(title)) return title;
+
+  const albumTitle =
+    typeof album === "string" ? album.trim() : album?.title?.trim();
+  const photoNumber = `${t("photo", "fallbackLabel", locale)} ${index + 1}`;
+
+  return albumTitle ? `${albumTitle} — ${photoNumber}` : photoNumber;
 }

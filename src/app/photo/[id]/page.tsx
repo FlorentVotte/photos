@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import PhotoContent from "@/components/PhotoContent";
 import {
   getPhotoById,
@@ -81,6 +82,7 @@ export default async function PhotoPage({ params }: Props) {
         prevPhoto={prevPhoto}
         nextPhoto={nextPhoto}
       />
+      <Footer />
     </div>
   );
 }

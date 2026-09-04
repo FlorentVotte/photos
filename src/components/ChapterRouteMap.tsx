@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { Photo } from "@/lib/types";
 import type * as LeafletTypes from "leaflet";
+import { useLocale } from "@/lib/LocaleContext";
+import { formatPhotoAccessibleLabel } from "@/lib/photo-display";
 
 interface ChapterRouteMapProps {
   photos: Photo[];
@@ -44,12 +46,16 @@ export default function ChapterRouteMap({
   showMarkers = true,
   interactive = true,
 }: ChapterRouteMapProps) {
-  const [isClient, setIsClient] = useState(false);
+  const { locale, t } = useLocale();
   const [L, setL] = useState<typeof LeafletTypes | null>(null);
 
   // Filter and sort photos with GPS data by date
   const geoPhotos = photos
-    .filter((p) => p.metadata?.latitude && p.metadata?.longitude)
+    .filter(
+      (p) =>
+        Number.isFinite(p.metadata?.latitude) &&
+        Number.isFinite(p.metadata?.longitude)
+    )
     .sort((a, b) => {
       const dateA = a.metadata.date || "";
       const dateB = b.metadata.date || "";
@@ -57,20 +63,25 @@ export default function ChapterRouteMap({
     });
 
   useEffect(() => {
-    setIsClient(true);
+    let isActive = true;
+
     import("leaflet").then((leaflet) => {
-      setL(leaflet.default);
+      if (isActive) setL(leaflet.default);
     });
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
-  if (!isClient || !L) {
+  if (!L) {
     return (
       <div
         className="w-full bg-surface-dark flex items-center justify-center"
         style={{ height }}
       >
         <p className="font-sans text-eyebrow uppercase text-text-muted animate-pulse">
-          Loading map
+          {t("stats", "loadingMap")}
         </p>
       </div>
     );
@@ -82,7 +93,7 @@ export default function ChapterRouteMap({
         className="w-full bg-surface-dark flex items-center justify-center border-y border-surface-border"
         style={{ height }}
       >
-        <p className="font-sans text-sm text-text-muted">No GPS data available</p>
+        <p className="font-sans text-sm text-text-muted">{t("stats", "noGpsData")}</p>
       </div>
     );
   }
@@ -175,7 +186,10 @@ export default function ChapterRouteMap({
 
           {/* Photo markers */}
           {showMarkers &&
-            geoPhotos.map((photo, index) => (
+            geoPhotos.map((photo, index) => {
+              const label = formatPhotoAccessibleLabel(photo, photo.albumTitle, index, locale);
+
+              return (
               <Marker
                 key={photo.id}
                 position={[photo.metadata.latitude!, photo.metadata.longitude!]}
@@ -189,7 +203,7 @@ export default function ChapterRouteMap({
                   <Link href={`/photo/${photo.id}`} className="block">
                     <img
                       src={photo.src.thumb}
-                      alt={photo.title}
+                      alt={label}
                       className="w-full h-24 object-cover"
                     />
                     <div className="p-2">
@@ -205,11 +219,12 @@ export default function ChapterRouteMap({
                   </Link>
                 </Popup>
               </Marker>
-            ))}
+              );
+            })}
         </MapContainer>
       </div>
       <p className="text-center font-sans text-eyebrow uppercase text-text-muted mt-6">
-        {geoPhotos.length} locations along the route
+        {geoPhotos.length} {t("stats", "locationsAlongRoute")}
       </p>
     </>
   );

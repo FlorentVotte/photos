@@ -45,7 +45,7 @@ export default function ChapterStats({
       </p>
       {photosWithGps > 0 && photosWithGps < photoCount && (
         <p className="font-sans text-micro uppercase text-text-muted/60">
-          {photosWithGps}/{photoCount} with GPS
+          {photosWithGps}/{photoCount} {t("stats", "withGps")}
         </p>
       )}
     </div>

@@ -71,6 +71,12 @@ export const translations = {
     download: { en: "Download", fr: "Télécharger" },
     share: { en: "Share", fr: "Partager" },
     linkCopied: { en: "Link copied!", fr: "Lien copié !" },
+    location: { en: "Location", fr: "Lieu" },
+    capture: { en: "Capture", fr: "Prise de vue" },
+    unknownLocation: { en: "Unknown location", fr: "Lieu inconnu" },
+    fallbackLabel: { en: "Photo", fr: "Photo" },
+    previous: { en: "Previous photo", fr: "Photo précédente" },
+    next: { en: "Next photo", fr: "Photo suivante" },
   },
 
   // Search page
@@ -97,6 +103,8 @@ export const translations = {
       fr: "Essayez un autre terme ou filtre",
     },
     showingFirst: { en: "Showing first 50 of", fr: "Affichage des 50 premiers sur" },
+    inputLabel: { en: "Search the photo archive", fr: "Rechercher dans les archives photo" },
+    loadMore: { en: "Load more", fr: "Afficher plus" },
   },
 
   // Map page
@@ -174,6 +182,13 @@ export const translations = {
   stats: {
     photos: { en: "Photos", fr: "Photos" },
     traveled: { en: "traveled", fr: "parcourus" },
+    withGps: { en: "with GPS", fr: "avec GPS" },
+    locationsAlongRoute: {
+      en: "locations along the route",
+      fr: "lieux le long de l’itinéraire",
+    },
+    loadingMap: { en: "Loading map", fr: "Chargement de la carte" },
+    noGpsData: { en: "No GPS data available", fr: "Aucune donnée GPS disponible" },
   },
 
   // Lightbox

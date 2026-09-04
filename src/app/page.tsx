@@ -40,11 +40,13 @@ export default async function Home() {
       />
       <Header />
 
-      <HomeExperience
-        featuredAlbum={featuredAlbum}
-        recentAlbums={recentAlbums}
-        markers={markers}
-      />
+      <main>
+        <HomeExperience
+          featuredAlbum={featuredAlbum}
+          recentAlbums={recentAlbums}
+          markers={markers}
+        />
+      </main>
 
       <Footer />
     </div>

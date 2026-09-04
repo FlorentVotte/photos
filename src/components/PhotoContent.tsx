@@ -10,6 +10,7 @@ import Lightbox from "./Lightbox";
 import { useLocale } from "@/lib/LocaleContext";
 import { usePresence } from "@/hooks";
 import { formatPhotoTitle } from "@/lib/photo-display";
+import { cleanLocationParts } from "@/lib/transformers";
 import type { Photo, Album } from "@/lib/types";
 
 interface PhotoContentProps {
@@ -46,6 +47,11 @@ export default function PhotoContent({
   const router = useRouter();
 
   const displayTitle = formatPhotoTitle(photo, album, currentIndex);
+  const location = cleanLocationParts(
+    photo.metadata.city,
+    photo.metadata.locationDetail,
+    photo.metadata.location
+  ).join(", ");
 
   const [showCopied, setShowCopied] = useState(false);
   // Keeps the badge mounted long enough to fade back out.
@@ -204,7 +210,7 @@ export default function PhotoContent({
                 href={`/photo/${prevPhoto.id}`}
                 scroll={false}
                 className="absolute inset-y-0 left-0 z-10 hidden w-20 items-center justify-start pl-4 text-3xl font-thin text-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:text-white md:flex"
-                aria-label="Previous photo"
+                aria-label={t("photo", "previous")}
               >
                 ←
               </Link>
@@ -214,7 +220,7 @@ export default function PhotoContent({
                 href={`/photo/${nextPhoto.id}`}
                 scroll={false}
                 className="absolute inset-y-0 right-0 z-10 hidden w-20 items-center justify-end pr-4 text-3xl font-thin text-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:text-white md:flex"
-                aria-label="Next photo"
+                aria-label={t("photo", "next")}
               >
                 →
               </Link>
@@ -248,7 +254,7 @@ export default function PhotoContent({
                   href={`/photo/${prevPhoto.id}`}
                   scroll={false}
                   className="text-2xl font-thin text-white/60 hover:text-white"
-                  aria-label="Previous photo"
+                  aria-label={t("photo", "previous")}
                 >
                   ←
                 </Link>
@@ -258,7 +264,7 @@ export default function PhotoContent({
                   href={`/photo/${nextPhoto.id}`}
                   scroll={false}
                   className="text-2xl font-thin text-white/60 hover:text-white"
-                  aria-label="Next photo"
+                  aria-label={t("photo", "next")}
                 >
                   →
                 </Link>
@@ -351,12 +357,10 @@ export default function PhotoContent({
               <section className="flex flex-col gap-4">
                 <header className="flex flex-col gap-1">
                   <p className="font-sans text-eyebrow uppercase text-text-muted">
-                    Location
+                    {t("photo", "location")}
                   </p>
                   <p className="font-display text-base text-foreground">
-                    {photo.metadata.city
-                      ? `${photo.metadata.city}, ${photo.metadata.location}`
-                      : photo.metadata.location}
+                    {location || t("photo", "unknownLocation")}
                   </p>
                   {photo.metadata.date && (
                     <p className="font-sans text-xs text-text-muted">
@@ -384,7 +388,7 @@ export default function PhotoContent({
               <section className="flex flex-col gap-4">
                 <header className="flex flex-col gap-1">
                   <p className="font-sans text-eyebrow uppercase text-text-muted">
-                    Capture
+                    {t("photo", "capture")}
                   </p>
                   <p className="font-display text-base text-foreground">
                     {photo.metadata.camera || t("photo", "camera")}

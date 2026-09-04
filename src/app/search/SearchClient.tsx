@@ -1,13 +1,21 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLocale } from "@/lib/LocaleContext";
+import {
+  parseSearchState,
+  reduceSearchPagination,
+  SEARCH_PAGE_SIZE,
+  serializeSearchState,
+  type FilterType,
+} from "@/lib/search-state";
+import { formatPhotoAccessibleLabel } from "@/lib/photo-display";
 import type { Album, Photo } from "@/lib/types";
-
-type FilterType = "all" | "albums" | "photos";
+import type { Locale, translations } from "@/lib/translations";
 
 interface SearchClientProps {
   albums: Album[];
@@ -56,13 +64,13 @@ function buildPhotoHaystack(photo: Photo): string {
 }
 
 export default function SearchClient({ albums, photos }: SearchClientProps) {
-  const { t } = useLocale();
-  const [query, setQuery] = useState("");
-  const [filterType, setFilterType] = useState<FilterType>("all");
-  const [selectedLocation] = useState<string>("");
-  const [selectedCamera] = useState<string>("");
-  const [selectedLens] = useState<string>("");
-
+  const { locale, t } = useLocale();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { query, filter: filterType } = useMemo(
+    () => parseSearchState(searchParams),
+    [searchParams]
+  );
   const normalizedQuery = useMemo(() => normalize(query), [query]);
 
   // Pre-build searchable text per item so each keystroke is cheap.
@@ -79,33 +87,30 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
     if (filterType === "photos") return [];
 
     return albumIndex
-      .filter(({ album, haystack }) => {
+      .filter(({ haystack }) => {
         const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
-        const matchesLocation =
-          !selectedLocation || album.location === selectedLocation;
-        return matchesQuery && matchesLocation;
+        return matchesQuery;
       })
       .map((entry) => entry.album);
-  }, [albumIndex, normalizedQuery, filterType, selectedLocation]);
+  }, [albumIndex, normalizedQuery, filterType]);
 
   const filteredPhotos = useMemo(() => {
     if (filterType === "albums") return [];
 
     return photoIndex
-      .filter(({ photo, haystack }) => {
+      .filter(({ haystack }) => {
         const matchesQuery = !normalizedQuery || haystack.includes(normalizedQuery);
-        const matchesLocation =
-          !selectedLocation || photo.metadata.location === selectedLocation;
-        const matchesCamera =
-          !selectedCamera || photo.metadata.camera === selectedCamera;
-        const matchesLens =
-          !selectedLens || photo.metadata.lens === selectedLens;
-        return matchesQuery && matchesLocation && matchesCamera && matchesLens;
+        return matchesQuery;
       })
       .map((entry) => entry.photo);
-  }, [photoIndex, normalizedQuery, filterType, selectedLocation, selectedCamera, selectedLens]);
+  }, [photoIndex, normalizedQuery, filterType]);
 
   const totalResults = filteredAlbums.length + filteredPhotos.length;
+  const updateSearchState = (nextQuery: string, nextFilter: FilterType) => {
+    router.replace(`/search${serializeSearchState(nextQuery, nextFilter)}`, {
+      scroll: false,
+    });
+  };
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
@@ -120,10 +125,14 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
           </header>
 
           <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
+            <label htmlFor="photo-search" className="sr-only">
+              {t("search", "inputLabel")}
+            </label>
             <input
+              id="photo-search"
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => updateSearchState(e.target.value, filterType)}
               placeholder={t("search", "placeholder")}
               className="flex-1 border-b border-surface-border bg-transparent pb-3 pl-0 pr-4 font-display text-2xl md:text-3xl font-normal text-foreground placeholder-text-muted/60 focus:border-foreground focus:outline-none transition-colors"
             />
@@ -132,7 +141,9 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
               {(["all", "albums", "photos"] as FilterType[]).map((type) => (
                 <button
                   key={type}
-                  onClick={() => setFilterType(type)}
+                  type="button"
+                  onClick={() => updateSearchState(query, type)}
+                  aria-pressed={filterType === type}
                   className={`relative font-sans text-eyebrow uppercase transition-colors ${
                     filterType === type
                       ? "text-foreground after:absolute after:-bottom-2 after:left-0 after:right-0 after:h-px after:bg-foreground"
@@ -145,7 +156,11 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
             </div>
           </div>
 
-          <p className="mb-12 font-sans text-eyebrow uppercase text-text-muted">
+          <p
+            className="mb-12 font-sans text-eyebrow uppercase text-text-muted"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {totalResults}{" "}
             {totalResults !== 1 ? t("search", "results") : t("search", "result")}
             {query && (
@@ -159,7 +174,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
           {filteredAlbums.length > 0 && (
             <section className="mb-20">
               <h2 className="mb-8 font-sans text-eyebrow uppercase text-text-muted">
-                Albums ({filteredAlbums.length})
+                {t("search", "albums")} ({filteredAlbums.length})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {filteredAlbums.map((album) => (
@@ -189,32 +204,12 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
           )}
 
           {filteredPhotos.length > 0 && (
-            <section>
-              <h2 className="mb-8 font-sans text-eyebrow uppercase text-text-muted">
-                Photos ({filteredPhotos.length})
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
-                {filteredPhotos.slice(0, 50).map((photo) => (
-                  <Link
-                    key={photo.id}
-                    href={`/photo/${photo.id}`}
-                    className="group relative aspect-square overflow-hidden bg-surface-dark"
-                  >
-                    <img
-                      src={photo.src.thumb}
-                      alt={photo.title}
-                      className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-                    />
-                  </Link>
-                ))}
-              </div>
-              {filteredPhotos.length > 50 && (
-                <p className="mt-10 text-center font-sans text-eyebrow uppercase text-text-muted">
-                  {t("search", "showingFirst")} {filteredPhotos.length}{" "}
-                  {t("search", "photos")}
-                </p>
-              )}
-            </section>
+            <SearchPhotoResults
+              key={`${query}\u0000${filterType}`}
+              photos={filteredPhotos}
+              locale={locale}
+              t={t}
+            />
           )}
 
           {totalResults === 0 && (
@@ -232,5 +227,74 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
 
       <Footer />
     </div>
+  );
+}
+
+type Translate = (section: keyof typeof translations, key: string) => string;
+
+function SearchPhotoResults({
+  photos,
+  locale,
+  t,
+}: {
+  photos: Photo[];
+  locale: Locale;
+  t: Translate;
+}) {
+  const [visiblePhotoCount, setVisiblePhotoCount] = useState(SEARCH_PAGE_SIZE);
+  const visiblePhotos = photos.slice(0, visiblePhotoCount);
+
+  return (
+    <section>
+      <h2 className="mb-8 font-sans text-eyebrow uppercase text-text-muted">
+        {t("search", "photos")} ({photos.length})
+      </h2>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+        {visiblePhotos.map((photo, index) => {
+          const label = formatPhotoAccessibleLabel(
+            photo,
+            photo.albumTitle,
+            index,
+            locale
+          );
+
+          return (
+            <Link
+              key={photo.id}
+              href={`/photo/${photo.id}`}
+              className="group relative aspect-square overflow-hidden bg-surface-dark"
+              aria-label={label}
+            >
+              <img
+                src={photo.src.thumb}
+                alt={label}
+                className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+              />
+            </Link>
+          );
+        })}
+      </div>
+      {visiblePhotos.length < photos.length && (
+        <div className="mt-10 flex flex-col items-center gap-4">
+          <p className="text-center font-sans text-eyebrow uppercase text-text-muted">
+            {t("common", "showing")} {visiblePhotos.length} {t("common", "of")} {photos.length} {t("search", "photos")}
+          </p>
+          <button
+            type="button"
+            onClick={() =>
+              setVisiblePhotoCount((current) =>
+                reduceSearchPagination(current, {
+                  type: "load-more",
+                  total: photos.length,
+                })
+              )
+            }
+            className="rounded-full border border-surface-border px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            {t("search", "loadMore")}
+          </button>
+        </div>
+      )}
+    </section>
   );
 }
