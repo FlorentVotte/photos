@@ -39,32 +39,42 @@ export class RateLimiter {
   private attempts = new Map<string, { count: number; lastAttempt: number }>();
   private readonly windowMs: number;
   private readonly maxAttempts: number;
+  private readonly capacity: number;
 
-  constructor(windowMs: number, maxAttempts: number) {
+  constructor(windowMs: number, maxAttempts: number, capacity = 10_000) {
     this.windowMs = windowMs;
     this.maxAttempts = maxAttempts;
+    this.capacity = capacity;
+  }
+
+  private pruneExpired(now: number): void {
+    for (const [key, record] of this.attempts) {
+      if (now - record.lastAttempt > this.windowMs) {
+        this.attempts.delete(key);
+      }
+    }
   }
 
   isLimited(key: string): boolean {
     const now = Date.now();
+    this.pruneExpired(now);
     const record = this.attempts.get(key);
 
     if (!record) return false;
-
-    // Reset if window has passed
-    if (now - record.lastAttempt > this.windowMs) {
-      this.attempts.delete(key);
-      return false;
-    }
 
     return record.count >= this.maxAttempts;
   }
 
   recordAttempt(key: string): void {
     const now = Date.now();
+    this.pruneExpired(now);
     const record = this.attempts.get(key);
 
-    if (!record || now - record.lastAttempt > this.windowMs) {
+    if (!record) {
+      if (this.attempts.size >= this.capacity) {
+        const oldestKey = this.attempts.keys().next().value;
+        if (oldestKey !== undefined) this.attempts.delete(oldestKey);
+      }
       this.attempts.set(key, { count: 1, lastAttempt: now });
     } else {
       record.count++;
@@ -73,7 +83,14 @@ export class RateLimiter {
   }
 
   clearAttempts(key: string): void {
+    this.pruneExpired(Date.now());
     this.attempts.delete(key);
+  }
+
+  /** Internal inspection hook for deterministic tests. */
+  sizeForTests(): number {
+    this.pruneExpired(Date.now());
+    return this.attempts.size;
   }
 }
 

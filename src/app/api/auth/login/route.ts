@@ -4,11 +4,43 @@ import { secureCompare, generateSecureToken, RateLimiter } from "@/lib/security"
 import { signSessionToken } from "@/lib/session";
 import { RATE_LIMITS, AUTH } from "@/lib/constants";
 
-// Rate limiting: 5 attempts per 15 minutes
-const loginRateLimiter = new RateLimiter(
-  RATE_LIMITS.LOGIN_WINDOW_MS,
-  RATE_LIMITS.LOGIN_MAX_ATTEMPTS
-);
+function createLoginRateLimiter(): RateLimiter {
+  return new RateLimiter(
+    RATE_LIMITS.LOGIN_WINDOW_MS,
+    RATE_LIMITS.LOGIN_MAX_ATTEMPTS
+  );
+}
+
+function createGlobalLoginRateLimiter(): RateLimiter {
+  return new RateLimiter(
+    RATE_LIMITS.LOGIN_WINDOW_MS,
+    RATE_LIMITS.LOGIN_GLOBAL_MAX_ATTEMPTS
+  );
+}
+
+let loginRateLimiter = createLoginRateLimiter();
+let globalLoginRateLimiter = createGlobalLoginRateLimiter();
+
+/** Internal reset hook so route tests do not share module state. */
+export function __resetLoginRateLimitersForTests(): void {
+  loginRateLimiter = createLoginRateLimiter();
+  globalLoginRateLimiter = createGlobalLoginRateLimiter();
+}
+
+function firstNonEmptyAddress(value: string | null): string | undefined {
+  return value
+    ?.split(",")
+    .map((part) => part.trim())
+    .find((part) => part.length > 0);
+}
+
+function clientKey(request: NextRequest): string {
+  const address =
+    firstNonEmptyAddress(request.headers.get("x-forwarded-for")) ??
+    firstNonEmptyAddress(request.headers.get("x-real-ip")) ??
+    "unknown";
+  return address.slice(0, 200);
+}
 
 export async function POST(request: NextRequest) {
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -19,13 +51,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
   }
 
-  // Get client IP for rate limiting
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0] ||
-             request.headers.get("x-real-ip") ||
-             "unknown";
+  // Get a bounded, normalized proxy address for per-client rate limiting.
+  const ip = clientKey(request);
 
   // Check rate limit
-  if (loginRateLimiter.isLimited(ip)) {
+  if (
+    loginRateLimiter.isLimited(ip) ||
+    globalLoginRateLimiter.isLimited(RATE_LIMITS.LOGIN_GLOBAL_KEY)
+  ) {
     return NextResponse.json(
       { error: "Too many failed attempts. Please try again later." },
       { status: 429 }
@@ -40,12 +73,14 @@ export async function POST(request: NextRequest) {
     }
 
     if (secureCompare(password, ADMIN_PASSWORD)) {
-      loginRateLimiter.clearAttempts(ip);
-
       // Generate a random token and sign it so the server can later verify
       // this cookie was issued by us (prevents forged cookies from passing
       // the format-only check in middleware).
-      const signedToken = await signSessionToken(generateSecureToken());
+      loginRateLimiter.clearAttempts(ip);
+      const signedToken = await signSessionToken(
+        generateSecureToken(),
+        AUTH.SESSION_EXPIRY_SECONDS
+      );
 
       // Set auth cookie (expires in 2 hours for security)
       const cookieStore = await cookies();
@@ -68,6 +103,7 @@ export async function POST(request: NextRequest) {
     }
 
     loginRateLimiter.recordAttempt(ip);
+    globalLoginRateLimiter.recordAttempt(RATE_LIMITS.LOGIN_GLOBAL_KEY);
     return NextResponse.json({ error: "Invalid password" }, { status: 401 });
   } catch {
     return NextResponse.json({ error: "Login failed" }, { status: 500 });

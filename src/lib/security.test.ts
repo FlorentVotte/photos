@@ -194,6 +194,21 @@ describe("security", () => {
       // Now we have 5 attempts
       expect(limiter.isLimited("user1")).toBe(true);
     });
+
+    it("evicts the oldest key when capacity is exceeded", () => {
+      const limiter = new RateLimiter(60000, 1);
+
+      limiter.recordAttempt("user-0");
+      expect(limiter.isLimited("user-0")).toBe(true);
+
+      for (let i = 1; i <= 10000; i++) {
+        limiter.recordAttempt(`user-${i}`);
+      }
+
+      expect(limiter.sizeForTests()).toBe(10000);
+      expect(limiter.isLimited("user-0")).toBe(false);
+      expect(limiter.isLimited("user-10000")).toBe(true);
+    });
   });
 
   describe("SimpleRateLimiter", () => {

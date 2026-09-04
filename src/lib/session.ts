@@ -1,3 +1,5 @@
+import { AUTH } from "./constants";
+
 const SIGNATURE_LENGTH_BYTES = 32; // SHA-256 output
 const SIGNATURE_LENGTH_HEX = SIGNATURE_LENGTH_BYTES * 2;
 const TOKEN_LENGTH_HEX = 64; // 32 bytes as hex
@@ -73,12 +75,12 @@ function bytesToHex(bytes: ArrayBuffer): string {
   return out;
 }
 
-async function computeSignature(tokenHex: string): Promise<string> {
+async function computeSignature(payload: string): Promise<string> {
   const key = await getSigningKey();
   const sig = await crypto.subtle.sign(
     "HMAC",
     key,
-    new TextEncoder().encode(tokenHex)
+    new TextEncoder().encode(payload)
   );
   return bytesToHex(sig);
 }
@@ -97,12 +99,24 @@ function timingSafeEqualHex(a: string, b: string): boolean {
 }
 
 /**
- * Wrap a random hex token with an HMAC signature.
- * Output format: "<tokenHex>.<signatureHex>"
+ * Wrap a random hex token and expiry with an HMAC signature.
+ * Output format: "v1.<tokenHex>.<expiryUnixSeconds>.<signatureHex>"
  */
-export async function signSessionToken(tokenHex: string): Promise<string> {
-  const signature = await computeSignature(tokenHex);
-  return `${tokenHex}.${signature}`;
+export async function signSessionToken(
+  tokenHex: string,
+  expirySeconds = AUTH.SESSION_EXPIRY_SECONDS
+): Promise<string> {
+  if (tokenHex.length !== TOKEN_LENGTH_HEX || !HEX_REGEX.test(tokenHex)) {
+    throw new Error("Session token must be 64 lowercase hexadecimal characters");
+  }
+  if (!Number.isInteger(expirySeconds) || expirySeconds <= 0) {
+    throw new Error("Session expiry must be a positive integer");
+  }
+
+  const expiryUnixSeconds = Math.floor(Date.now() / 1000) + expirySeconds;
+  const payload = `v1.${tokenHex}.${expiryUnixSeconds}`;
+  const signature = await computeSignature(payload);
+  return `${payload}.${signature}`;
 }
 
 /**
@@ -114,19 +128,28 @@ export async function verifySignedSessionToken(
 ): Promise<boolean> {
   if (!value) return false;
 
-  const dot = value.indexOf(".");
-  if (dot === -1) return false;
+  const parts = value.split(".");
+  if (parts.length !== 4) return false;
 
-  const tokenHex = value.slice(0, dot);
-  const signatureHex = value.slice(dot + 1);
+  const [version, tokenHex, expiryText, signatureHex] = parts;
 
+  if (version !== "v1") return false;
   if (tokenHex.length !== TOKEN_LENGTH_HEX) return false;
   if (signatureHex.length !== SIGNATURE_LENGTH_HEX) return false;
   if (!HEX_REGEX.test(tokenHex)) return false;
   if (!HEX_REGEX.test(signatureHex)) return false;
+  if (!/^\d+$/.test(expiryText)) return false;
+
+  const expiryUnixSeconds = Number(expiryText);
+  if (
+    !Number.isSafeInteger(expiryUnixSeconds) ||
+    expiryUnixSeconds <= Math.floor(Date.now() / 1000)
+  ) {
+    return false;
+  }
 
   try {
-    const expected = await computeSignature(tokenHex);
+    const expected = await computeSignature(`v1.${tokenHex}.${expiryText}`);
     return timingSafeEqualHex(signatureHex, expected);
   } catch {
     return false;

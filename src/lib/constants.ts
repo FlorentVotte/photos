@@ -15,6 +15,10 @@ export const RATE_LIMITS = {
   /** Login attempts: 5 per 15 minutes */
   LOGIN_WINDOW_MS: 15 * TIME.MINUTE,
   LOGIN_MAX_ATTEMPTS: 5,
+  /** Login attempts across all clients: 50 per 15 minutes */
+  LOGIN_GLOBAL_MAX_ATTEMPTS: 50,
+  /** Stable key used by the global login limiter */
+  LOGIN_GLOBAL_KEY: "global",
   /** Sync requests: 1 per minute */
   SYNC_WINDOW_MS: TIME.MINUTE,
 } as const;

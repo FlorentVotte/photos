@@ -20,13 +20,14 @@ vi.mock("@/lib/security", async (importOriginal) => {
   };
 });
 
-import { POST } from "./route";
+import { POST, __resetLoginRateLimitersForTests } from "./route";
 
 describe("POST /api/auth/login", () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    __resetLoginRateLimitersForTests();
     process.env = { ...originalEnv, ADMIN_PASSWORD: "test-password-123" };
   });
 
@@ -105,6 +106,64 @@ describe("POST /api/auth/login", () => {
 
       expect(mockCookieSet).not.toHaveBeenCalled();
     });
+
+    it("should return 429 on the sixth failed attempt from one client", async () => {
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const response = await POST(
+          createRequest({ password: "wrong-password" }, { "x-real-ip": "192.0.2.1" })
+        );
+        expect(response.status).toBe(401);
+      }
+
+      const response = await POST(
+        createRequest({ password: "wrong-password" }, { "x-real-ip": "192.0.2.1" })
+      );
+      expect(response.status).toBe(429);
+    });
+
+    it("should return 429 on the 51st failed attempt globally", async () => {
+      for (let attempt = 0; attempt < 50; attempt++) {
+        const response = await POST(
+          createRequest(
+            { password: "wrong-password" },
+            { "x-real-ip": `192.0.2.${attempt + 1}` }
+          )
+        );
+        expect(response.status).toBe(401);
+      }
+
+      const response = await POST(
+        createRequest({ password: "wrong-password" }, { "x-real-ip": "198.51.100.1" })
+      );
+      expect(response.status).toBe(429);
+    });
+
+    it("should not clear global failures after a successful login", async () => {
+      for (let attempt = 0; attempt < 49; attempt++) {
+        const response = await POST(
+          createRequest(
+            { password: "wrong-password" },
+            { "x-real-ip": `203.0.113.${attempt + 1}` }
+          )
+        );
+        expect(response.status).toBe(401);
+      }
+
+      const success = await POST(
+        createRequest({ password: "test-password-123" }, { "x-real-ip": "198.51.100.1" })
+      );
+      expect(success.status).toBe(200);
+
+      const fiftiethFailure = await POST(
+        createRequest({ password: "wrong-password" }, { "x-real-ip": "198.51.100.2" })
+      );
+      expect(fiftiethFailure.status).toBe(401);
+
+      const response = await POST(
+        createRequest({ password: "wrong-password" }, { "x-real-ip": "198.51.100.3" })
+      );
+      expect(response.status).toBe(429);
+    });
   });
 
   describe("validation", () => {
@@ -148,6 +207,25 @@ describe("POST /api/auth/login", () => {
   });
 
   describe("IP extraction", () => {
+    it("should normalize the first non-empty forwarded address", async () => {
+      for (let attempt = 0; attempt < 5; attempt++) {
+        await POST(
+          createRequest(
+            { password: "wrong" },
+            { "x-forwarded-for": "  , 192.0.2.10, 10.0.0.1" }
+          )
+        );
+      }
+
+      const response = await POST(
+        createRequest(
+          { password: "wrong" },
+          { "x-forwarded-for": "192.0.2.10" }
+        )
+      );
+      expect(response.status).toBe(429);
+    });
+
     it("should extract IP from x-forwarded-for header", async () => {
       const request = createRequest(
         { password: "wrong" },
