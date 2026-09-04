@@ -5,6 +5,8 @@ interface UseModalFocusOptions {
   isOpen: boolean;
   containerRef: RefObject<HTMLElement | null>;
   initialFocusRef?: RefObject<HTMLElement | null>;
+  /** Explicit return target when an opener unmounts while the dialog opens. */
+  restoreFocusRef?: RefObject<HTMLElement | null>;
   onClose: () => void;
   /** Optional selector for background roots when siblings alone are not enough. */
   inertRootSelector?: string;
@@ -41,6 +43,7 @@ export function useModalFocus({
   isOpen,
   containerRef,
   initialFocusRef,
+  restoreFocusRef,
   onClose,
   inertRootSelector,
 }: UseModalFocusOptions): void {
@@ -51,7 +54,8 @@ export function useModalFocus({
     if (!container) return;
 
     const previouslyFocused =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      restoreFocusRef?.current ??
+      (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     const inertStates: InertState[] = getBackgroundRoots(container, inertRootSelector).map(
       (element) => ({
         element,
@@ -126,5 +130,5 @@ export function useModalFocus({
 
       if (previouslyFocused?.isConnected) previouslyFocused.focus();
     };
-  }, [containerRef, inertRootSelector, initialFocusRef, isOpen, onClose]);
+  }, [containerRef, inertRootSelector, initialFocusRef, isOpen, onClose, restoreFocusRef]);
 }

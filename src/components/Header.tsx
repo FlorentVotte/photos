@@ -1,18 +1,93 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { useLocale } from "@/lib/LocaleContext";
 import { useModalFocus, useScrolled } from "@/hooks";
+import { translations, type Locale } from "@/lib/translations";
 
 interface HeaderProps {
   transparent?: boolean;
+}
+
+type Translator = (section: keyof typeof translations, key: string) => string;
+
+interface MobileMenuDialogProps {
+  containerRef: RefObject<HTMLDivElement | null>;
+  initialFocusRef: RefObject<HTMLAnchorElement | null>;
+  locale: Locale;
+  onClose: () => void;
+  onToggleLocale: () => void;
+  t: Translator;
+}
+
+const navItemClass =
+  "font-display text-3xl font-semibold tracking-tight text-foreground/85 hover:text-foreground transition-colors";
+
+export function MobileMenuDialog({
+  containerRef,
+  initialFocusRef,
+  locale,
+  onClose,
+  onToggleLocale,
+  t,
+}: MobileMenuDialogProps) {
+  return (
+    <div
+      ref={containerRef}
+      className="material-thick md:hidden fixed inset-0 z-[60]"
+      role="dialog"
+      aria-modal="true"
+      aria-label={t("nav", "openMenu")}
+      tabIndex={-1}
+    >
+      <button
+        onClick={onClose}
+        className="absolute right-3 top-3 z-10 flex min-h-11 min-w-11 items-center justify-center text-foreground hover:text-primary transition-colors"
+        aria-label={t("nav", "closeMenu")}
+      >
+        <span aria-hidden="true" className="material-symbols-outlined">close</span>
+      </button>
+      <nav className="flex h-full flex-col items-start justify-center gap-8 px-8">
+        <Link
+          href="/"
+          ref={initialFocusRef}
+          onClick={onClose}
+          className={navItemClass}
+        >
+          {t("nav", "home")}
+        </Link>
+        <Link href="/albums" onClick={onClose} className={navItemClass}>
+          {t("nav", "albums")}
+        </Link>
+        <Link href="/search" onClick={onClose} className={navItemClass}>
+          {t("nav", "search")}
+        </Link>
+        <Link href="/map" onClick={onClose} className={navItemClass}>
+          {t("nav", "map")}
+        </Link>
+        <Link href="/about" onClick={onClose} className={navItemClass}>
+          {t("nav", "about")}
+        </Link>
+        <button
+          onClick={() => {
+            onToggleLocale();
+            onClose();
+          }}
+          className="mt-4 min-h-11 font-sans text-eyebrow uppercase text-text-muted hover:text-foreground transition-colors"
+        >
+          {locale === "en" ? "FR — Français" : "EN — English"}
+        </button>
+      </nav>
+    </div>
+  );
 }
 
 export default function Header({ transparent = false }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const firstMobileNavLinkRef = useRef<HTMLAnchorElement>(null);
+  const mobileMenuOpenerFocusRef = useRef<HTMLElement | null>(null);
   const { t, locale, setLocale } = useLocale();
   const scrolled = useScrolled();
 
@@ -36,11 +111,9 @@ export default function Header({ transparent = false }: HeaderProps) {
     isOpen: mobileMenuOpen,
     containerRef: mobileMenuRef,
     initialFocusRef: firstMobileNavLinkRef,
+    restoreFocusRef: mobileMenuOpenerFocusRef,
     onClose: closeMobileMenu,
   });
-
-  const navItemClass =
-    "font-display text-3xl font-semibold tracking-tight text-foreground/85 hover:text-foreground transition-colors";
 
   return (
     <>
@@ -106,17 +179,21 @@ export default function Header({ transparent = false }: HeaderProps) {
             </button>
           </nav>
 
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden flex min-h-11 min-w-11 items-center justify-center text-foreground hover:text-primary transition-colors relative z-[60]"
-            aria-label={mobileMenuOpen ? t("nav", "closeMenu") : t("nav", "openMenu")}
-            aria-expanded={mobileMenuOpen}
-          >
-            <span className="material-symbols-outlined">
-              {mobileMenuOpen ? "close" : "menu"}
-            </span>
-          </button>
+          {/* The opener unmounts while the dialog is open so it can remain in
+              the safely inert header behind the dialog. */}
+          {!mobileMenuOpen && (
+            <button
+              onClick={(event) => {
+                mobileMenuOpenerFocusRef.current = event.currentTarget;
+                setMobileMenuOpen(true);
+              }}
+              className="md:hidden flex min-h-11 min-w-11 items-center justify-center text-foreground hover:text-primary transition-colors relative z-[60]"
+              aria-label={t("nav", "openMenu")}
+              aria-expanded={false}
+            >
+              <span className="material-symbols-outlined">menu</span>
+            </button>
+          )}
         </div>
       </header>
 
@@ -126,62 +203,14 @@ export default function Header({ transparent = false }: HeaderProps) {
           nested here `inset-0` resolved against the 64px header instead of the
           viewport and the menu rendered as a strip under the bar. */}
       {mobileMenuOpen && (
-        <div
-          ref={mobileMenuRef}
-          className="material-thick md:hidden fixed inset-0 z-40"
-          role="dialog"
-          aria-modal="true"
-          aria-label={t("nav", "openMenu")}
-          tabIndex={-1}
-        >
-          <nav className="flex h-full flex-col items-start justify-center gap-8 px-8">
-          <Link
-            href="/"
-            ref={firstMobileNavLinkRef}
-            onClick={closeMobileMenu}
-            className={navItemClass}
-          >
-            {t("nav", "home")}
-          </Link>
-          <Link
-            href="/albums"
-            onClick={closeMobileMenu}
-            className={navItemClass}
-          >
-            {t("nav", "albums")}
-          </Link>
-          <Link
-            href="/search"
-            onClick={closeMobileMenu}
-            className={navItemClass}
-          >
-            {t("nav", "search")}
-          </Link>
-          <Link
-            href="/map"
-            onClick={closeMobileMenu}
-            className={navItemClass}
-          >
-            {t("nav", "map")}
-          </Link>
-          <Link
-            href="/about"
-            onClick={closeMobileMenu}
-            className={navItemClass}
-          >
-            {t("nav", "about")}
-          </Link>
-          <button
-            onClick={() => {
-              toggleLocale();
-              closeMobileMenu();
-            }}
-            className="mt-4 min-h-11 font-sans text-eyebrow uppercase text-text-muted hover:text-foreground transition-colors"
-          >
-            {locale === "en" ? "FR — Français" : "EN — English"}
-          </button>
-          </nav>
-        </div>
+        <MobileMenuDialog
+          containerRef={mobileMenuRef}
+          initialFocusRef={firstMobileNavLinkRef}
+          locale={locale}
+          onClose={closeMobileMenu}
+          onToggleLocale={toggleLocale}
+          t={t}
+        />
       )}
     </>
   );
