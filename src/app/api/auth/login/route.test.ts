@@ -307,7 +307,7 @@ describe("POST /api/auth/login", () => {
   });
 
   describe("error handling", () => {
-    it("should return 500 for invalid JSON body", async () => {
+    it("returns a 400 public error for malformed JSON", async () => {
       const request = new NextRequest("http://localhost:3000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -315,7 +315,21 @@ describe("POST /api/auth/login", () => {
       });
 
       const response = await POST(request);
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(400);
+      await expect(response.json()).resolves.toEqual({ error: "Invalid JSON body" });
+    });
+
+    it("returns 413 for an oversized login body", async () => {
+      const request = new NextRequest("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Length": "4097" },
+        body: "{}",
+      });
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(413);
+      await expect(response.json()).resolves.toEqual({ error: "Request body too large" });
     });
   });
 });

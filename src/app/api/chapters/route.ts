@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
 import type { Chapter, Photo } from "@prisma/client";
+import { JSON_BODY_LIMITS, JsonBodyError, readJsonBody } from "@/lib/request-json";
 
 interface ChapterInput {
   id: string;
@@ -71,10 +72,10 @@ export async function POST(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    const { albumId, chapters } = (await request.json()) as {
+    const { albumId, chapters } = await readJsonBody<{
       albumId: string;
       chapters: ChapterInput[];
-    };
+    }>(request, JSON_BODY_LIMITS.CHAPTERS);
 
     if (!albumId || !chapters) {
       return NextResponse.json({ error: "albumId and chapters required" }, { status: 400 });
@@ -106,6 +107,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof JsonBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error saving chapters:", error);
     return NextResponse.json({ error: "Failed to save chapters" }, { status: 500 });
   }
@@ -117,7 +121,7 @@ export async function DELETE(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    const { albumId } = await request.json();
+    const { albumId } = await readJsonBody<{ albumId: string }>(request, JSON_BODY_LIMITS.CHAPTERS);
 
     if (!albumId) {
       return NextResponse.json({ error: "albumId required" }, { status: 400 });
@@ -127,6 +131,9 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof JsonBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error deleting chapters:", error);
     return NextResponse.json({ error: "Failed to delete chapters" }, { status: 500 });
   }

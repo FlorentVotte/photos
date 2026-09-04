@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
 import { VALIDATION } from "@/lib/constants";
+import { JSON_BODY_LIMITS, JsonBodyError, readJsonBody } from "@/lib/request-json";
+
+interface AlbumOrderBody {
+  albumOrder?: string[];
+}
+
+interface AlbumPatchBody {
+  id?: string;
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  location?: string;
+  date?: string;
+  coverImage?: string;
+}
 
 // GET - List all synced albums
 export async function GET() {
@@ -40,7 +55,7 @@ export async function PUT(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    const body = await request.json();
+    const body = await readJsonBody<AlbumOrderBody>(request, JSON_BODY_LIMITS.METADATA);
     const { albumOrder } = body;
 
     if (!albumOrder || !Array.isArray(albumOrder)) {
@@ -62,6 +77,9 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof JsonBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error reordering albums:", error);
     return NextResponse.json(
       { error: "Failed to reorder albums" },
@@ -76,7 +94,7 @@ export async function PATCH(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    const body = await request.json();
+    const body = await readJsonBody<AlbumPatchBody>(request, JSON_BODY_LIMITS.METADATA);
     const { id, title, subtitle, description, location, date, coverImage } = body;
 
     if (!id) {
@@ -155,6 +173,9 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true, album });
   } catch (error) {
+    if (error instanceof JsonBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error updating album:", error);
     return NextResponse.json(
       { error: "Failed to update album" },

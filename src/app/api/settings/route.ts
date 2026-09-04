@@ -3,9 +3,17 @@ import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
 import { THEME_PRESETS, DEFAULT_THEME, ThemePresetKey } from "@/lib/themes";
 import { requireAuth } from "@/lib/auth";
+import { JSON_BODY_LIMITS, JsonBodyError, readJsonBody } from "@/lib/request-json";
 
 // Force dynamic to always fetch fresh data
 export const dynamic = "force-dynamic";
+
+interface SettingsPatchBody {
+  theme?: string;
+  siteTitle?: string;
+  siteDescription?: string;
+  aboutText?: string;
+}
 
 // GET - Read current settings
 export async function GET() {
@@ -41,7 +49,7 @@ export async function PATCH(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    const body = await request.json();
+    const body = await readJsonBody<SettingsPatchBody>(request, JSON_BODY_LIMITS.METADATA);
     const { theme, siteTitle, siteDescription, aboutText } = body;
 
     const updateData: Record<string, string | null> = {};
@@ -87,6 +95,9 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true, settings });
   } catch (error) {
+    if (error instanceof JsonBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error updating settings:", error);
     return NextResponse.json(
       { error: "Failed to update settings" },

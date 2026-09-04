@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { secureCompare, generateSecureToken, RateLimiter } from "@/lib/security";
 import { signSessionToken } from "@/lib/session";
 import { RATE_LIMITS, AUTH } from "@/lib/constants";
+import { JSON_BODY_LIMITS, JsonBodyError, readJsonBody } from "@/lib/request-json";
 
 function createLoginRateLimiter(): RateLimiter {
   return new RateLimiter(
@@ -51,14 +52,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
   }
 
-  let password: string;
+  let password: unknown;
   try {
-    ({ password } = await request.json());
+    ({ password } = await readJsonBody<{ password?: unknown }>(request, JSON_BODY_LIMITS.AUTH));
 
     if (!password || typeof password !== "string") {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
-  } catch {
+  } catch (error) {
+    if (error instanceof JsonBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     return NextResponse.json({ error: "Login failed" }, { status: 500 });
   }
 

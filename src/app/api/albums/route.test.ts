@@ -162,6 +162,19 @@ describe("/api/albums", () => {
       expect(body.error).toBe("albumOrder array is required");
     });
 
+    it("returns 413 for an oversized JSON body", async () => {
+      const request = new NextRequest("http://localhost:3000/api/albums", {
+        method: "PUT",
+        headers: { "Content-Length": "65537" },
+        body: "{}",
+      });
+
+      const response = await PUT(request);
+
+      expect(response.status).toBe(413);
+      await expect(response.json()).resolves.toEqual({ error: "Request body too large" });
+    });
+
     it("should return 500 on database error", async () => {
       mockPrisma.album.update.mockRejectedValue(new Error("DB error"));
 

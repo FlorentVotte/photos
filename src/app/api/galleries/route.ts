@@ -3,9 +3,19 @@ import fs from "fs/promises";
 import path from "path";
 import prisma from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
+import { JSON_BODY_LIMITS, JsonBodyError, readJsonBody } from "@/lib/request-json";
 
 // Pattern for valid adobe.ly short code (alphanumeric only, 4-20 chars)
 const ADOBE_SHORT_CODE_PATTERN = /^\/[a-zA-Z0-9]{4,20}$/;
+
+interface GalleryMutationBody {
+  id?: string;
+  url?: string;
+  albumId?: string;
+  albumName?: string;
+  featured?: boolean;
+  type?: string;
+}
 
 /**
  * Resolve short URLs (adobe.ly) to full Lightroom URLs
@@ -55,6 +65,9 @@ async function resolveShortUrl(url: string): Promise<string> {
 
 // GET - List all galleries with their album info
 export async function GET() {
+  const authError = await requireAuth();
+  if (authError) return authError;
+
   try {
     const galleries = await prisma.gallery.findMany({
       include: {
@@ -98,7 +111,7 @@ export async function POST(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    const body = await request.json();
+    const body = await readJsonBody<GalleryMutationBody>(request, JSON_BODY_LIMITS.METADATA);
     const { url, albumId, albumName, featured = false, type = "public" } = body;
 
     // Handle private album from authenticated API
@@ -211,6 +224,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, gallery });
   } catch (error) {
+    if (error instanceof JsonBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error adding gallery:", error);
     return NextResponse.json(
       { error: "Failed to add gallery" },
@@ -225,7 +241,7 @@ export async function DELETE(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    const body = await request.json();
+    const body = await readJsonBody<GalleryMutationBody>(request, JSON_BODY_LIMITS.METADATA);
     const { id, url, albumId } = body;
 
     if (!id && !url && !albumId) {
@@ -282,6 +298,9 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof JsonBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error removing gallery:", error);
     return NextResponse.json(
       { error: "Failed to remove gallery" },
@@ -296,7 +315,7 @@ export async function PATCH(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    const body = await request.json();
+    const body = await readJsonBody<GalleryMutationBody>(request, JSON_BODY_LIMITS.METADATA);
     const { id, url, albumId, featured } = body;
 
     if (!id && !url && !albumId) {
@@ -352,6 +371,9 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ success: true, gallery: updated });
   } catch (error) {
+    if (error instanceof JsonBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Error updating gallery:", error);
     return NextResponse.json(
       { error: "Failed to update gallery" },

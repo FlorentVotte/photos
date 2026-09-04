@@ -3,6 +3,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { secureCompare, SimpleRateLimiter } from "@/lib/security";
 import { RATE_LIMITS } from "@/lib/constants";
 import type { SyncProgress } from "@/lib/sync-progress";
+import { JSON_BODY_LIMITS, JsonBodyError, readJsonBody } from "@/lib/request-json";
 
 const WEBHOOK_SECRET = process.env.SYNC_WEBHOOK_SECRET;
 
@@ -44,20 +45,29 @@ export async function POST(request: NextRequest) {
   // Record sync attempt for rate limiting
   syncStreamRateLimiter.recordAttempt(ip);
 
-  // Check for galleryId in request body
+  // Check for galleryId in request body. An absent body retains the existing
+  // sync-all behavior, while malformed and oversized bodies are client errors.
   let galleryId: string | undefined;
-  try {
-    const body = await request.json();
-    galleryId = body.galleryId;
-    // Validate galleryId format
-    if (galleryId && !/^[a-zA-Z0-9_-]+$/.test(galleryId)) {
-      return new Response(JSON.stringify({ error: "Invalid gallery ID" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+  if (request.body) {
+    try {
+      const body = await readJsonBody<{ galleryId?: string }>(request, JSON_BODY_LIMITS.METADATA);
+      galleryId = body.galleryId;
+      // Validate galleryId format
+      if (galleryId && !/^[a-zA-Z0-9_-]+$/.test(galleryId)) {
+        return new Response(JSON.stringify({ error: "Invalid gallery ID" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    } catch (error) {
+      if (error instanceof JsonBodyError) {
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: error.status,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      throw error;
     }
-  } catch {
-    // No body or invalid JSON, sync all
   }
 
   // Prevent concurrent syncs

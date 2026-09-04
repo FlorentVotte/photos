@@ -5,6 +5,7 @@ import prisma from "@/lib/db";
 import { isAuthenticated } from "@/lib/auth";
 import { secureCompare, SimpleRateLimiter } from "@/lib/security";
 import { RATE_LIMITS, SYNC } from "@/lib/constants";
+import { JSON_BODY_LIMITS, JsonBodyError, readJsonBody } from "@/lib/request-json";
 
 const execFileAsync = promisify(execFile);
 const WEBHOOK_SECRET = process.env.SYNC_WEBHOOK_SECRET;
@@ -69,17 +70,16 @@ export async function POST(request: NextRequest) {
   syncRateLimiter.recordAttempt(ip);
 
   try {
-    // Check for galleryId in request body
+    // Check for galleryId in request body. An absent body retains the existing
+    // sync-all behavior, while malformed and oversized bodies are client errors.
     let galleryId: string | undefined;
-    try {
-      const body = await request.json();
+    if (request.body) {
+      const body = await readJsonBody<{ galleryId?: string }>(request, JSON_BODY_LIMITS.METADATA);
       galleryId = body.galleryId;
       // Validate galleryId format to prevent command injection
       if (galleryId && !/^[a-zA-Z0-9_-]+$/.test(galleryId)) {
         return NextResponse.json({ error: "Invalid gallery ID" }, { status: 400 });
       }
-    } catch {
-      // No body or invalid JSON, sync all
     }
 
     // Build command arguments safely (no string concatenation).
@@ -122,6 +122,9 @@ export async function POST(request: NextRequest) {
         : `Successfully synced ${albums} albums with ${photos} photos`,
     });
   } catch (error: unknown) {
+    if (error instanceof JsonBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Sync error:", error);
 
     // Don't leak error details to client
