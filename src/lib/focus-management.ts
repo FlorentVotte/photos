@@ -12,6 +12,14 @@ export function resolveFocusTargetIndex(
   return (currentIndex + (shiftKey ? -1 : 1) + count) % count;
 }
 
+/** Prefer the current remounted opener over the element that was active on open. */
+export function resolveRestoreFocusTarget<T>(
+  explicitTarget: T | null | undefined,
+  fallbackTarget: T | null
+): T | null {
+  return explicitTarget ?? fallbackTarget;
+}
+
 const FOCUSABLE_SELECTOR = [
   "a[href]",
   "area[href]",

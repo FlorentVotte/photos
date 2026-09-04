@@ -87,7 +87,7 @@ export default function Header({ transparent = false }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const firstMobileNavLinkRef = useRef<HTMLAnchorElement>(null);
-  const mobileMenuOpenerFocusRef = useRef<HTMLElement | null>(null);
+  const mobileMenuOpenerFocusRef = useRef<HTMLButtonElement>(null);
   const { t, locale, setLocale } = useLocale();
   const scrolled = useScrolled();
 
@@ -183,10 +183,8 @@ export default function Header({ transparent = false }: HeaderProps) {
               the safely inert header behind the dialog. */}
           {!mobileMenuOpen && (
             <button
-              onClick={(event) => {
-                mobileMenuOpenerFocusRef.current = event.currentTarget;
-                setMobileMenuOpen(true);
-              }}
+              ref={mobileMenuOpenerFocusRef}
+              onClick={() => setMobileMenuOpen(true)}
               className="md:hidden flex min-h-11 min-w-11 items-center justify-center text-foreground hover:text-primary transition-colors relative z-[60]"
               aria-label={t("nav", "openMenu")}
               aria-expanded={false}

@@ -1,5 +1,9 @@
 import { type RefObject, useEffect } from "react";
-import { getFocusableElements, resolveFocusTargetIndex } from "@/lib/focus-management";
+import {
+  getFocusableElements,
+  resolveFocusTargetIndex,
+  resolveRestoreFocusTarget,
+} from "@/lib/focus-management";
 
 interface UseModalFocusOptions {
   isOpen: boolean;
@@ -54,8 +58,7 @@ export function useModalFocus({
     if (!container) return;
 
     const previouslyFocused =
-      restoreFocusRef?.current ??
-      (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const inertStates: InertState[] = getBackgroundRoots(container, inertRootSelector).map(
       (element) => ({
         element,
@@ -128,7 +131,14 @@ export function useModalFocus({
         else element.setAttribute("aria-hidden", ariaHidden);
       });
 
-      if (previouslyFocused?.isConnected) previouslyFocused.focus();
+      // Resolve this ref during cleanup so a conditionally remounted opener
+      // wins over the node that was active when the dialog opened.
+      const restoreTarget = resolveRestoreFocusTarget(
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        restoreFocusRef?.current,
+        previouslyFocused
+      );
+      if (restoreTarget?.isConnected) restoreTarget.focus();
     };
   }, [containerRef, inertRootSelector, initialFocusRef, isOpen, onClose, restoreFocusRef]);
 }
