@@ -94,7 +94,8 @@ COPY --from=runtime-deps /app/node_modules ./node_modules
 
 # Entrypoint
 COPY docker-entrypoint.sh ./
-RUN chmod +x docker-entrypoint.sh
+COPY --from=builder /app/scripts/validate-production-env.sh ./scripts/validate-production-env.sh
+RUN chmod +x docker-entrypoint.sh scripts/validate-production-env.sh
 
 RUN mkdir -p /app/public/photos /app/data && \
     chown -R nextjs:nodejs /app

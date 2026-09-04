@@ -20,14 +20,30 @@ case "$PHOTOBOOK_IMAGE" in
   *:latest*) fail "PHOTOBOOK_IMAGE must not use the mutable latest tag" ;;
 esac
 
-image_without_digest=${PHOTOBOOK_IMAGE%@*}
-digest=${PHOTOBOOK_IMAGE#*@}
-last_path_component=${image_without_digest##*/}
-if [ "$image_without_digest" = "$PHOTOBOOK_IMAGE" ] || [ -z "$digest" ]; then
-  case "$last_path_component" in
-    *:*) ;;
-    *) fail "PHOTOBOOK_IMAGE must include an immutable tag or digest" ;;
-  esac
-fi
+case "$PHOTOBOOK_IMAGE" in
+  *@*)
+    digest=${PHOTOBOOK_IMAGE#*@}
+    case "$digest" in
+      sha256:*)
+        digest_hex=${digest#sha256:}
+        [ "${#digest_hex}" -eq 64 ] || fail "PHOTOBOOK_IMAGE digest must be sha256 followed by 64 hexadecimal characters"
+        case "$digest_hex" in
+          *[!0123456789abcdefABCDEF]*|'') fail "PHOTOBOOK_IMAGE digest must be sha256 followed by 64 hexadecimal characters" ;;
+        esac
+        ;;
+      *) fail "PHOTOBOOK_IMAGE digest must be sha256 followed by 64 hexadecimal characters" ;;
+    esac
+    ;;
+  *)
+    last_path_component=${PHOTOBOOK_IMAGE##*/}
+    case "$last_path_component" in
+      *:*)
+        image_tag=${last_path_component##*:}
+        [ -n "$image_tag" ] || fail "PHOTOBOOK_IMAGE must include a nonempty tag after the final colon"
+        ;;
+      *) fail "PHOTOBOOK_IMAGE must include an immutable tag or digest" ;;
+    esac
+    ;;
+esac
 
 exit 0
