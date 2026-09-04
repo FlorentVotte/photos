@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 import {
   Noto_Serif,
   Noto_Sans,
@@ -137,6 +138,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const requestHeaders = await headers();
+  const nonce = requestHeaders.get("x-nonce") ?? undefined;
   const theme = await getTheme();
   const initialCSSVars = generateThemeCSSVars(theme);
 
@@ -144,7 +147,7 @@ export default async function RootLayout({
     <html lang="en" className="dark">
       <head>
         {/* Inject theme CSS variables inline for SSR - prevents flash */}
-        <style dangerouslySetInnerHTML={{
+        <style nonce={nonce} dangerouslySetInnerHTML={{
           __html: `:root { ${initialCSSVars} }`
         }} />
         <link rel="icon" href="/favicon.ico" sizes="32x32" />
