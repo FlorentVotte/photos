@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { Locale, translations, t as translate } from "./translations";
+import { persistLocalePreference } from "./locale";
 
 interface LocaleContextType {
   locale: Locale;
@@ -22,9 +23,17 @@ export function LocaleProvider({
 
   const handleSetLocale = (newLocale: Locale) => {
     setLocale(newLocale);
-    document.documentElement.lang = newLocale;
-    localStorage.setItem("locale", newLocale);
-    document.cookie = `locale=${newLocale}; Path=/; Max-Age=31536000; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+    persistLocalePreference(newLocale, {
+      setDocumentLanguage: (locale) => {
+        document.documentElement.lang = locale;
+      },
+      setLocalStorage: (locale) => {
+        localStorage.setItem("locale", locale);
+      },
+      setCookie: (locale) => {
+        document.cookie = `locale=${locale}; Path=/; Max-Age=31536000; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+      },
+    });
   };
 
   const t = (section: keyof typeof translations, key: string): string => {

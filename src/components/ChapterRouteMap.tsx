@@ -192,6 +192,7 @@ export default function ChapterRouteMap({
               return (
               <Marker
                 key={photo.id}
+                keyboard={false}
                 position={[photo.metadata.latitude!, photo.metadata.longitude!]}
                 icon={createNumberedIcon(
                   index,

@@ -40,7 +40,7 @@ export default async function Home() {
       />
       <Header />
 
-      <main>
+      <main className="flex flex-1 flex-col">
         <HomeExperience
           featuredAlbum={featuredAlbum}
           recentAlbums={recentAlbums}

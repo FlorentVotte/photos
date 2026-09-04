@@ -14,6 +14,15 @@ function toRad(deg: number): number {
   return deg * (Math.PI / 180);
 }
 
+/** Coordinates on zero-valued axes are valid; only non-finite pairs are absent. */
+export function hasFiniteCoordinates(
+  metadata: Pick<Photo["metadata"], "latitude" | "longitude">
+): metadata is typeof metadata & { latitude: number; longitude: number } {
+  return (
+    Number.isFinite(metadata.latitude) && Number.isFinite(metadata.longitude)
+  );
+}
+
 /**
  * Calculate distance between two GPS points using Haversine formula
  * @returns Distance in kilometers
@@ -44,7 +53,7 @@ export function calculateDistance(
  */
 export function calculateRouteDistance(photos: Photo[]): number {
   const geoPhotos = photos
-    .filter((p) => p.metadata.latitude && p.metadata.longitude)
+    .filter((photo) => hasFiniteCoordinates(photo.metadata))
     .sort((a, b) => {
       const dateA = a.metadata.date || "";
       const dateB = b.metadata.date || "";
@@ -80,7 +89,7 @@ export function extractLocations(photos: Photo[]): LocationSummary {
   );
 
   const coordinates: GeoPoint[] = photos
-    .filter((p) => p.metadata.latitude && p.metadata.longitude)
+    .filter((photo) => hasFiniteCoordinates(photo.metadata))
     .sort((a, b) => {
       const dateA = a.metadata.date || "";
       const dateB = b.metadata.date || "";
@@ -106,8 +115,8 @@ export function computeChapterStats(photos: Photo[]): ChapterStats {
     .filter((d): d is string => !!d)
     .sort();
 
-  const photosWithGps = photos.filter(
-    (p) => p.metadata.latitude && p.metadata.longitude
+  const photosWithGps = photos.filter((photo) =>
+    hasFiniteCoordinates(photo.metadata)
   ).length;
 
   return {

@@ -1,7 +1,16 @@
 import Header from "@/components/Header";
 import { Skeleton } from "@/components/Skeleton";
+import { cookies, headers } from "next/headers";
+import { resolveLocale } from "@/lib/locale";
+import { t } from "@/lib/translations";
 
-export default function MapLoading() {
+export default async function MapLoading() {
+  const [cookieStore, requestHeaders] = await Promise.all([cookies(), headers()]);
+  const locale = resolveLocale(
+    cookieStore.get("locale")?.value,
+    requestHeaders.get("accept-language")
+  );
+
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />
@@ -14,7 +23,7 @@ export default function MapLoading() {
 
           <div className="w-full h-[70vh] bg-surface-dark flex items-center justify-center border-y border-surface-border">
             <p className="font-sans text-eyebrow uppercase text-text-muted animate-pulse">
-              Loading map
+              {t("map", "loadingMap", locale)}
             </p>
           </div>
 

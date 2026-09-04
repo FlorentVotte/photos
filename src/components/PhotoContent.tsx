@@ -9,8 +9,12 @@ import PhotoKeyboardNav from "./PhotoKeyboardNav";
 import Lightbox from "./Lightbox";
 import { useLocale } from "@/lib/LocaleContext";
 import { usePresence } from "@/hooks";
-import { formatPhotoTitle } from "@/lib/photo-display";
-import { cleanLocationParts } from "@/lib/transformers";
+import {
+  formatPhotoLocation,
+  formatPhotoShareText,
+  formatPhotoTitle,
+} from "@/lib/photo-display";
+import { hasFiniteCoordinates } from "@/lib/geo-utils";
 import type { Photo, Album } from "@/lib/types";
 
 interface PhotoContentProps {
@@ -47,11 +51,7 @@ export default function PhotoContent({
   const router = useRouter();
 
   const displayTitle = formatPhotoTitle(photo, album, currentIndex);
-  const location = cleanLocationParts(
-    photo.metadata.city,
-    photo.metadata.locationDetail,
-    photo.metadata.location
-  ).join(", ");
+  const location = formatPhotoLocation(photo);
 
   const [showCopied, setShowCopied] = useState(false);
   // Keeps the badge mounted long enough to fade back out.
@@ -87,7 +87,7 @@ export default function PhotoContent({
   const handleShare = async () => {
     const url = window.location.href;
     const title = displayTitle;
-    const text = photo.caption || `${displayTitle} - ${photo.metadata.location}`;
+    const text = formatPhotoShareText(photo, displayTitle);
 
     if (navigator.share) {
       try {
@@ -369,7 +369,7 @@ export default function PhotoContent({
                   )}
                 </header>
 
-                {photo.metadata.latitude && photo.metadata.longitude ? (
+                {hasFiniteCoordinates(photo.metadata) ? (
                   <div className="overflow-hidden border-y border-surface-border">
                     <PhotoLocationMap
                       latitude={photo.metadata.latitude}

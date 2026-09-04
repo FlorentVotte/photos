@@ -220,6 +220,15 @@ describe("transformers", () => {
       expect(result.metadata.latitude).toBeUndefined();
       expect(result.metadata.longitude).toBeUndefined();
     });
+
+    it("preserves coordinates on the equator and prime meridian", () => {
+      const photo = { ...basePrismaPhoto, latitude: 0, longitude: 0 };
+
+      const result = transformPhoto(photo);
+
+      expect(result.metadata.latitude).toBe(0);
+      expect(result.metadata.longitude).toBe(0);
+    });
   });
 
   describe("cleanLocationParts", () => {

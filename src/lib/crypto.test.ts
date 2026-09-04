@@ -27,6 +27,19 @@ describe("crypto", () => {
       }
     );
 
+    it("rejects a 32-character production key that is not 32 UTF-8 bytes", async () => {
+      process.env = {
+        ...process.env,
+        NODE_ENV: "production",
+        ENCRYPTION_KEY: "é".repeat(32),
+      };
+      const { encrypt: productionEncrypt } = await import("./crypto");
+
+      expect(() => productionEncrypt("token")).toThrow(
+        "ENCRYPTION_KEY must encode to exactly 32 bytes when provided as a 32-character key"
+      );
+    });
+
     it("should return encrypted string in iv:tag:ciphertext format", () => {
       process.env.ENCRYPTION_KEY = "test-encryption-key-for-testing";
       const result = encrypt("test-plaintext");

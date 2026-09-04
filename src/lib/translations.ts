@@ -233,7 +233,10 @@ export const translations = {
       en: "Privacy policy and data protection information for Regards Perdus.",
       fr: "Politique de confidentialité et informations sur la protection des données de Regards Perdus.",
     },
-    lastUpdated: { en: "Last updated: August 2026", fr: "Dernière mise à jour : août 2026" },
+    lastUpdated: {
+      en: "Last updated: September 4, 2026",
+      fr: "Dernière mise à jour : 4 septembre 2026",
+    },
     overviewTitle: { en: "Overview", fr: "Aperçu" },
     overviewText: {
       en: "This website is a personal photography portfolio. We are committed to protecting your privacy and processing your data in accordance with the General Data Protection Regulation (GDPR) and other applicable data protection laws.",
@@ -332,7 +335,10 @@ export const translations = {
       en: "Legal information and terms of use for Regards Perdus.",
       fr: "Informations légales et conditions d’utilisation de Regards Perdus.",
     },
-    lastUpdated: { en: "Last updated: December 2024", fr: "Dernière mise à jour : décembre 2024" },
+    lastUpdated: {
+      en: "Last updated: September 4, 2026",
+      fr: "Dernière mise à jour : 4 septembre 2026",
+    },
     ownerTitle: { en: "Website Owner", fr: "Propriétaire du site" },
     individual: { en: "(Individual)", fr: "(Particulier)" },
     email: { en: "Email:", fr: "Email :" },

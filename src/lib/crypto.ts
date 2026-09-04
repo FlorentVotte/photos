@@ -33,13 +33,20 @@ function getEncryptionKey(): Buffer {
     return crypto.scryptSync(fallback, KEY_DERIVATION_SALT, 32, SCRYPT_OPTIONS);
   }
 
+  const keyByteLength = Buffer.byteLength(key, "utf8");
+  if (key.length === 32 && keyByteLength !== 32) {
+    throw new Error(
+      "ENCRYPTION_KEY must encode to exactly 32 bytes when provided as a 32-character key"
+    );
+  }
+
   // If key is provided, ensure it's 32 bytes (256 bits)
   if (key.length === 64 && /^[a-f0-9]+$/i.test(key)) {
     // Hex-encoded 32-byte key
     return Buffer.from(key, "hex");
   } else if (key.length >= 32) {
     // Use first 32 bytes or derive from longer string
-    if (key.length === 32) {
+    if (keyByteLength === 32) {
       return Buffer.from(key);
     }
     // Derive 32-byte key from provided string

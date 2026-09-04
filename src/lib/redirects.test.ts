@@ -8,7 +8,16 @@ describe("safeInternalRedirect", () => {
     );
   });
 
-  it.each(["//evil.example", "https://evil.example", "javascript:alert(1)", "admin"])(
+  it.each([
+    "//evil.example",
+    "/\\\\evil.example",
+    "/%5C%5Cevil.example",
+    "/%255C%255Cevil.example",
+    "/admin%0d%0aLocation:%20https://evil.example",
+    "https://evil.example",
+    "javascript:alert(1)",
+    "admin",
+  ])(
     "falls back for unsafe redirect %s",
     (unsafe) => {
       expect(safeInternalRedirect(unsafe)).toBe("/admin");

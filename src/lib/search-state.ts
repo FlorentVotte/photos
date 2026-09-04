@@ -7,6 +7,10 @@ export interface SearchState {
   filter: FilterType;
 }
 
+export interface SearchViewState extends SearchState {
+  visiblePhotoCount: number;
+}
+
 type SearchParams = Pick<URLSearchParams, "get" | "toString">;
 
 const FILTERS: ReadonlySet<string> = new Set(["all", "albums", "photos"]);
@@ -45,6 +49,57 @@ export function mergeSearchState(
 
   const serialized = params.toString();
   return serialized ? `?${serialized}` : "";
+}
+
+export type SearchViewAction =
+  | { type: "query-changed"; query: string }
+  | { type: "filter-changed"; filter: FilterType }
+  | { type: "url-changed"; state: SearchState }
+  | { type: "load-more"; total: number };
+
+/** Keeps controlled input state synchronous while resetting result batches. */
+export function reduceSearchViewState(
+  state: SearchViewState,
+  action: SearchViewAction
+): SearchViewState {
+  switch (action.type) {
+    case "query-changed":
+      return {
+        ...state,
+        query: action.query,
+        visiblePhotoCount: SEARCH_PAGE_SIZE,
+      };
+    case "filter-changed":
+      return {
+        ...state,
+        filter: action.filter,
+        visiblePhotoCount: SEARCH_PAGE_SIZE,
+      };
+    case "url-changed":
+      return {
+        ...action.state,
+        visiblePhotoCount: SEARCH_PAGE_SIZE,
+      };
+    case "load-more":
+      return {
+        ...state,
+        visiblePhotoCount: reduceSearchPagination(state.visiblePhotoCount, action),
+      };
+  }
+}
+
+/** Ignores delayed router snapshots that no longer match the address bar. */
+export function shouldRehydrateSearchState(
+  observed: SearchParams,
+  currentLocationSearch: string
+): boolean {
+  return (
+    observed.toString() ===
+    new URLSearchParams(currentLocationSearch.startsWith("?")
+      ? currentLocationSearch.slice(1)
+      : currentLocationSearch
+    ).toString()
+  );
 }
 
 export type SearchPaginationAction =

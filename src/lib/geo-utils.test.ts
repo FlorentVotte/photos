@@ -8,6 +8,7 @@ import {
   albumMarkers,
   albumYear,
   sortMarkersByDate,
+  hasFiniteCoordinates,
 } from "./geo-utils";
 import type { Album, Photo } from "./types";
 
@@ -199,6 +200,24 @@ describe("geo-utils", () => {
       ];
       const distance = calculateRouteDistance(photos);
       expect(distance).toBe(0);
+    });
+
+    it("includes route points on zero latitude or longitude", () => {
+      const photos = [
+        createPhoto({
+          id: "1",
+          metadata: { date: "2024-01-01", latitude: 0, longitude: 0 },
+        }),
+        createPhoto({
+          id: "2",
+          metadata: { date: "2024-01-02", latitude: 0, longitude: 1 },
+        }),
+      ];
+
+      expect(calculateRouteDistance(photos)).toBeGreaterThan(100);
+      expect(extractLocations(photos).coordinates).toHaveLength(2);
+      expect(computeChapterStats(photos).photosWithGps).toBe(2);
+      expect(hasFiniteCoordinates(photos[0].metadata)).toBe(true);
     });
   });
 

@@ -8,7 +8,10 @@ import {
   getAlbums,
   getAllPhotos,
 } from "@/lib/data";
-import { formatPhotoTitle } from "@/lib/photo-display";
+import {
+  formatPhotoMetadataDescription,
+  formatPhotoTitle,
+} from "@/lib/photo-display";
 import type { Metadata } from "next";
 
 // Force dynamic to always fetch fresh data
@@ -29,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const index = albumPhotos.findIndex((p) => p.id === photo.id);
   const displayTitle = formatPhotoTitle(photo, album, index >= 0 ? index : undefined);
 
-  const description = photo.caption || `Photo from ${photo.metadata.location}`;
+  const description = formatPhotoMetadataDescription(photo, displayTitle);
   return {
     title: `${displayTitle} - Regards Perdus`,
     description,

@@ -1,16 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useReducer } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useLocale } from "@/lib/LocaleContext";
 import {
   parseSearchState,
   mergeSearchState,
-  reduceSearchPagination,
+  reduceSearchViewState,
   SEARCH_PAGE_SIZE,
+  shouldRehydrateSearchState,
   type FilterType,
 } from "@/lib/search-state";
 import { formatPhotoAccessibleLabel } from "@/lib/photo-display";
@@ -65,13 +66,46 @@ function buildPhotoHaystack(photo: Photo): string {
 
 export default function SearchClient({ albums, photos }: SearchClientProps) {
   const { locale, t } = useLocale();
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const { query, filter: filterType } = useMemo(
+  const initialSearchState = useMemo(
     () => parseSearchState(searchParams),
     [searchParams]
   );
+  const [searchState, dispatch] = useReducer(reduceSearchViewState, {
+    ...initialSearchState,
+    visiblePhotoCount: SEARCH_PAGE_SIZE,
+  });
+  const { query, filter: filterType, visiblePhotoCount } = searchState;
   const normalizedQuery = useMemo(() => normalize(query), [query]);
+
+  const observedSearch = searchParams.toString();
+  useEffect(() => {
+    if (
+      !shouldRehydrateSearchState(
+        new URLSearchParams(observedSearch),
+        window.location.search
+      )
+    ) {
+      return;
+    }
+
+    dispatch({
+      type: "url-changed",
+      state: parseSearchState(new URLSearchParams(observedSearch)),
+    });
+  }, [observedSearch]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      dispatch({
+        type: "url-changed",
+        state: parseSearchState(new URLSearchParams(window.location.search)),
+      });
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   // Pre-build searchable text per item so each keystroke is cheap.
   const albumIndex = useMemo(
@@ -106,10 +140,21 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
   }, [photoIndex, normalizedQuery, filterType]);
 
   const totalResults = filteredAlbums.length + filteredPhotos.length;
-  const updateSearchState = (nextQuery: string, nextFilter: FilterType) => {
-    router.replace(`/search${mergeSearchState(searchParams, nextQuery, nextFilter)}`, {
-      scroll: false,
-    });
+  const updateSearchUrl = (
+    nextQuery: string,
+    nextFilter: FilterType,
+    method: "replaceState" | "pushState"
+  ) => {
+    const queryString = mergeSearchState(
+      new URLSearchParams(window.location.search),
+      nextQuery,
+      nextFilter
+    );
+    window.history[method](
+      window.history.state,
+      "",
+      `/search${queryString}${window.location.hash}`
+    );
   };
 
   return (
@@ -132,7 +177,11 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
               id="photo-search"
               type="text"
               value={query}
-              onChange={(e) => updateSearchState(e.target.value, filterType)}
+              onChange={(event) => {
+                const nextQuery = event.target.value;
+                dispatch({ type: "query-changed", query: nextQuery });
+                updateSearchUrl(nextQuery, filterType, "replaceState");
+              }}
               placeholder={t("search", "placeholder")}
               className="flex-1 border-b border-surface-border bg-transparent pb-3 pl-0 pr-4 font-display text-2xl md:text-3xl font-normal text-foreground placeholder-text-muted/60 focus:border-foreground focus:outline-none transition-colors"
             />
@@ -142,7 +191,11 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                 <button
                   key={type}
                   type="button"
-                  onClick={() => updateSearchState(query, type)}
+                  onClick={() => {
+                    if (type === filterType) return;
+                    dispatch({ type: "filter-changed", filter: type });
+                    updateSearchUrl(query, type, "pushState");
+                  }}
                   aria-pressed={filterType === type}
                   className={`relative font-sans text-eyebrow uppercase transition-colors ${
                     filterType === type
@@ -205,10 +258,13 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
 
           {filteredPhotos.length > 0 && (
             <SearchPhotoResults
-              key={`${query}\u0000${filterType}`}
               photos={filteredPhotos}
               locale={locale}
               t={t}
+              visiblePhotoCount={visiblePhotoCount}
+              onLoadMore={() =>
+                dispatch({ type: "load-more", total: filteredPhotos.length })
+              }
             />
           )}
 
@@ -236,12 +292,15 @@ function SearchPhotoResults({
   photos,
   locale,
   t,
+  visiblePhotoCount,
+  onLoadMore,
 }: {
   photos: Photo[];
   locale: Locale;
   t: Translate;
+  visiblePhotoCount: number;
+  onLoadMore: () => void;
 }) {
-  const [visiblePhotoCount, setVisiblePhotoCount] = useState(SEARCH_PAGE_SIZE);
   const visiblePhotos = photos.slice(0, visiblePhotoCount);
 
   return (
@@ -281,14 +340,7 @@ function SearchPhotoResults({
           </p>
           <button
             type="button"
-            onClick={() =>
-              setVisiblePhotoCount((current) =>
-                reduceSearchPagination(current, {
-                  type: "load-more",
-                  total: photos.length,
-                })
-              )
-            }
+            onClick={onLoadMore}
             className="rounded-full border border-surface-border px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             {t("search", "loadMore")}

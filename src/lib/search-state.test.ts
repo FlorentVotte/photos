@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   SEARCH_PAGE_SIZE,
   parseSearchState,
+  reduceSearchViewState,
   reduceSearchPagination,
   mergeSearchState,
   serializeSearchState,
+  shouldRehydrateSearchState,
 } from "./search-state";
 
 describe("search URL state", () => {
@@ -40,6 +42,65 @@ describe("search URL state", () => {
     expect(mergeSearchState(current, "coast", "all")).toBe(
       "?view=map&query=coast&tag=featured&tag=film"
     );
+  });
+
+  it("keeps every rapid local query edit without waiting for URL state", () => {
+    const initial = { query: "", filter: "all" as const, visiblePhotoCount: 150 };
+    const afterFirstKey = reduceSearchViewState(initial, {
+      type: "query-changed",
+      query: "c",
+    });
+    const afterSecondKey = reduceSearchViewState(afterFirstKey, {
+      type: "query-changed",
+      query: "co",
+    });
+
+    expect(afterSecondKey).toEqual({
+      query: "co",
+      filter: "all",
+      visiblePhotoCount: SEARCH_PAGE_SIZE,
+    });
+  });
+
+  it("rehydrates only from the URL currently visible in the address bar", () => {
+    expect(
+      shouldRehydrateSearchState(
+        new URLSearchParams("query=c"),
+        "?query=co&tag=film&tag=film"
+      )
+    ).toBe(false);
+    expect(
+      shouldRehydrateSearchState(
+        new URLSearchParams("query=co&tag=film&tag=film"),
+        "?query=co&tag=film&tag=film"
+      )
+    ).toBe(true);
+  });
+
+  it("resets the photo batch for filter and Back/Forward URL changes", () => {
+    const loaded = {
+      query: "coast",
+      filter: "all" as const,
+      visiblePhotoCount: 150,
+    };
+
+    expect(
+      reduceSearchViewState(loaded, { type: "filter-changed", filter: "photos" })
+    ).toEqual({
+      query: "coast",
+      filter: "photos",
+      visiblePhotoCount: SEARCH_PAGE_SIZE,
+    });
+    expect(
+      reduceSearchViewState(loaded, {
+        type: "url-changed",
+        state: { query: "mountain", filter: "albums" },
+      })
+    ).toEqual({
+      query: "mountain",
+      filter: "albums",
+      visiblePhotoCount: SEARCH_PAGE_SIZE,
+    });
   });
 });
 

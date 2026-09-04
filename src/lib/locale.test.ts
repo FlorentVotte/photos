@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveLocale } from "./locale";
+import { persistLocalePreference, resolveLocale } from "./locale";
 import { translations } from "./translations";
 
 describe("resolveLocale", () => {
@@ -16,6 +16,22 @@ describe("resolveLocale", () => {
   });
 });
 
+describe("persistLocalePreference", () => {
+  it("still writes the cookie when localStorage is blocked", () => {
+    const effects: string[] = [];
+
+    persistLocalePreference("fr", {
+      setDocumentLanguage: (locale) => effects.push(`lang:${locale}`),
+      setLocalStorage: () => {
+        throw new Error("SecurityError");
+      },
+      setCookie: (locale) => effects.push(`cookie:${locale}`),
+    });
+
+    expect(effects).toEqual(["lang:fr", "cookie:fr"]);
+  });
+});
+
 describe("legal download terms", () => {
   it("permits private, non-commercial downloads while retaining copyright limits", () => {
     const terms = translations.legal;
@@ -27,6 +43,17 @@ describe("legal download terms", () => {
       "Vous pouvez télécharger les photographies pour une consultation privée et non commerciale. Les droits d’auteur restent la propriété du photographe. Toute copie, redistribution, republication, modification, tout téléchargement automatisé en masse et tout usage commercial nécessitent une autorisation explicite."
     );
     expect(terms).not.toHaveProperty("termNoDownload");
+  });
+
+  it("publishes the current revision date in both locales", () => {
+    expect(translations.legal.lastUpdated).toEqual({
+      en: "Last updated: September 4, 2026",
+      fr: "Dernière mise à jour : 4 septembre 2026",
+    });
+    expect(translations.privacy.lastUpdated).toEqual({
+      en: "Last updated: September 4, 2026",
+      fr: "Dernière mise à jour : 4 septembre 2026",
+    });
   });
 
   it("does not override the download permission in its copyright notice", () => {

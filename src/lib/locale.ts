@@ -45,3 +45,23 @@ export function resolveLocale(
 
   return parseAcceptLanguage(acceptLanguage);
 }
+
+export interface LocalePersistenceTarget {
+  setDocumentLanguage: (locale: Locale) => void;
+  setLocalStorage: (locale: Locale) => void;
+  setCookie: (locale: Locale) => void;
+}
+
+/** Persists durable cookie state even when localStorage access is blocked. */
+export function persistLocalePreference(
+  locale: Locale,
+  target: LocalePersistenceTarget
+): void {
+  target.setDocumentLanguage(locale);
+  try {
+    target.setLocalStorage(locale);
+  } catch {
+    // Storage can be disabled by browser privacy settings.
+  }
+  target.setCookie(locale);
+}

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { formatPhotoAccessibleLabel } from "./photo-display";
+import {
+  formatPhotoAccessibleLabel,
+  formatPhotoLocation,
+  formatPhotoMetadataDescription,
+  formatPhotoShareText,
+} from "./photo-display";
 
 describe("formatPhotoAccessibleLabel", () => {
   const album = { title: "A Quiet Coast" };
@@ -28,5 +33,32 @@ describe("formatPhotoAccessibleLabel", () => {
     expect(
       formatPhotoAccessibleLabel({ title: "IMG_0678.jpg" }, album, 6, "fr")
     ).toBe("A Quiet Coast — Photo 7");
+  });
+});
+
+describe("photo sharing and metadata copy", () => {
+  it("uses the cleaned location when one is available", () => {
+    const photo = {
+      caption: undefined,
+      metadata: { city: " Paris ", locationDetail: "Unknown", location: "France" },
+    };
+
+    expect(formatPhotoLocation(photo)).toBe("Paris, France");
+    expect(formatPhotoShareText(photo, "Morning light")).toBe(
+      "Morning light - Paris, France"
+    );
+    expect(formatPhotoMetadataDescription(photo, "Morning light")).toBe(
+      "Photo from Paris, France"
+    );
+  });
+
+  it("omits a location suffix instead of rendering undefined", () => {
+    const photo = { caption: undefined, metadata: {} };
+
+    expect(formatPhotoLocation(photo)).toBe("");
+    expect(formatPhotoShareText(photo, "Morning light")).toBe("Morning light");
+    expect(formatPhotoMetadataDescription(photo, "Morning light")).toBe(
+      "Morning light"
+    );
   });
 });

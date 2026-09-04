@@ -1,6 +1,7 @@
 import type { Album, Photo } from "@/lib/types";
 import { t } from "@/lib/translations";
 import type { Locale } from "@/lib/translations";
+import { cleanLocationParts } from "@/lib/transformers";
 
 const FILENAME_PREFIX_RE = /^(DSC|DSCF|DSCN|IMG|MOV|GOPR|P\d|_DSC)/i;
 const FILE_EXTENSION_RE = /\.[a-z0-9]{2,5}$/i;
@@ -62,4 +63,38 @@ export function formatPhotoAccessibleLabel(
   const photoNumber = `${t("photo", "fallbackLabel", locale)} ${index + 1}`;
 
   return albumTitle ? `${albumTitle} — ${photoNumber}` : photoNumber;
+}
+
+type PhotoCopyInput = {
+  caption?: string;
+  metadata: Partial<
+    Pick<Photo["metadata"], "city" | "locationDetail" | "location">
+  >;
+};
+
+/** Returns one cleaned, display-ready location for UI and metadata copy. */
+export function formatPhotoLocation(photo: PhotoCopyInput): string {
+  return cleanLocationParts(
+    photo.metadata.city,
+    photo.metadata.locationDetail,
+    photo.metadata.location
+  ).join(", ");
+}
+
+export function formatPhotoShareText(
+  photo: PhotoCopyInput,
+  displayTitle: string
+): string {
+  if (photo.caption) return photo.caption;
+  const location = formatPhotoLocation(photo);
+  return location ? `${displayTitle} - ${location}` : displayTitle;
+}
+
+export function formatPhotoMetadataDescription(
+  photo: PhotoCopyInput,
+  displayTitle: string
+): string {
+  if (photo.caption) return photo.caption;
+  const location = formatPhotoLocation(photo);
+  return location ? `Photo from ${location}` : displayTitle;
 }
