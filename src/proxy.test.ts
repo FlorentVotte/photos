@@ -10,6 +10,7 @@ describe("buildContentSecurityPolicy", () => {
     expect(policy).toContain("script-src 'self' 'nonce-test-nonce' 'strict-dynamic'");
     expect(policy).toContain("style-src-elem 'self' 'nonce-test-nonce'");
     expect(policy).toContain("style-src-attr 'unsafe-inline'");
+    expect(policy).toContain("worker-src 'self' blob:");
     expect(policy).toContain("object-src 'none'");
     expect(policy).toContain("frame-ancestors 'none'");
     expect(policy).toContain("base-uri 'self'");

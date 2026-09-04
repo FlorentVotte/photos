@@ -18,6 +18,7 @@ export function buildContentSecurityPolicy(
     "img-src 'self' blob: data: https://tiles.openfreemap.org",
     "connect-src 'self' https://tiles.openfreemap.org wss://tiles.openfreemap.org",
     "font-src 'self'",
+    "worker-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",

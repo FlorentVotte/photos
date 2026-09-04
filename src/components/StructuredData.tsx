@@ -19,13 +19,18 @@ function safeJsonLd(value: unknown): string {
   );
 }
 
+async function getNonce(): Promise<string | undefined> {
+  return (await headers()).get("x-nonce") ?? undefined;
+}
+
 interface WebsiteStructuredDataProps {
   name: string;
   description: string;
   url: string;
 }
 
-export function WebsiteStructuredData({ name, description, url }: WebsiteStructuredDataProps) {
+export async function WebsiteStructuredData({ name, description, url }: WebsiteStructuredDataProps) {
+  const nonce = await getNonce();
   const data = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -45,6 +50,7 @@ export function WebsiteStructuredData({ name, description, url }: WebsiteStructu
   return (
     <script
       type="application/ld+json"
+      nonce={nonce}
       dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   );
@@ -63,7 +69,7 @@ interface ImageGalleryStructuredDataProps {
   author: string;
 }
 
-export function ImageGalleryStructuredData({
+export async function ImageGalleryStructuredData({
   name,
   description,
   url,
@@ -71,6 +77,7 @@ export function ImageGalleryStructuredData({
   datePublished,
   author,
 }: ImageGalleryStructuredDataProps) {
+  const nonce = await getNonce();
   const data = {
     "@context": "https://schema.org",
     "@type": "ImageGallery",
@@ -93,6 +100,7 @@ export function ImageGalleryStructuredData({
   return (
     <script
       type="application/ld+json"
+      nonce={nonce}
       dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   );
@@ -111,7 +119,7 @@ interface PhotoStructuredDataProps {
   height?: number;
 }
 
-export function PhotoStructuredData({
+export async function PhotoStructuredData({
   name,
   description,
   url,
@@ -123,6 +131,7 @@ export function PhotoStructuredData({
   width,
   height,
 }: PhotoStructuredDataProps) {
+  const nonce = await getNonce();
   const data = {
     "@context": "https://schema.org",
     "@type": "Photograph",
@@ -164,6 +173,7 @@ export function PhotoStructuredData({
   return (
     <script
       type="application/ld+json"
+      nonce={nonce}
       dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   );
@@ -176,7 +186,8 @@ interface BreadcrumbStructuredDataProps {
   }[];
 }
 
-export function BreadcrumbStructuredData({ items }: BreadcrumbStructuredDataProps) {
+export async function BreadcrumbStructuredData({ items }: BreadcrumbStructuredDataProps) {
+  const nonce = await getNonce();
   const data = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -191,7 +202,9 @@ export function BreadcrumbStructuredData({ items }: BreadcrumbStructuredDataProp
   return (
     <script
       type="application/ld+json"
+      nonce={nonce}
       dangerouslySetInnerHTML={{ __html: safeJsonLd(data) }}
     />
   );
 }
+import { headers } from "next/headers";
