@@ -4,7 +4,9 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Globe3D, type GlobeMarker } from "./Globe3D";
 import { albumMarkers } from "@/lib/geo-utils";
+import { resolveAutoRotateSpeed } from "@/lib/pagination";
 import { useLocale } from "@/lib/LocaleContext";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { Album, AlbumMarker, Photo } from "@/lib/types";
 
 interface PhotoGlobeProps {
@@ -17,6 +19,7 @@ export default function PhotoGlobe({ photos, albums }: PhotoGlobeProps) {
   const router = useRouter();
   const [hovered, setHovered] = useState<AlbumMarker | null>(null);
   const [pointerOver, setPointerOver] = useState(false);
+  const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   const markers = useMemo(
     () => albumMarkers(photos, albums),
@@ -50,14 +53,14 @@ export default function PhotoGlobe({ photos, albums }: PhotoGlobeProps) {
       // The globe drifts on its own to reveal markers on the far side, but
       // freezes as soon as the pointer enters — a moving marker is a moving
       // click target.
-      autoRotateSpeed: pointerOver ? 0 : 0.3,
+      autoRotateSpeed: resolveAutoRotateSpeed(pointerOver, prefersReducedMotion),
       ambientIntensity: 0.85,
       enableZoom: true,
       minDistance: 4,
       maxDistance: 12,
       markerSize: 40,
     }),
-    [pointerOver]
+    [pointerOver, prefersReducedMotion]
   );
 
   if (markers.length === 0) {
@@ -90,6 +93,7 @@ export default function PhotoGlobe({ photos, albums }: PhotoGlobeProps) {
           config={config}
           onMarkerClick={handleClick}
           onMarkerHover={handleHover}
+          markerFallbackLabel={t("map", "albumMarker")}
         />
 
         {hovered && (

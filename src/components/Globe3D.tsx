@@ -85,6 +85,8 @@ interface Globe3DProps {
   onMarkerClick?: (marker: GlobeMarker) => void;
   /** Callback when a marker is hovered */
   onMarkerHover?: (marker: GlobeMarker | null) => void;
+  /** Fallback label for markers without an album title. */
+  markerFallbackLabel?: string;
 }
 
 // ============================================================================
@@ -128,6 +130,7 @@ interface MarkerProps {
   defaultSize: number;
   onClick?: (marker: GlobeMarker) => void;
   onHover?: (marker: GlobeMarker | null) => void;
+  markerFallbackLabel: string;
 }
 
 function Marker({
@@ -136,6 +139,7 @@ function Marker({
   defaultSize,
   onClick,
   onHover,
+  markerFallbackLabel,
 }: MarkerProps) {
   const [hovered, setHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -237,9 +241,11 @@ function Marker({
             transition: "opacity 0.15s ease-out",
           }}
         >
-          <div
+          <button
+            type="button"
+            aria-label={marker.label || markerFallbackLabel}
             className={cn(
-              "cursor-pointer overflow-hidden rounded-full bg-neutral-900 shadow-lg transition-transform duration-200",
+              "cursor-pointer overflow-hidden rounded-full border-0 bg-neutral-900 p-0 shadow-lg transition-transform duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background-dark motion-reduce:transition-none",
               hovered && "scale-125 shadow-xl ring-1 ring-white/50",
             )}
             style={{
@@ -251,17 +257,17 @@ function Marker({
               // testing and every click fell through to the canvas.
               pointerEvents: isVisible ? "auto" : "none",
             }}
-            onMouseEnter={handlePointerEnter}
-            onMouseLeave={handlePointerLeave}
+            onPointerEnter={handlePointerEnter}
+            onPointerLeave={handlePointerLeave}
             onClick={handleClick}
           >
             <img
               src={marker.src}
-              alt={marker.label || "Marker"}
+              alt=""
               className="h-full w-full object-cover"
               draggable={false}
             />
-          </div>
+          </button>
         </Html>
       </group>
     </group>
@@ -277,6 +283,7 @@ interface RotatingGlobeProps {
   markers: GlobeMarker[];
   onMarkerClick?: (marker: GlobeMarker) => void;
   onMarkerHover?: (marker: GlobeMarker | null) => void;
+  markerFallbackLabel: string;
 }
 
 function RotatingGlobe({
@@ -284,6 +291,7 @@ function RotatingGlobe({
   markers,
   onMarkerClick,
   onMarkerHover,
+  markerFallbackLabel,
 }: RotatingGlobeProps) {
   const groupRef = useRef<THREE.Group>(null);
 
@@ -347,6 +355,7 @@ function RotatingGlobe({
           defaultSize={config.markerSize}
           onClick={onMarkerClick}
           onHover={onMarkerHover}
+          markerFallbackLabel={markerFallbackLabel}
         />
       ))}
     </group>
@@ -419,9 +428,16 @@ interface SceneProps {
   config: Required<Globe3DConfig>;
   onMarkerClick?: (marker: GlobeMarker) => void;
   onMarkerHover?: (marker: GlobeMarker | null) => void;
+  markerFallbackLabel: string;
 }
 
-function Scene({ markers, config, onMarkerClick, onMarkerHover }: SceneProps) {
+function Scene({
+  markers,
+  config,
+  onMarkerClick,
+  onMarkerHover,
+  markerFallbackLabel,
+}: SceneProps) {
   const { camera } = useThree();
 
   // Set initial camera position (pulled back to accommodate markers)
@@ -451,6 +467,7 @@ function Scene({ markers, config, onMarkerClick, onMarkerHover }: SceneProps) {
         markers={markers}
         onMarkerClick={onMarkerClick}
         onMarkerHover={onMarkerHover}
+        markerFallbackLabel={markerFallbackLabel}
       />
 
       {/* Atmosphere (static) */}
@@ -530,6 +547,7 @@ export function Globe3D({
   className,
   onMarkerClick,
   onMarkerHover,
+  markerFallbackLabel = "Photo album",
 }: Globe3DProps) {
   const mergedConfig = useMemo(
     () => ({ ...defaultConfig, ...config }),
@@ -564,6 +582,7 @@ export function Globe3D({
             config={mergedConfig}
             onMarkerClick={onMarkerClick}
             onMarkerHover={onMarkerHover}
+            markerFallbackLabel={markerFallbackLabel}
           />
         </Suspense>
       </Canvas>

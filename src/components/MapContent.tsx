@@ -46,25 +46,27 @@ function writeView(next: View) {
   listeners.forEach((listener) => listener());
 }
 
-function ViewPlaceholder({ label }: { label: string }) {
+function ViewPlaceholder({ view }: { view: View }) {
+  const { t } = useLocale();
+
   return (
     <div className="w-full h-[600px] bg-surface-dark flex items-center justify-center">
       <p className="font-sans text-eyebrow uppercase text-text-muted animate-pulse">
-        {label}
+        {view === "map" ? t("map", "loadingMap") : t("map", "loadingGlobe")}
       </p>
     </div>
   );
 }
 
 const PhotoMap = dynamic(() => import("./PhotoMap"), {
-  loading: () => <ViewPlaceholder label="Loading map" />,
+  loading: () => <ViewPlaceholder view="map" />,
   ssr: false,
 });
 
 // Kept in its own dynamic import so the three.js bundle is only fetched by
 // visitors who actually switch to the globe.
 const PhotoGlobe = dynamic(() => import("./PhotoGlobe"), {
-  loading: () => <ViewPlaceholder label="Loading globe" />,
+  loading: () => <ViewPlaceholder view="globe" />,
   ssr: false,
 });
 

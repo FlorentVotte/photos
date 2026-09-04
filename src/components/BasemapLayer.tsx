@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useMap } from "react-leaflet";
 import type { Layer } from "leaflet";
+import type { Map as MapLibreMap } from "maplibre-gl";
 // Both stylesheets ship from node_modules rather than a CDN. Leaflet's used to
 // be a <link> to unpkg.com in each map component, which sent a visitor's IP to
 // a third party on every map view.
@@ -18,8 +19,13 @@ import "maplibre-gl/dist/maplibre-gl.css";
 // their OpenFreeMap / OpenMapTiles / OpenStreetMap credits, and Leaflet renders
 // them in the attribution control. Adding them again here duplicated the line.
 const STYLE_URL = "https://tiles.openfreemap.org/styles/dark";
+const NOOP = () => {};
 
-export default function BasemapLayer() {
+interface BasemapLayerProps {
+  onError?: () => void;
+}
+
+export default function BasemapLayer({ onError = NOOP }: BasemapLayerProps) {
   const map = useMap();
 
   useEffect(() => {
@@ -27,6 +33,11 @@ export default function BasemapLayer() {
 
     let cancelled = false;
     let layer: Layer | undefined;
+    let maplibreMap: MapLibreMap | undefined;
+
+    const handleError = () => {
+      if (!cancelled) onError();
+    };
 
     // maplibre-gl touches `window` as it initialises, so it is pulled in here
     // rather than imported at module scope — PhotoLocationMap reaches the
@@ -34,19 +45,20 @@ export default function BasemapLayer() {
     import("@maplibre/maplibre-gl-leaflet")
       .then(({ maplibreGL }) => {
         if (cancelled) return;
-        layer = maplibreGL({ style: STYLE_URL });
-        layer.addTo(map);
+        const nextLayer = maplibreGL({ style: STYLE_URL });
+        nextLayer.addTo(map);
+        layer = nextLayer;
+        maplibreMap = nextLayer.getMaplibreMap();
+        maplibreMap.on("error", handleError);
       })
-      .catch(() => {
-        // A basemap that fails to load leaves the markers on a blank pane,
-        // which is degraded but still readable. Nothing to recover here.
-      });
+      .catch(handleError);
 
     return () => {
       cancelled = true;
+      maplibreMap?.off("error", handleError);
       layer?.remove();
     };
-  }, [map]);
+  }, [map, onError]);
 
   return null;
 }
