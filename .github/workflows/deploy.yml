@@ -38,7 +38,7 @@ jobs:
         run: npm run test
 
       - name: Test Report
-        uses: dorny/test-reporter@1cc81a5edf733718d4850df304aaa21c05cd7280 # v3
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3
         if: success() || failure()
         with:
           name: Test Results
