@@ -40,7 +40,7 @@ export default function HomeContent({
         <p className="mt-5 font-sans text-eyebrow uppercase text-text-muted">
           {t("home", "quoteAuthor")}
         </p>
-        <p className="mx-auto mt-9 max-w-xl font-sans text-sm leading-[1.7] text-foreground/50">
+        <p className="mx-auto mt-9 max-w-xl font-sans text-sm leading-[1.7] text-foreground/80">
           {t("home", "tagline")}
         </p>
       </section>

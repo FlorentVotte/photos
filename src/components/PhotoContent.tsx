@@ -224,7 +224,7 @@ export default function PhotoContent({
               <Link
                 href={`/photo/${prevPhoto.id}`}
                 scroll={false}
-                className="absolute inset-y-0 left-0 z-10 hidden w-20 items-center justify-start pl-4 text-3xl font-thin text-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:text-white md:flex"
+                className="absolute inset-y-0 left-0 z-10 hidden w-20 items-center justify-start pl-4 text-3xl font-thin text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)] opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 hover:text-white md:flex"
                 aria-label={t("photo", "previous")}
               >
                 ←
@@ -234,7 +234,7 @@ export default function PhotoContent({
               <Link
                 href={`/photo/${nextPhoto.id}`}
                 scroll={false}
-                className="absolute inset-y-0 right-0 z-10 hidden w-20 items-center justify-end pr-4 text-3xl font-thin text-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:text-white md:flex"
+                className="absolute inset-y-0 right-0 z-10 hidden w-20 items-center justify-end pr-4 text-3xl font-thin text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)] opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 hover:text-white md:flex"
                 aria-label={t("photo", "next")}
               >
                 →

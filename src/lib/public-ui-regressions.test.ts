@@ -81,4 +81,53 @@ describe("public UI regressions", () => {
     expect(chapters).toContain("htmlFor={`chapter-${chapter.id}-title-en`}");
     expect(chapters).toContain("id={`chapter-${chapter.id}-title-fr`}");
   });
+
+  it("keeps small muted text and placeholders at AA contrast", () => {
+    const weak = /text-text-muted\/(40|50|60|70|75)|placeholder-text-muted\/(40|50|60|70)/;
+    for (const f of [
+      "app/search/SearchClient.tsx",
+      "components/PhotoMap.tsx",
+      "components/PhotoGlobe.tsx",
+      "components/ChapterStats.tsx",
+      "components/BasemapAttribution.tsx",
+      "components/GlobeHeroSection.tsx",
+      "app/login/page.tsx",
+      "app/admin/albums/page.tsx",
+      "app/admin/chapters/page.tsx",
+      "components/admin/GalleryForm.tsx",
+    ]) {
+      const text = source(f).replace(/<span[^>]*text-text-muted\/40[^>]*>/g, "");
+      expect(text, f).not.toMatch(weak);
+    }
+    expect(source("components/HomeContent.tsx")).not.toContain("text-foreground/50");
+  });
+
+  it("reveals photo-page arrows on keyboard focus", () => {
+    const photo = source("components/PhotoContent.tsx");
+    expect(photo.match(/focus-visible:opacity-100/g)).toHaveLength(2);
+    expect(photo).not.toContain("text-white/40 opacity-0");
+  });
+
+  it("puts text over photos on a strong scrim", () => {
+    expect(source("components/AlbumContent.tsx")).toContain(
+      "from-black/70 via-black/45 to-transparent"
+    );
+    const grid = source("components/PhotoGrid.tsx");
+    expect(grid).toContain("from-black/80 via-black/25 to-transparent");
+    expect(grid).not.toContain("to-transparent opacity-60");
+    expect(grid).toContain("text-white/80");
+  });
+
+  it("gives underline-only inputs a 3:1 boundary", () => {
+    for (const f of [
+      "app/search/SearchClient.tsx",
+      "app/login/page.tsx",
+      "app/admin/albums/page.tsx",
+      "app/admin/chapters/page.tsx",
+      "components/admin/GalleryForm.tsx",
+    ]) {
+      expect(source(f), f).not.toMatch(/border-b border-surface-border bg-transparent/);
+      expect(source(f), f).toContain("border-b border-text-muted/60 bg-transparent");
+    }
+  });
 });

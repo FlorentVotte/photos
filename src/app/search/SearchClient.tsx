@@ -183,7 +183,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                 updateSearchUrl(nextQuery, filterType, "replaceState");
               }}
               placeholder={t("search", "placeholder")}
-              className="flex-1 border-b border-surface-border bg-transparent pb-3 pl-0 pr-4 font-display text-2xl md:text-3xl font-normal text-foreground placeholder-text-muted/60 focus:border-foreground focus:outline-none transition-colors"
+              className="flex-1 border-b border-text-muted/60 bg-transparent pb-3 pl-0 pr-4 font-display text-2xl md:text-3xl font-normal text-foreground placeholder-text-muted/80 focus:border-foreground focus:outline-none transition-colors"
             />
 
             <div className="flex shrink-0 items-center gap-6">
@@ -240,12 +240,12 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
                       style={{ backgroundImage: `url("${album.coverImage}")` }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-5 md:p-6">
                       <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight text-foreground">
                         {album.title}
                       </h3>
-                      <p className="font-sans text-label uppercase tracking-[0.22em] text-white/70">
+                      <p className="font-sans text-label uppercase tracking-[0.22em] text-white/80">
                         {album.location} <span className="text-white/40">·</span>{" "}
                         {album.date}
                       </p>
@@ -273,7 +273,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
               <p className="font-sans text-sm text-text-muted">
                 {t("search", "noResults")}
               </p>
-              <p className="mt-2 font-sans text-xs text-text-muted/60">
+              <p className="mt-2 font-sans text-xs text-text-muted">
                 {t("search", "tryDifferent")}
               </p>
             </div>

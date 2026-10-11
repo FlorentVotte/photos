@@ -68,7 +68,7 @@ function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="border-b border-surface-border bg-transparent pb-3 font-sans text-base text-foreground placeholder-text-muted/50 focus:border-foreground focus:outline-none transition-colors"
+              className="border-b border-text-muted/60 bg-transparent pb-3 font-sans text-base text-foreground placeholder-text-muted/80 focus:border-foreground focus:outline-none transition-colors"
               aria-invalid={!!error}
               aria-describedby={error ? "login-error" : undefined}
               autoFocus
@@ -98,7 +98,7 @@ function LoginForm() {
           </button>
         </form>
 
-        <p className="mt-16 text-center font-sans text-label uppercase text-text-muted/50">
+        <p className="mt-16 text-center font-sans text-label uppercase text-text-muted">
           Set ADMIN_PASSWORD env var to configure
         </p>
       </div>

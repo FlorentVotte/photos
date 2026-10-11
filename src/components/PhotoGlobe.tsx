@@ -79,7 +79,7 @@ export default function PhotoGlobe({ photos, albums }: PhotoGlobeProps) {
         <p className="font-sans text-sm text-text-muted">
           {t("map", "noGeoAlbums")}
         </p>
-        <p className="font-sans text-xs text-text-muted/60">
+        <p className="font-sans text-xs text-text-muted">
           {t("map", "gpsNote")}
         </p>
       </div>

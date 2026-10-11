@@ -185,7 +185,7 @@ function ChaptersEditorContent() {
   };
 
   const inputClass =
-    "w-full border-b border-surface-border bg-transparent py-2 font-sans text-foreground placeholder-text-muted/40 focus:border-foreground focus:outline-none transition-colors";
+    "w-full border-b border-text-muted/60 bg-transparent py-2 font-sans text-foreground placeholder-text-muted/80 focus:border-foreground focus:outline-none transition-colors";
   const labelClass =
     "block mb-2 font-sans text-label uppercase text-text-muted";
 
@@ -470,7 +470,7 @@ function ChaptersEditorContent() {
                           );
                         })}
                       </div>
-                      <p className="font-sans text-xs text-text-muted/70">
+                      <p className="font-sans text-xs text-text-muted">
                         {chapter.coverPhotoId
                           ? "Click again to remove cover photo"
                           : "Click a photo to set it as the chapter cover"}
@@ -489,7 +489,7 @@ function ChaptersEditorContent() {
                           </span>
                         )}
                       </h4>
-                      <p className="font-sans text-xs text-text-muted/70">
+                      <p className="font-sans text-xs text-text-muted">
                         Select photos to display larger in the grid. They will
                         alternate left/right positioning.
                       </p>

@@ -131,6 +131,7 @@ export default function AlbumContent({
           }}
         />
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-black/15 to-background-dark" />
+        <div className="absolute inset-x-0 bottom-0 z-10 h-3/5 bg-gradient-to-t from-black/70 via-black/45 to-transparent" />
 
         <div
           className="relative z-20 mx-auto flex h-full max-w-[1100px] flex-col justify-end px-6 pb-20 md:px-12 md:pb-28 will-change-transform"
@@ -140,7 +141,7 @@ export default function AlbumContent({
           }}
         >
           <div className="flex max-w-3xl flex-col gap-4">
-            <p className="font-sans text-eyebrow uppercase text-white/70">
+            <p className="font-sans text-eyebrow uppercase text-white/80">
               {t("album", "travelDiary")}
             </p>
 
@@ -154,7 +155,7 @@ export default function AlbumContent({
               </p>
             )}
 
-            <p className="mt-2 font-sans text-eyebrow uppercase text-white/60">
+            <p className="mt-2 font-sans text-eyebrow uppercase text-white/80">
               {album.date} <span className="mx-2 text-white/30">·</span>{" "}
               {album.location}
             </p>

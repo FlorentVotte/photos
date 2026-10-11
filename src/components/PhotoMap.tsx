@@ -87,7 +87,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
     return (
       <div className="w-full h-[400px] bg-surface-dark flex flex-col items-center justify-center gap-3 border-y border-surface-border">
         <p className="font-sans text-sm text-text-muted">{t("map", "noPhotos")}</p>
-        <p className="font-sans text-xs text-text-muted/60">{t("map", "gpsNote")}</p>
+        <p className="font-sans text-xs text-text-muted">{t("map", "gpsNote")}</p>
       </div>
     );
   }

@@ -117,7 +117,7 @@ export default function GlobeHeroSection({
           {markers.length > 0 && (
             <>
               <p
-                className="gh-fade font-sans text-[10px] uppercase tracking-[0.24em] text-text-muted/75 lg:hidden"
+                className="gh-fade font-sans text-[10px] uppercase tracking-[0.24em] text-text-muted lg:hidden"
                 style={{ animationDelay: "900ms" }}
               >
                 {t("home", "globeHint")}
@@ -146,7 +146,7 @@ export default function GlobeHeroSection({
                     }`}
                   >
                     <span>{marker.label}</span>
-                    <span className="font-sans text-[11px] text-text-muted/60">
+                    <span className="font-sans text-[11px] text-text-muted">
                       {marker.year}
                     </span>
                   </Link>
