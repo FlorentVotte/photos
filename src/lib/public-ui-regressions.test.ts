@@ -110,7 +110,7 @@ describe("public UI regressions", () => {
 
   it("puts text over photos on a strong scrim", () => {
     expect(source("components/AlbumContent.tsx")).toContain(
-      "from-black/70 via-black/45 to-transparent"
+      "from-background-dark/80 via-background-dark/50 to-transparent"
     );
     const grid = source("components/PhotoGrid.tsx");
     expect(grid).toContain("from-black/80 via-black/25 to-transparent");

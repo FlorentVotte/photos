@@ -131,7 +131,7 @@ export default function AlbumContent({
           }}
         />
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-black/15 to-background-dark" />
-        <div className="absolute inset-x-0 bottom-0 z-10 h-3/5 bg-gradient-to-t from-black/70 via-black/45 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 z-10 h-3/5 bg-gradient-to-t from-background-dark/80 via-background-dark/50 to-transparent" />
 
         <div
           className="relative z-20 mx-auto flex h-full max-w-[1100px] flex-col justify-end px-6 pb-20 md:px-12 md:pb-28 will-change-transform"
