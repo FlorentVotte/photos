@@ -32,6 +32,8 @@ export const translations = {
       en: "Drag the globe · tap a marker",
       fr: "Faites tourner le globe · touchez un marqueur",
     },
+    globePause: { en: "Pause the globe", fr: "Mettre le globe en pause" },
+    globePlay: { en: "Play the globe", fr: "Relancer le globe" },
     recentAlbums: { en: "Recent Albums", fr: "Albums récents" },
     viewArchive: { en: "View Archive", fr: "Voir les archives" },
     tagline: {

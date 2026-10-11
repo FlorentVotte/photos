@@ -101,7 +101,7 @@ interface Globe3DProps {
 // Self-hosted copies of the NASA Blue Marble textures the upstream component
 // fetches from a CDN at runtime. See scripts/fetch-globe-textures.sh.
 const DEFAULT_EARTH_TEXTURE = "/globe/earth-blue-marble.jpg";
-const DEFAULT_BUMP_TEXTURE = "/globe/earth-topology.png";
+const DEFAULT_BUMP_TEXTURE = "/globe/earth-topology.jpg";
 
 // ============================================================================
 // Utility Functions

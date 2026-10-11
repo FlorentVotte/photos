@@ -180,4 +180,22 @@ describe("public UI regressions", () => {
     expect(sw).toContain("/_next/static/");
     expect(sw).toContain("MAX_IMAGE_ENTRIES");
   });
+
+  it("keeps the home globe light, pausable and keyboard-safe", () => {
+    const hero = source("components/GlobeHero.tsx");
+    expect(hero).toContain("/globe/earth-topology.jpg");
+    expect(hero).toContain('"(pointer: coarse)"');
+    expect(hero).toContain("reduceQuery.addEventListener");
+    expect(hero).toContain("button.tabIndex = facing ? 0 : -1");
+    expect(hero).toContain('setAttribute("aria-hidden", "true")');
+    expect(hero).not.toContain("camera.position.clone()");
+
+    const section = source("components/GlobeHeroSection.tsx");
+    expect(section).toContain("{globeReady && (");
+    expect(section).toContain("aria-pressed={paused}");
+    expect(section).toContain("min-h-11");
+    expect(section).toContain("font-sans text-label uppercase text-text-muted");
+    expect(section).toContain('t("home", "globePause")');
+    expect(section).toContain("!reduceMotion && (");
+  });
 });

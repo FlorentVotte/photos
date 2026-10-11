@@ -2,10 +2,11 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/LocaleContext";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useGlobeMount } from "@/hooks/useGlobeMount";
 import type { GlobeHeroHandle } from "./GlobeHero";
 import type { AlbumMarker } from "@/lib/types";
 
@@ -39,6 +40,9 @@ export default function GlobeHeroSection({
   const router = useRouter();
   const globe = useRef<GlobeHeroHandle | null>(null);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const [paused, setPaused] = useState(false);
+  const [globeColumn, globeReady] = useGlobeMount<HTMLDivElement>();
 
   const focusAlbum = (slug: string) => {
     onActivate(slug);
@@ -55,24 +59,40 @@ export default function GlobeHeroSection({
       <div className="relative mx-auto grid min-h-[640px] w-full max-w-[1280px] grid-cols-1 items-center gap-0 px-0 lg:min-h-[720px] lg:grid-cols-[460px_1fr] lg:px-16">
         {/* Globe. First in DOM order on mobile so it sits above the copy, and
             reordered to the right-hand column from lg up. */}
-        <div className="relative order-1 h-[400px] w-full lg:order-2 lg:h-[720px]">
+        <div
+          ref={globeColumn}
+          className="relative order-1 h-[400px] w-full lg:order-2 lg:h-[720px]"
+        >
           <div className="gh-globe-in absolute inset-0 lg:-inset-y-10 lg:-right-[120px] lg:left-0">
-            <GlobeHero
-              markers={markers}
-              handleRef={globe}
-              distance={isDesktop ? 2.9 : 3.0}
-              tilt={isDesktop ? 0.3 : 0.26}
-              hotspotSize={isDesktop ? 34 : 48}
-              onMarkerEnter={(marker) => onActivate(marker.slug)}
-              onMarkerLeave={(marker) => onDeactivate(marker.slug)}
-              onMarkerClick={(marker) => router.push(`/album/${marker.slug}`)}
-            />
+            {globeReady && (
+              <GlobeHero
+                markers={markers}
+                paused={paused}
+                handleRef={globe}
+                distance={isDesktop ? 2.9 : 3.0}
+                tilt={isDesktop ? 0.3 : 0.26}
+                hotspotSize={isDesktop ? 34 : 48}
+                onMarkerEnter={(marker) => onActivate(marker.slug)}
+                onMarkerLeave={(marker) => onDeactivate(marker.slug)}
+                onMarkerClick={(marker) => router.push(`/album/${marker.slug}`)}
+              />
+            )}
           </div>
           {/* Fades the globe into the copy below on the stacked layout. */}
           <div
             aria-hidden="true"
             className="globe-hero-fade pointer-events-none absolute inset-x-0 bottom-0 h-[120px] lg:hidden"
           />
+          {!reduceMotion && (
+            <button
+              type="button"
+              aria-pressed={paused}
+              onClick={() => setPaused((value) => !value)}
+              className="absolute bottom-2 right-5 z-[4] inline-flex min-h-11 items-center px-2 font-sans text-label uppercase text-text-muted transition-colors hover:text-foreground lg:bottom-6 lg:right-0"
+            >
+              {paused ? t("home", "globePlay") : t("home", "globePause")}
+            </button>
+          )}
         </div>
 
         {/* Editorial column */}
@@ -138,7 +158,9 @@ export default function GlobeHeroSection({
                     onPointerLeave={() => releaseAlbum(marker.slug)}
                     onFocus={() => focusAlbum(marker.slug)}
                     onBlur={() => releaseAlbum(marker.slug)}
-                    aria-current={activeSlug === marker.slug ? "true" : undefined}
+                    aria-current={
+                      activeSlug === marker.slug ? "true" : undefined
+                    }
                     className={`flex min-h-11 items-center justify-between gap-4 border-b border-surface-border/60 py-[7px] font-sans text-[13px] uppercase tracking-[0.16em] transition-[color,padding-left] duration-[220ms] ease-out hover:pl-2.5 lg:min-h-0 lg:items-baseline ${
                       activeSlug === marker.slug
                         ? "pl-2.5 text-white"
