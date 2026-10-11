@@ -101,15 +101,24 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Other assets: network first, cache fallback
+  // Other assets: network first, cache fallback. Only same-origin responses
+  // are cached, and never RSC payloads (per-navigation, unbounded).
+  const cacheable =
+    url.origin === self.location.origin &&
+    !url.searchParams.has("_rsc") &&
+    request.headers.get("RSC") !== "1";
+
   event.respondWith(
     fetch(request)
       .then((response) => {
-        if (response.ok) {
+        if (cacheable && response.ok) {
           const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
-          });
+          event.waitUntil(
+            caches
+              .open(CACHE_NAME)
+              .then((cache) => cache.put(request, responseClone))
+              .catch(() => {})
+          );
         }
         return response;
       })

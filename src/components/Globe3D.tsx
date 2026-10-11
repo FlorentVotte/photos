@@ -476,14 +476,14 @@ interface PolarLockable {
   maxPolarAngle: number;
 }
 
-/** Apply a touch config to a connected canvas and its controls. */
+/** Apply a touch config to the element the controls connected to. */
 function applyGlobeTouch(
-  canvas: HTMLElement,
+  target: HTMLElement,
   controls: PolarLockable,
   camera: THREE.Camera,
   touch: GlobeTouchConfig,
 ) {
-  if (touch.touchAction) canvas.style.touchAction = touch.touchAction;
+  if (touch.touchAction) target.style.touchAction = touch.touchAction;
   if (touch.lockPolar) {
     const polar = Math.acos(
       THREE.MathUtils.clamp(camera.position.y / camera.position.length(), -1, 1),
@@ -516,7 +516,7 @@ function Scene({
 }: SceneProps) {
   const { camera, gl } = useThree();
   const controls = useThree((state) => state.controls) as
-    | (THREE.EventDispatcher & PolarLockable)
+    | (THREE.EventDispatcher & PolarLockable & { domElement?: HTMLElement })
     | null;
   const [coarsePointer] = useState(
     () =>
@@ -539,8 +539,12 @@ function Scene({
   // page on coarse pointers and keep the drag horizontal-only.
   React.useEffect(() => {
     if (!controls || !touch.touchAction) return;
-    applyGlobeTouch(gl.domElement, controls, camera, touch);
-  }, [controls, gl, camera, touch]);
+    // controls.domElement is the element OrbitControls actually connected to
+    // (the canvas, via the explicit domElement prop below).
+    const target = controls.domElement;
+    if (!target) return;
+    applyGlobeTouch(target, controls, camera, touch);
+  }, [controls, camera, touch]);
 
   return (
     <>
@@ -580,6 +584,7 @@ function Scene({
       {/* Controls */}
       <OrbitControls
         makeDefault
+        domElement={gl.domElement}
         enablePan={config.enablePan}
         enableZoom={config.enableZoom && touch.enableZoom}
         minDistance={config.minDistance}

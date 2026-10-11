@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { etagMatches } from "./http-cache";
+import { etagMatches, isNotFoundError } from "./http-cache";
 
 describe("etagMatches", () => {
   const etag = '"123-456"';
@@ -12,5 +12,17 @@ describe("etagMatches", () => {
     expect(etagMatches('"999-456"', etag)).toBe(false);
     expect(etagMatches(null, etag)).toBe(false);
     expect(etagMatches("", etag)).toBe(false);
+  });
+});
+
+describe("isNotFoundError", () => {
+  it("treats ENOENT and ENOTDIR as not found", () => {
+    expect(isNotFoundError({ code: "ENOENT" })).toBe(true);
+    expect(isNotFoundError({ code: "ENOTDIR" })).toBe(true);
+  });
+  it("does not swallow other errors", () => {
+    expect(isNotFoundError({ code: "EACCES" })).toBe(false);
+    expect(isNotFoundError(new Error("x"))).toBe(false);
+    expect(isNotFoundError(null)).toBe(false);
   });
 });

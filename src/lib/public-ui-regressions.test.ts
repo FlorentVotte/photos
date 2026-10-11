@@ -179,6 +179,11 @@ describe("public UI regressions", () => {
     expect(sw).not.toMatch(/"\/(albums|search|map|about)"/);
     expect(sw).toContain("/_next/static/");
     expect(sw).toContain("MAX_IMAGE_ENTRIES");
+    // Catch-all only caches same-origin, non-RSC responses, via waitUntil.
+    expect(sw).toContain("url.origin === self.location.origin");
+    expect(sw).toContain('url.searchParams.has("_rsc")');
+    expect(sw).toContain('request.headers.get("RSC")');
+    expect(sw).toContain("event.waitUntil(");
   });
 
   it("keeps the home globe light, pausable and keyboard-safe", () => {
@@ -202,7 +207,12 @@ describe("public UI regressions", () => {
   it("keeps map surfaces touch-safe, keyboard-reachable and on-theme", () => {
     const globe = source("components/Globe3D.tsx");
     expect(globe).toContain("globeTouchConfig(");
-    expect(globe).toContain("style.touchAction");
+    // OrbitControls connects to one stable element (the canvas), and the touch
+    // config is applied to the element the controls actually connected to.
+    expect(globe).toContain("domElement={gl.domElement}");
+    expect(globe).toContain("const target = controls.domElement;");
+    expect(globe).toContain("applyGlobeTouch(target, controls, camera, touch)");
+    expect(globe).not.toContain("applyGlobeTouch(gl.domElement");
     for (const hex of ["#ef4444", "#f97316", "#88ccff", "#4da6ff", "#4a9eff"]) {
       expect(globe).not.toContain(hex);
     }

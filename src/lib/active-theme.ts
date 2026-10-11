@@ -1,11 +1,12 @@
+import { cache } from "react";
 import prisma from "@/lib/db";
 import { DEFAULT_THEME, THEME_PRESETS, ThemePresetKey } from "@/lib/themes";
 
 /**
- * Read the active theme from the database. Falls back to DEFAULT_THEME when the
+ * Read the active theme from the database (memoised per request via React cache). Falls back to DEFAULT_THEME when the
  * DB is absent (build time), the read fails, or the stored key is unknown.
  */
-export async function getActiveTheme(): Promise<ThemePresetKey> {
+export const getActiveTheme = cache(async (): Promise<ThemePresetKey> => {
   try {
     const settings = await prisma.settings.findUnique({
       where: { id: "default" },
@@ -16,4 +17,4 @@ export async function getActiveTheme(): Promise<ThemePresetKey> {
   } catch {
     return DEFAULT_THEME;
   }
-}
+});

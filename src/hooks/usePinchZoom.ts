@@ -77,6 +77,10 @@ export function usePinchZoom({
   const initialScale = useRef<number>(1);
   const isPinching = useRef<boolean>(false);
   const lastPanPosition = useRef<Position | null>(null);
+  // Zoom origin as fractions of the rendered size; mirrors transformOrigin.
+  const originRef = useRef<Position>({ x: 0.5, y: 0.5 });
+  // Latest scale, readable outside React updaters (set alongside setScale).
+  const scaleRef = useRef(1);
 
   // Clamp a pan offset to the image's overflow. offsetWidth/Height are layout
   // sizes, unaffected by the zoom transform. Unmeasurable -> leave as is.
@@ -87,7 +91,7 @@ export function usePinchZoom({
       return clampPan(pos, atScale, {
         width: el.offsetWidth,
         height: el.offsetHeight,
-      });
+      }, originRef.current);
     },
     [sizeRef]
   );
@@ -104,6 +108,8 @@ export function usePinchZoom({
   // on top of the image crossfade reads as broken rather than smooth.
   useEffect(() => {
     setIsSnapping(true);
+    scaleRef.current = 1;
+    originRef.current = { x: 0.5, y: 0.5 };
     setScale(1);
     setPosition({ x: 0, y: 0 });
     setTransformOrigin("center center");
@@ -113,6 +119,8 @@ export function usePinchZoom({
   }, [resetKey]);
 
   const resetZoom = useCallback(() => {
+    scaleRef.current = 1;
+    originRef.current = { x: 0.5, y: 0.5 };
     setScale(1);
     setPosition({ x: 0, y: 0 });
     setTransformOrigin("center center");
@@ -146,6 +154,7 @@ export function usePinchZoom({
           if (scale > 1) {
             // Keep the existing origin so it animates back out about the
             // same point it zoomed in on.
+            scaleRef.current = 1;
             setScale(1);
             setPosition({ x: 0, y: 0 });
           } else {
@@ -158,8 +167,10 @@ export function usePinchZoom({
                 ((e.touches[0].clientX - rect.left) / rect.width) * 100;
               const originY =
                 ((e.touches[0].clientY - rect.top) / rect.height) * 100;
+              originRef.current = { x: originX / 100, y: originY / 100 };
               setTransformOrigin(`${originX.toFixed(2)}% ${originY.toFixed(2)}%`);
             }
+            scaleRef.current = doubleTapScale;
             setScale(doubleTapScale);
           }
           lastTapTime.current = 0;
@@ -189,6 +200,7 @@ export function usePinchZoom({
         } else if (raw < MIN_SCALE) {
           newScale = MIN_SCALE - rubberband(MIN_SCALE - raw, MIN_SCALE);
         }
+        scaleRef.current = newScale;
         setScale(newScale);
 
         if (newScale <= MIN_SCALE) {
@@ -224,12 +236,11 @@ export function usePinchZoom({
 
       // Settle back inside the bounds. Clearing isGesturing on the same tick
       // re-enables the spring, so this springs home rather than snapping.
-      setScale((current) => {
-        const settled = Math.min(Math.max(current, MIN_SCALE), maxScale);
-        if (settled <= MIN_SCALE) setPosition({ x: 0, y: 0 });
-        else setPosition((prev) => clamp(prev, settled));
-        return settled;
-      });
+      const settled = Math.min(Math.max(scaleRef.current, MIN_SCALE), maxScale);
+      scaleRef.current = settled;
+      setScale(settled);
+      if (settled <= MIN_SCALE) setPosition({ x: 0, y: 0 });
+      else setPosition((prev) => clamp(prev, settled));
     }
     lastPanPosition.current = null;
     setIsGesturing(false);

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import { Readable } from "stream";
 import path from "path";
-import { etagMatches } from "@/lib/http-cache";
+import { etagMatches, isNotFoundError } from "@/lib/http-cache";
 
 // Serve photos from the data directory (for standalone mode)
 const PHOTOS_DIR = path.resolve(
@@ -39,12 +39,12 @@ export async function GET(
   }
 
   try {
-    // Stat the resolved, validated path; ENOENT means not found.
+    // Stat the resolved, validated path; ENOENT/ENOTDIR mean not found.
     let stat: fs.Stats;
     try {
       stat = await fs.promises.stat(filePath);
     } catch (err) {
-      if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+      if (isNotFoundError(err)) {
         return new NextResponse("Not Found", { status: 404 });
       }
       throw err;

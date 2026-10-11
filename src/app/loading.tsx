@@ -5,6 +5,7 @@ export default function HomeLoading() {
   return (
     <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
+      <main id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">
 
       {/* Hero — full-bleed */}
       <section className="relative w-full">
@@ -36,6 +37,7 @@ export default function HomeLoading() {
           </section>
         </div>
       </div>
+      </main>
     </div>
   );
 }
