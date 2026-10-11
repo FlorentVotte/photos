@@ -221,6 +221,29 @@ describe("public UI regressions", () => {
     const css = source("app/globals.css");
     expect(css).toMatch(/\.leaflet-bar a,[\s\S]*?width: 44px;[\s\S]*?height: 44px;/);
   });
+
+  it("sizes type in rem, not px, so it follows the reader's text setting", () => {
+    for (const f of [
+      "components/GlobeHeroSection.tsx",
+      "components/PhotoGlobe.tsx",
+      "components/BasemapAttribution.tsx",
+      "components/ChapterRouteMap.tsx",
+      "components/ChapterStats.tsx",
+    ]) {
+      expect(source(f), f).not.toMatch(/text-\[[\d.]+px\]/);
+    }
+    expect(source("components/ChapterRouteMap.tsx")).not.toContain("text-[0.5rem]");
+    const css = source("app/globals.css");
+    const label = css.match(/\.globe-hero-label\s*\{[^}]*\}/)?.[0] ?? "";
+    expect(label).not.toBe("");
+    expect(label).not.toMatch(/font-size:\s*[\d.]+px/);
+  });
+
+  it("lets photo grid rows grow with their captions", () => {
+    const grid = source("components/PhotoGrid.tsx");
+    expect(grid).toContain("auto-rows-[minmax(300px,auto)]");
+    expect(grid).toContain("auto-rows-[minmax(250px,auto)]");
+  });
 });
 
 describe("mobile safe areas, viewport units and touch targets", () => {

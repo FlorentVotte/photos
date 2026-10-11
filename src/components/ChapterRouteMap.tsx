@@ -129,7 +129,7 @@ export default function ChapterRouteMap({
       </div>`;
     } else {
       iconHtml = `<div class="w-4 h-4 rounded-full bg-primary/70 ring-2 ring-primary/20 flex items-center justify-center">
-        <span class="text-[0.5rem] font-semibold text-background-dark">${index + 1}</span>
+        <span class="text-[0.625rem] font-semibold text-background-dark">${index + 1}</span>
       </div>`;
     }
 

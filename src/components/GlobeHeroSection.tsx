@@ -99,7 +99,7 @@ export default function GlobeHeroSection({
         <div className="relative z-[3] order-2 flex flex-col gap-[18px] px-5 pb-10 lg:order-1 lg:px-0 lg:py-20">
           {kicker && (
             <p
-              className="gh-rise font-sans text-[11px] uppercase tracking-[0.32em] text-foreground/70 lg:text-xs"
+              className="gh-rise font-sans text-[0.6875rem] uppercase tracking-[0.32em] text-foreground/70 lg:text-xs"
               style={{ animationDuration: "900ms", animationDelay: "200ms" }}
             >
               {kicker}
@@ -107,14 +107,14 @@ export default function GlobeHeroSection({
           )}
 
           <h1
-            className="gh-rise font-display text-5xl font-semibold leading-[1.04] tracking-[-0.02em] text-foreground lg:text-[76px] lg:leading-[1.02]"
+            className="gh-rise font-display text-5xl font-semibold leading-[1.04] tracking-[-0.02em] text-foreground lg:text-[4.75rem] lg:leading-[1.02]"
             style={{ animationDelay: "320ms" }}
           >
             {title}
           </h1>
 
           <p
-            className="gh-rise font-display text-[17px] italic leading-[1.5] text-foreground/80 lg:text-xl"
+            className="gh-rise font-display text-[1.0625rem] italic leading-[1.5] text-foreground/80 lg:text-xl"
             style={{ animationDelay: "420ms" }}
           >
             {tagline}
@@ -137,7 +137,7 @@ export default function GlobeHeroSection({
           {markers.length > 0 && (
             <>
               <p
-                className="gh-fade font-sans text-[10px] uppercase tracking-[0.24em] text-text-muted lg:hidden"
+                className="gh-fade font-sans text-micro uppercase text-text-muted lg:hidden"
                 style={{ animationDelay: "900ms" }}
               >
                 {t("home", "globeHint")}
@@ -147,7 +147,7 @@ export default function GlobeHeroSection({
                 className="gh-fade mt-6 flex flex-col gap-0.5 border-t border-surface-border pt-6 lg:mt-10"
                 style={{ animationDelay: "800ms" }}
               >
-                <p className="mb-2.5 font-sans text-[10px] uppercase tracking-[0.32em] text-text-muted">
+                <p className="mb-2.5 font-sans text-[0.625rem] uppercase tracking-[0.32em] text-text-muted">
                   {t("nav", "albums")}
                 </p>
                 {markers.map((marker) => (
@@ -161,14 +161,14 @@ export default function GlobeHeroSection({
                     aria-current={
                       activeSlug === marker.slug ? "true" : undefined
                     }
-                    className={`flex min-h-11 items-center justify-between gap-4 border-b border-surface-border/60 py-[7px] font-sans text-[13px] uppercase tracking-[0.16em] transition-[color,padding-left] duration-[220ms] ease-out hover:pl-2.5 lg:min-h-0 lg:items-baseline ${
+                    className={`flex min-h-11 items-center justify-between gap-4 border-b border-surface-border/60 py-[7px] font-sans text-[0.8125rem] uppercase tracking-[0.16em] transition-[color,padding-left] duration-[220ms] ease-out hover:pl-2.5 lg:min-h-0 lg:items-baseline ${
                       activeSlug === marker.slug
                         ? "pl-2.5 text-white"
                         : "text-foreground/75 hover:text-white"
                     }`}
                   >
                     <span>{marker.label}</span>
-                    <span className="font-sans text-[11px] text-text-muted">
+                    <span className="font-sans text-[0.6875rem] text-text-muted">
                       {marker.year}
                     </span>
                   </Link>

@@ -143,11 +143,11 @@ export default function PhotoGlobe({ photos, albums }: PhotoGlobeProps) {
             <li key={marker.slug}>
               <Link
                 href={`/album/${marker.slug}`}
-                className="flex min-h-11 items-center justify-between gap-4 border-b border-surface-border/60 py-[7px] font-sans text-[13px] uppercase tracking-[0.16em] text-foreground/75 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="flex min-h-11 items-center justify-between gap-4 border-b border-surface-border/60 py-[7px] font-sans text-[0.8125rem] uppercase tracking-[0.16em] text-foreground/75 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <span>{marker.label}</span>
                 {locations.get(marker.slug) && (
-                  <span className="text-[11px] text-text-muted">
+                  <span className="text-[0.6875rem] text-text-muted">
                     {locations.get(marker.slug)}
                   </span>
                 )}

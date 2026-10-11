@@ -90,8 +90,8 @@ export default function PhotoGrid({
       <div
         className={`grid gap-4 md:gap-6 ${
           variant === "chapter"
-            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-[300px]"
-            : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[250px]"
+            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-[minmax(300px,auto)]"
+            : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[minmax(250px,auto)]"
         }`}
       >
         {displayedPhotos.map((photo, index) => {

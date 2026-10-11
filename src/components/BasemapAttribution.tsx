@@ -10,7 +10,7 @@ export default function BasemapAttribution({
   className?: string;
 }) {
   return (
-    <p className={`text-[10px] leading-relaxed text-text-muted ${className}`}>
+    <p className={`text-[0.625rem] leading-relaxed text-text-muted ${className}`}>
       &copy;{" "}
       <a
         href="https://openfreemap.org/"
