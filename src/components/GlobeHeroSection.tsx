@@ -161,13 +161,19 @@ export default function GlobeHeroSection({
                     aria-current={
                       activeSlug === marker.slug ? "true" : undefined
                     }
-                    className={`flex min-h-11 items-center justify-between gap-4 border-b border-surface-border/60 py-[7px] font-sans text-[0.8125rem] uppercase tracking-[0.16em] transition-[color,padding-left] duration-[220ms] ease-out hover:pl-2.5 lg:min-h-0 lg:items-baseline ${
+                    className={`group/row flex min-h-11 items-center justify-between gap-4 border-b border-surface-border/60 py-[7px] font-sans text-[0.8125rem] uppercase tracking-[0.16em] transition-colors duration-[220ms] ease-out lg:min-h-0 lg:items-baseline ${
                       activeSlug === marker.slug
-                        ? "pl-2.5 text-white"
+                        ? "text-white"
                         : "text-foreground/75 hover:text-white"
                     }`}
                   >
-                    <span>{marker.label}</span>
+                    <span
+                      className={`transition-transform duration-[220ms] ease-out group-hover/row:translate-x-2.5 motion-reduce:transition-none motion-reduce:group-hover/row:translate-x-0 ${
+                        activeSlug === marker.slug ? "translate-x-2.5 motion-reduce:translate-x-0" : ""
+                      }`}
+                    >
+                      {marker.label}
+                    </span>
                     <span className="font-sans text-[0.6875rem] text-text-muted">
                       {marker.year}
                     </span>

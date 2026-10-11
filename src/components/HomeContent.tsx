@@ -74,9 +74,10 @@ export default function HomeContent({
             className="group/cta inline-flex min-h-11 items-center gap-3 font-sans text-sm uppercase tracking-[0.24em] text-text-muted transition-colors hover:text-foreground md:min-h-0"
           >
             <span>{t("home", "viewArchive")}</span>
+            {/* w-12 box scaled to 2rem at rest; -mr-4 cancels the extra 1rem */}
             <span
               aria-hidden="true"
-              className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
+              className="-mr-4 h-px w-12 origin-left scale-x-[0.6667] bg-text-muted/60 transition-[transform,background-color] duration-300 ease-out-soft group-hover/cta:scale-x-100 group-hover/cta:bg-foreground motion-reduce:transition-none"
             />
           </Link>
         </div>

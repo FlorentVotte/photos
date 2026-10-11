@@ -294,3 +294,38 @@ describe("mobile safe areas, viewport units and touch targets", () => {
     expect(photo.match(/inline-flex min-h-11 items-center gap-2/g)?.length).toBe(3);
   });
 });
+
+describe("motion is driven by transforms and honours reduced motion", () => {
+  it("drives the album hero parallax without per-scroll React state", () => {
+    const album = source("components/AlbumContent.tsx");
+    expect(album).not.toContain("setScrollY");
+    expect(album).not.toContain("will-change-transform");
+    expect(album).toContain("heroParallax(");
+    expect(album).toContain("requestAnimationFrame");
+    expect(album).toContain("IntersectionObserver");
+    expect(album).toContain("prefers-reduced-motion: reduce");
+  });
+
+  it("scales hairlines instead of animating their width", () => {
+    for (const file of [
+      "components/AlbumContent.tsx",
+      "components/HomeContent.tsx",
+      "components/PhotoContent.tsx",
+    ]) {
+      const src = source(file);
+      expect(src).not.toMatch(/transition-all duration-300 group(\/cta)?-hover:w-/);
+      expect(src).toContain("origin-left scale-x-[");
+      expect(src).toContain("ease-out-soft");
+    }
+  });
+
+  it("reveals the gh-rule with scaleX and the globe list rows with translate", () => {
+    const css = source("app/globals.css");
+    expect(css).toMatch(/\.gh-rule \{\s*width: 56px;\s*transform: scaleX\(0\);/);
+    expect(css).not.toMatch(/transition: width 900ms/);
+    const globe = source("components/GlobeHeroSection.tsx");
+    expect(globe).not.toContain("padding-left");
+    expect(globe).not.toContain("pl-2.5");
+    expect(globe).toContain("translate-x-2.5");
+  });
+});
