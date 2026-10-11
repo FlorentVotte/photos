@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useLocale } from "@/lib/LocaleContext";
 import { formatPhotoTitle } from "@/lib/photo-display";
 import { nextVisibleCount } from "@/lib/pagination";
+import { touchTargetHtml } from "@/lib/map-ui";
 import type { Photo } from "@/lib/types";
 import type * as LeafletTypes from "leaflet";
 
@@ -145,7 +146,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
   if (!L) {
     return (
       <>
-        <div className="w-full h-[600px] bg-surface-dark flex items-center justify-center">
+        <div className="w-full h-[60svh] min-h-[360px] md:h-[600px] bg-surface-dark flex items-center justify-center">
           <p className="font-sans text-eyebrow uppercase text-text-muted animate-pulse">
             {t("map", "loadingMap")}
           </p>
@@ -166,10 +167,12 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
 
   const customIcon = L.divIcon({
     className: "custom-marker",
-    html: `<div class="w-3 h-3 rounded-full bg-primary ring-4 ring-primary/30"></div>`,
-    iconSize: [12, 12],
-    iconAnchor: [6, 6],
-    popupAnchor: [0, -10],
+    html: touchTargetHtml(
+      `<div class="w-3 h-3 rounded-full bg-primary ring-4 ring-primary/30"></div>`,
+    ),
+    iconSize: [44, 44],
+    iconAnchor: [22, 22],
+    popupAnchor: [0, -16],
   });
 
   return (
@@ -201,7 +204,7 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
         <MapContainer
           center={[centerLat, centerLng]}
           zoom={4}
-          className="w-full h-[600px] overflow-hidden z-0 bg-surface-dark"
+          className="w-full h-[60svh] min-h-[360px] md:h-[600px] overflow-hidden z-0 bg-surface-dark"
           scrollWheelZoom={true}
         >
           <FitBoundsComponent bounds={bounds} />

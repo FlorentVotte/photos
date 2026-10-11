@@ -146,6 +146,7 @@ export const translations = {
     viewGlobe: { en: "Globe", fr: "Globe" },
     viewLabel: { en: "View", fr: "Vue" },
     albumsOnGlobe: { en: "albums on the globe", fr: "albums sur le globe" },
+    albumsOnGlobeHeading: { en: "Albums on the globe", fr: "Albums sur le globe" },
     noGeoAlbums: {
       en: "No album has GPS data yet",
       fr: "Aucun album ne dispose encore de données GPS",

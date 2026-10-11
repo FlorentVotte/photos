@@ -198,4 +198,27 @@ describe("public UI regressions", () => {
     expect(section).toContain('t("home", "globePause")');
     expect(section).toContain("!reduceMotion && (");
   });
+
+  it("keeps map surfaces touch-safe, keyboard-reachable and on-theme", () => {
+    const globe = source("components/Globe3D.tsx");
+    expect(globe).toContain("globeTouchConfig(");
+    expect(globe).toContain("style.touchAction");
+    for (const hex of ["#ef4444", "#f97316", "#88ccff", "#4da6ff", "#4a9eff"]) {
+      expect(globe).not.toContain(hex);
+    }
+    const photoGlobe = source("components/PhotoGlobe.tsx");
+    expect(photoGlobe).toContain("albumsOnGlobeHeading");
+    expect(photoGlobe).toContain("href={`/album/${marker.slug}`}");
+    expect(source("components/ChapterRouteMap.tsx")).not.toContain("#7ba88e");
+    for (const f of ["components/PhotoMap.tsx", "components/ChapterRouteMap.tsx"]) {
+      const text = source(f);
+      expect(text, f).toContain("iconSize: [44, 44]");
+      expect(text, f).toContain("iconAnchor: [22, 22]");
+    }
+    expect(source("components/PhotoMap.tsx")).toContain(
+      "h-[60svh] min-h-[360px] md:h-[600px]",
+    );
+    const css = source("app/globals.css");
+    expect(css).toMatch(/\.leaflet-bar a,[\s\S]*?width: 44px;[\s\S]*?height: 44px;/);
+  });
 });

@@ -421,3 +421,38 @@ img {
 .gh-card-glow {
   box-shadow: inset 0 0 60px color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
+
+/* ---------------------------------------------------------------------------
+   Leaflet zoom control: 44px touch targets, themed from the design tokens.
+   Leaflet's defaults are 30px white/grey buttons.
+   ------------------------------------------------------------------------ */
+.leaflet-bar {
+  border: 1px solid var(--color-surface-border);
+  box-shadow: none;
+}
+
+.leaflet-bar a,
+.leaflet-bar a:hover {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border-color: var(--color-surface-border);
+}
+
+.leaflet-bar a:hover,
+.leaflet-bar a:focus-visible {
+  color: var(--color-primary);
+}
+
+.leaflet-bar a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.leaflet-bar a.leaflet-disabled {
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}

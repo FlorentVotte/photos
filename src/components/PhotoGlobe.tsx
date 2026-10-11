@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Globe3D, type GlobeMarker } from "./Globe3D";
 import { albumMarkers } from "@/lib/geo-utils";
@@ -25,6 +26,11 @@ export default function PhotoGlobe({ photos, albums }: PhotoGlobeProps) {
   const markers = useMemo(
     () => albumMarkers(photos, albums),
     [photos, albums]
+  );
+
+  const locations = useMemo(
+    () => new Map(albums.map((album) => [album.slug, album.location])),
+    [albums]
   );
 
   // Globe3D hands back the very object it was given, so a lookup by identity
@@ -122,9 +128,34 @@ export default function PhotoGlobe({ photos, albums }: PhotoGlobeProps) {
         )}
       </div>
 
-      <p className="text-center font-sans text-eyebrow uppercase text-text-muted mt-6">
-        {markers.length} {t("map", "albumsOnGlobe")}
-      </p>
+      {/* The globe hides far-side markers from the tab order and has no keyboard
+          rotation, so every pinned album is also listed here. */}
+      <section aria-labelledby="globe-albums-heading" className="mt-8">
+        <h2
+          id="globe-albums-heading"
+          className="mb-2.5 font-sans text-eyebrow uppercase text-text-muted"
+        >
+          {t("map", "albumsOnGlobeHeading")}
+          <span className="ml-3">{markers.length}</span>
+        </h2>
+        <ul className="border-t border-surface-border">
+          {markers.map((marker) => (
+            <li key={marker.slug}>
+              <Link
+                href={`/album/${marker.slug}`}
+                className="flex min-h-11 items-center justify-between gap-4 border-b border-surface-border/60 py-[7px] font-sans text-[13px] uppercase tracking-[0.16em] text-foreground/75 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <span>{marker.label}</span>
+                {locations.get(marker.slug) && (
+                  <span className="text-[11px] text-text-muted">
+                    {locations.get(marker.slug)}
+                  </span>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
     </>
   );
 }
