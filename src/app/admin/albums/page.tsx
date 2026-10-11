@@ -195,7 +195,7 @@ export default function AlbumsEditorPage() {
     "block mb-2 font-sans text-label uppercase text-text-muted";
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <SkipLink />
       <Header showSkipLink={false} />
 

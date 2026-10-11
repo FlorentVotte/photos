@@ -248,7 +248,7 @@ export default function PhotoContent({
             )}
 
             <div
-              className="relative w-full h-[60vh] sm:h-[70vh] md:h-[78vh] flex items-center justify-center bg-background-dark cursor-pointer"
+              className="relative w-full h-[60svh] sm:h-[70svh] md:h-[78svh] flex items-center justify-center bg-background-dark cursor-pointer"
               onClick={openLightbox}
             >
               <ProtectedImage
@@ -263,18 +263,18 @@ export default function PhotoContent({
             </div>
 
             {/* Counter — quiet caption, not a backdrop pill */}
-            <p className="absolute top-4 left-4 z-10 font-sans text-eyebrow uppercase text-white/60 tabular-nums">
+            <p className="absolute top-4 left-4 z-10 font-sans text-eyebrow uppercase text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)] tabular-nums">
               {String(currentIndex + 1).padStart(2, "0")} /{" "}
               {String(albumPhotos.length).padStart(2, "0")}
             </p>
 
             {/* Mobile nav */}
-            <div className="absolute bottom-4 right-4 z-10 flex gap-6 md:hidden">
+            <div className="absolute bottom-4 right-4 z-10 flex gap-2 md:hidden">
               {prevPhoto && (
                 <Link
                   href={`/photo/${prevPhoto.id}`}
                   scroll={false}
-                  className="text-2xl font-thin text-white/60 hover:text-white"
+                  className="inline-flex size-11 items-center justify-center text-2xl font-thin text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)] hover:text-white"
                   aria-label={t("photo", "previous")}
                 >
                   ←
@@ -284,7 +284,7 @@ export default function PhotoContent({
                 <Link
                   href={`/photo/${nextPhoto.id}`}
                   scroll={false}
-                  className="text-2xl font-thin text-white/60 hover:text-white"
+                  className="inline-flex size-11 items-center justify-center text-2xl font-thin text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)] hover:text-white"
                   aria-label={t("photo", "next")}
                 >
                   →
@@ -313,7 +313,7 @@ export default function PhotoContent({
                 <button
                   onClick={handleDownload}
                   disabled={isDownloading}
-                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t("photo", "download")}
                 >
                   <span aria-hidden="true" className="material-symbols-outlined !text-base">
@@ -323,7 +323,7 @@ export default function PhotoContent({
                 </button>
                 <button
                   onClick={handleShare}
-                  className="relative inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="relative inline-flex min-h-11 items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t("photo", "share")}
                 >
                   <span aria-hidden="true" className="material-symbols-outlined !text-base">
@@ -348,7 +348,7 @@ export default function PhotoContent({
                 </span>
                 <button
                   onClick={openLightbox}
-                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <span aria-hidden="true" className="material-symbols-outlined !text-base">
                     slideshow

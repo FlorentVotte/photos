@@ -31,9 +31,9 @@ const navItemClass =
 const navItemActiveClass =
   "font-display text-3xl font-semibold tracking-tight text-foreground transition-colors";
 const desktopNavClass =
-  "text-sm font-medium leading-normal hover:text-primary transition-colors";
+  "inline-flex min-h-11 items-center text-sm font-medium leading-normal hover:text-primary transition-colors";
 const desktopNavActiveClass =
-  "text-sm font-medium leading-normal text-foreground underline decoration-primary decoration-1 underline-offset-8 hover:text-primary transition-colors";
+  "inline-flex min-h-11 items-center text-sm font-medium leading-normal text-foreground underline decoration-primary decoration-1 underline-offset-8 hover:text-primary transition-colors";
 
 const NAV_ITEMS = [
   { href: "/", key: "home" },
@@ -65,15 +65,16 @@ export function MobileMenuDialog({
     >
       <button
         onClick={onClose}
-        className="absolute right-3 top-3 z-10 flex min-h-11 min-w-11 items-center justify-center text-foreground hover:text-primary transition-colors"
+        className="absolute right-[max(0.75rem,env(safe-area-inset-right))] top-[max(0.75rem,env(safe-area-inset-top))] z-10 flex min-h-11 min-w-11 items-center justify-center text-foreground hover:text-primary transition-colors"
         aria-label={t("nav", "closeMenu")}
       >
         <span aria-hidden="true" className="material-symbols-outlined">close</span>
       </button>
       <nav
-        className="flex h-full flex-col items-start justify-center gap-8 px-8"
+        className="flex h-full flex-col items-start justify-start overflow-y-auto pb-[max(4rem,env(safe-area-inset-bottom))] pl-[max(2rem,env(safe-area-inset-left))] pr-[max(2rem,env(safe-area-inset-right))] pt-[max(4rem,env(safe-area-inset-top))]"
         aria-label={t("nav", "main")}
       >
+        <div className="my-auto flex flex-col items-start gap-8">
         {NAV_ITEMS.map(({ href, key }) => {
           const active = pathname === href;
           return (
@@ -98,6 +99,7 @@ export function MobileMenuDialog({
         >
           {locale === "en" ? "FR — Français" : "EN — English"}
         </button>
+        </div>
       </nav>
     </div>
   );
@@ -145,14 +147,14 @@ export default function Header({
       {showSkipLink && (
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[70] focus:bg-background-dark focus:px-4 focus:py-2 focus:text-foreground focus:font-sans focus:text-label focus:uppercase"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-[max(0.5rem,env(safe-area-inset-top))] focus:left-[max(0.5rem,env(safe-area-inset-left))] focus:z-[70] focus:bg-background-dark focus:px-4 focus:py-2 focus:text-foreground focus:font-sans focus:text-label focus:uppercase"
         >
           {t("nav", "skipToContent")}
         </a>
       )}
       <header
         data-scrolled={scrolled}
-        className={`scroll-edge sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-transparent px-4 py-3 md:px-6 md:py-4 lg:px-16 ${
+        className={`scroll-edge sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-transparent pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] md:pb-4 md:pt-[max(1rem,env(safe-area-inset-top))] md:pl-[max(1.5rem,env(safe-area-inset-left))] md:pr-[max(1.5rem,env(safe-area-inset-right))] lg:pl-[max(4rem,env(safe-area-inset-left))] lg:pr-[max(4rem,env(safe-area-inset-right))] ${
           // Lighter material over a hero image, thicker over ordinary content.
           transparent ? "material" : "material-thick"
         } ${
@@ -194,7 +196,7 @@ export default function Header({
             })}
             <button
               onClick={toggleLocale}
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors uppercase"
+              className="inline-flex min-h-11 items-center text-sm font-medium leading-normal hover:text-primary transition-colors uppercase"
               title={locale === "en" ? "Switch to French" : "Passer en anglais"}
               aria-label={locale === "en" ? "Switch to French" : "Passer en anglais"}
             >

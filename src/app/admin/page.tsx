@@ -273,7 +273,7 @@ export default function AdminPage() {
 
   return (
     <LiveRegionProvider>
-      <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+      <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
         <SkipLink />
         <Header showSkipLink={false} />
 

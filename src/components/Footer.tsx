@@ -10,7 +10,7 @@ export default function Footer() {
   return (
     <footer className="mt-24 border-t border-surface-border">
       <div className="mx-auto flex w-full max-w-[1200px] flex-col items-start justify-between gap-4 px-6 py-10 md:flex-row md:items-center md:px-12">
-        <p className="font-sans text-label uppercase text-text-muted">
+        <p className="inline-flex min-h-11 items-center font-sans text-label uppercase text-text-muted">
           © {currentYear} Florent Votte · {t("footer", "allRightsReserved")}
         </p>
         <nav
@@ -19,13 +19,13 @@ export default function Footer() {
         >
           <Link
             href="/privacy"
-            className="font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
+            className="inline-flex min-h-11 items-center font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
           >
             {t("footer", "privacyPolicy")}
           </Link>
           <Link
             href="/legal"
-            className="font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
+            className="inline-flex min-h-11 items-center font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
           >
             {t("footer", "legalNotice")}
           </Link>

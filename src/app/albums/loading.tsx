@@ -3,7 +3,7 @@ import { AlbumGridSkeleton, Skeleton } from "@/components/Skeleton";
 
 export default function AlbumsLoading() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
       <main id="main" tabIndex={-1} className="flex-1 px-6 pt-20 pb-20 md:px-12 md:pt-28">
         <div className="mx-auto max-w-[1200px]">

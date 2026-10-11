@@ -123,7 +123,7 @@ export default function AlbumContent({
       {/* Cinematic hero with parallax */}
       <div
         ref={heroRef}
-        className="relative h-[75vh] min-h-[480px] w-full overflow-hidden md:h-[88vh] md:min-h-[640px]"
+        className="relative h-[75svh] min-h-[480px] w-full overflow-hidden md:h-[88svh] md:min-h-[640px]"
       >
         <ProtectedImage
           alt=""

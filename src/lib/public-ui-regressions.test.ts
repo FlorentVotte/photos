@@ -222,3 +222,52 @@ describe("public UI regressions", () => {
     expect(css).toMatch(/\.leaflet-bar a,[\s\S]*?width: 44px;[\s\S]*?height: 44px;/);
   });
 });
+
+describe("mobile safe areas, viewport units and touch targets", () => {
+  it("respects safe areas", () => {
+    expect(source("app/layout.tsx")).toContain('viewportFit: "cover"');
+    const header = source("components/Header.tsx");
+    expect(header).toContain("pt-[max(0.75rem,env(safe-area-inset-top))]");
+    expect(header).toContain("pl-[max(1rem,env(safe-area-inset-left))]");
+    expect(header).toContain("right-[max(0.75rem,env(safe-area-inset-right))]");
+    expect(header).toContain("focus:top-[max(0.5rem,env(safe-area-inset-top))]");
+  });
+
+  it("lets the mobile menu scroll in landscape without clipping", () => {
+    const header = source("components/Header.tsx");
+    expect(header).toContain("justify-start overflow-y-auto");
+    expect(header).toContain("my-auto flex flex-col");
+    expect(header).not.toContain("items-start justify-center gap-8 px-8");
+  });
+
+  it("uses small-viewport units for tall surfaces", () => {
+    for (const f of [
+      "components/AlbumContent.tsx",
+      "app/album/[slug]/loading.tsx",
+    ]) {
+      expect(source(f), f).toContain("h-[75svh]");
+      expect(source(f), f).toContain("md:h-[88svh]");
+    }
+    expect(source("components/PhotoContent.tsx")).toContain(
+      "h-[60svh] sm:h-[70svh] md:h-[78svh]",
+    );
+    expect(source("app/loading.tsx")).toContain("min-h-[70svh]");
+    expect(source("app/loading.tsx")).toContain("min-h-svh");
+  });
+
+  it("gives interactive text at least a 44px hit area", () => {
+    const search = source("app/search/SearchClient.tsx");
+    expect(search).toContain("inline-flex min-h-11 items-center px-2");
+    expect(search).toContain("after:bottom-1");
+    expect(search).toContain('className="min-h-11 rounded-full');
+    expect(source("components/Footer.tsx")).toContain(
+      "inline-flex min-h-11 items-center",
+    );
+    const header = source("components/Header.tsx");
+    expect(header.match(/inline-flex min-h-11 items-center/g)?.length).toBe(3);
+    const photo = source("components/PhotoContent.tsx");
+    expect(photo).toContain("inline-flex size-11 items-center justify-center");
+    expect(photo).not.toContain("text-white/60");
+    expect(photo.match(/inline-flex min-h-11 items-center gap-2/g)?.length).toBe(3);
+  });
+});

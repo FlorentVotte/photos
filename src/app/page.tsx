@@ -32,7 +32,7 @@ export default async function Home() {
   const markers = sortMarkersByDate(albumMarkers(photos, albums));
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+    <div className="relative flex h-auto min-h-svh w-full flex-col overflow-x-hidden">
       <WebsiteStructuredData
         name="Regards Perdus - Photo Portfolio"
         description="Capturing the fleeting moments between departures and arrivals. A visual journey through the world."

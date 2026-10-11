@@ -582,7 +582,7 @@ function ChaptersEditorContent() {
 
 export default function ChaptersEditorPage() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <SkipLink />
       <Header showSkipLink={false} />
       <Suspense

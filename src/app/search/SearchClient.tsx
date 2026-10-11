@@ -159,7 +159,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
 
       <main id="main" tabIndex={-1} className="flex-1 px-6 pt-20 pb-20 md:px-12 md:pt-28">
@@ -198,9 +198,9 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                     updateSearchUrl(query, type, "pushState");
                   }}
                   aria-pressed={filterType === type}
-                  className={`relative font-sans text-eyebrow uppercase transition-colors ${
+                  className={`relative inline-flex min-h-11 items-center px-2 font-sans text-eyebrow uppercase transition-colors ${
                     filterType === type
-                      ? "text-foreground after:absolute after:-bottom-2 after:left-0 after:right-0 after:h-px after:bg-foreground"
+                      ? "text-foreground after:absolute after:bottom-1 after:left-2 after:right-2 after:h-px after:bg-foreground"
                       : "text-text-muted hover:text-foreground"
                   }`}
                 >
@@ -346,7 +346,7 @@ function SearchPhotoResults({
           <button
             type="button"
             onClick={onLoadMore}
-            className="rounded-full border border-surface-border px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="min-h-11 rounded-full border border-surface-border px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             {t("search", "loadMore")}
           </button>

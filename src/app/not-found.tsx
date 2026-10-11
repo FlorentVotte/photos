@@ -8,7 +8,7 @@ export default function NotFound() {
   const { t } = useLocale();
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
 
       <main id="main" tabIndex={-1} className="flex flex-1 items-center justify-center px-6 py-24 md:px-12">
