@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { CSSProperties, Ref } from "react";
 import type { Album } from "@/lib/types";
+import ProtectedImage from "./ProtectedImage";
+import { coverSources, wideCoverSources } from "@/lib/photo-display";
 
 interface AlbumCardProps {
   album: Album;
@@ -32,6 +34,8 @@ export default function AlbumCard({
   };
 
   const isLarge = variant === "large";
+  // The thumb is a square crop, so only square cards may use it.
+  const isSquare = variant === "default" || variant === "square";
 
   return (
     <Link
@@ -40,9 +44,17 @@ export default function AlbumCard({
       style={style}
       className={`group relative overflow-hidden cursor-pointer ${variantClasses[variant]} ${className}`}
     >
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-        style={{ backgroundImage: `url("${album.coverImage}")` }}
+      <ProtectedImage
+        alt=""
+        src={album.coverImage}
+        sources={isSquare ? coverSources(album.coverImage) : wideCoverSources(album.coverImage)}
+        sizes={
+          isLarge
+            ? "(min-width: 1024px) 66vw, 100vw"
+            : "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+        }
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
       />
 
       {/* Stronger scrim for legibility on bright cover images */}

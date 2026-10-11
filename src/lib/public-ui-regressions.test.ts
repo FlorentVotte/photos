@@ -150,4 +150,34 @@ describe("public UI regressions", () => {
     expect(keyboard).toContain("isInteractiveTarget(e.target)");
     expect(keyboard).not.toMatch(/handleKeyDown = [^]*?\n\s*e\.stopImmediatePropagation\(\);\n\n\s*switch/);
   });
+
+  it("serves album covers as responsive lazy images, not CSS backgrounds", () => {
+    for (const f of ["components/AlbumCard.tsx", "components/AlbumContent.tsx", "app/search/SearchClient.tsx"]) {
+      expect(source(f), f).not.toContain("backgroundImage");
+      expect(source(f), f).toContain("<ProtectedImage");
+    }
+    const content = source("components/AlbumContent.tsx");
+    expect(content).toContain('loading="eager"');
+    expect(content).toContain('fetchPriority="high"');
+  });
+
+  it("loads the lightbox lazily and uses the medium fallback src", () => {
+    const photo = source("components/PhotoContent.tsx");
+    expect(photo).not.toContain('import Lightbox from');
+    expect(photo).toContain("ssr: false");
+    expect(photo).toContain("lightboxRequested &&");
+    expect(photo).toContain("src={photo.src.medium}");
+  });
+
+  it("preloads only the Noto font pair", () => {
+    const layout = source("app/layout.tsx");
+    expect(layout.match(/preload: false/g)).toHaveLength(7);
+  });
+
+  it("keeps the service worker from precaching pages", () => {
+    const sw = readFileSync(join(process.cwd(), "public", "sw.js"), "utf8");
+    expect(sw).not.toMatch(/"\/(albums|search|map|about)"/);
+    expect(sw).toContain("/_next/static/");
+    expect(sw).toContain("MAX_IMAGE_ENTRIES");
+  });
 });

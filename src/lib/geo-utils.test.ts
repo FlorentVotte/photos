@@ -484,6 +484,19 @@ describe("geo-utils", () => {
       expect(marker.photoCount).toBe(42);
     });
 
+    it("should accept the minimal geo-point shape", () => {
+      const albums = [createAlbum({ id: "a", slug: "paris" })];
+      const points = [
+        { albumId: "a", metadata: { latitude: 0, longitude: 0 } },
+        { albumId: "a", metadata: { latitude: null, longitude: null } },
+      ];
+
+      const [marker] = albumMarkers(points, albums);
+
+      expect(marker.lat).toBe(0);
+      expect(marker.lng).toBe(0);
+    });
+
     it("should drop albums with no geotagged photos", () => {
       const albums = [
         createAlbum({ id: "a", slug: "paris" }),

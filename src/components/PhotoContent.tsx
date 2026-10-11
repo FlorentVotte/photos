@@ -3,10 +3,10 @@
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import ProtectedImage from "./ProtectedImage";
 import PhotoLocationMap from "./PhotoLocationMap";
 import PhotoKeyboardNav from "./PhotoKeyboardNav";
-import Lightbox from "./Lightbox";
 import { useLocale } from "@/lib/LocaleContext";
 import { usePresence } from "@/hooks";
 import {
@@ -16,6 +16,9 @@ import {
 } from "@/lib/photo-display";
 import { hasFiniteCoordinates } from "@/lib/geo-utils";
 import type { Photo, Album } from "@/lib/types";
+
+// Lightbox pulls in the motion library; load it only once it is first opened.
+const Lightbox = dynamic(() => import("./Lightbox"), { ssr: false });
 
 interface PhotoContentProps {
   photo: Photo;
@@ -63,10 +66,13 @@ export default function PhotoContent({
   const [announcement, setAnnouncement] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  // Stays true after the first open so the close animation can still play.
+  const [lightboxRequested, setLightboxRequested] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(currentIndex);
 
   const openLightbox = useCallback(() => {
     setLightboxIndex(currentIndex);
+    setLightboxRequested(true);
     setLightboxOpen(true);
   }, [currentIndex]);
 
@@ -248,7 +254,7 @@ export default function PhotoContent({
               <ProtectedImage
                 alt={displayTitle}
                 className="max-h-full max-w-full object-contain pointer-events-none"
-                src={photo.src.full}
+                src={photo.src.medium}
                 sources={photo.src}
                 sizes="(max-width: 1200px) 100vw, 1200px"
                 loading="eager"
@@ -457,13 +463,15 @@ export default function PhotoContent({
         </div>
       </main>
 
-      <Lightbox
-        photos={albumPhotos}
-        currentIndex={lightboxIndex}
-        isOpen={lightboxOpen}
-        onClose={handleLightboxClose}
-        onNavigate={handleLightboxNavigate}
-      />
+      {lightboxRequested && (
+        <Lightbox
+          photos={albumPhotos}
+          currentIndex={lightboxIndex}
+          isOpen={lightboxOpen}
+          onClose={handleLightboxClose}
+          onNavigate={handleLightboxNavigate}
+        />
+      )}
     </>
   );
 }

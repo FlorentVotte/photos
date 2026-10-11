@@ -22,6 +22,8 @@ import "./globals.css";
 
 // Each theme picks two of these. We load them all so the user can
 // switch in /admin/settings without a code change.
+// Only the Noto pair is preloaded (the live theme and most presets use it); the
+// rest stay preload:false so they are fetched only when a theme actually uses them.
 const notoSerif = Noto_Serif({
   variable: "--font-noto-serif",
   subsets: ["latin"],
@@ -36,37 +38,44 @@ const ebGaramond = EB_Garamond({
   variable: "--font-eb-garamond",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 const hankenGrotesk = Hanken_Grotesk({
   variable: "--font-hanken-grotesk",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 const anton = Anton({
   variable: "--font-anton",
   subsets: ["latin"],
   weight: "400",
   display: "swap",
+  preload: false,
 });
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 const bodoniModa = Bodoni_Moda({
   variable: "--font-bodoni-moda",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 
 const fontVariableClasses = [

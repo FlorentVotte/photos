@@ -143,6 +143,12 @@ export function formatDistance(km: number): string {
   return `${km.toLocaleString()} km`;
 }
 
+/** The minimal photo shape needed to place an album on the globe. */
+export interface GeoPhoto {
+  albumId: string;
+  metadata: { latitude?: number | null; longitude?: number | null };
+}
+
 /**
  * Build one globe marker per album, positioned at the mean coordinate of that
  * album's geotagged photos. Albums without a geotagged photo or without a cover
@@ -152,7 +158,10 @@ export function formatDistance(km: number): string {
  * antimeridian would land on the wrong side of the globe. No album in this
  * archive does, and handling it would cost more than it buys.
  */
-export function albumMarkers(photos: Photo[], albums: Album[]): AlbumMarker[] {
+export function albumMarkers(
+  photos: readonly GeoPhoto[],
+  albums: Album[]
+): AlbumMarker[] {
   const sums = new Map<string, { lat: number; lng: number; count: number }>();
 
   for (const photo of photos) {

@@ -14,7 +14,8 @@ import {
   shouldRehydrateSearchState,
   type FilterType,
 } from "@/lib/search-state";
-import { formatPhotoAccessibleLabel } from "@/lib/photo-display";
+import ProtectedImage from "@/components/ProtectedImage";
+import { formatPhotoAccessibleLabel, wideCoverSources } from "@/lib/photo-display";
 import type { Album, Photo } from "@/lib/types";
 import type { Locale, translations } from "@/lib/translations";
 
@@ -236,9 +237,13 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                     href={`/album/${album.slug}`}
                     className="group relative aspect-[4/3] overflow-hidden bg-surface-dark"
                   >
-                    <div
-                      className="absolute inset-0 bg-cover bg-center transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-                      style={{ backgroundImage: `url("${album.coverImage}")` }}
+                    <ProtectedImage
+                      alt=""
+                      src={album.coverImage}
+                      sources={wideCoverSources(album.coverImage)}
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-5 md:p-6">

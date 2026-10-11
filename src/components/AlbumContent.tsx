@@ -9,7 +9,7 @@ import ChapterLocationSummary from "./ChapterLocationSummary";
 import ProtectedImage from "./ProtectedImage";
 import { useLocale } from "@/lib/LocaleContext";
 import { extractLocations, computeChapterStats } from "@/lib/geo-utils";
-import { formatPhotoAccessibleLabel } from "@/lib/photo-display";
+import { formatPhotoAccessibleLabel, wideCoverSources } from "@/lib/photo-display";
 import type { Photo, Album, Chapter } from "@/lib/types";
 
 const ChapterRouteMap = dynamic(() => import("./ChapterRouteMap"), {
@@ -34,6 +34,8 @@ export default function AlbumContent({
 }: AlbumContentProps) {
   const { t, locale } = useLocale();
   const heroRef = useRef<HTMLDivElement>(null);
+  // Wide crops: the square thumb would be upscaled, so use medium + full only.
+  const heroSources = wideCoverSources(album.coverImage);
   const [heroHeight, setHeroHeight] = useState(600);
   const [scrollY, setScrollY] = useState(0);
 
@@ -123,12 +125,15 @@ export default function AlbumContent({
         ref={heroRef}
         className="relative h-[75vh] min-h-[480px] w-full overflow-hidden md:h-[88vh] md:min-h-[640px]"
       >
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
-          style={{
-            backgroundImage: `url("${album.coverImage}")`,
-            transform: `translateY(${parallaxOffset}px) scale(1.1)`,
-          }}
+        <ProtectedImage
+          alt=""
+          src={album.coverImage}
+          sources={heroSources}
+          sizes="100vw"
+          loading="eager"
+          fetchPriority="high"
+          className="absolute inset-0 z-0 h-full w-full object-cover will-change-transform"
+          style={{ transform: `translateY(${parallaxOffset}px) scale(1.1)` }}
         />
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-black/15 to-background-dark" />
         <div className="absolute inset-x-0 bottom-0 z-10 h-3/5 bg-gradient-to-t from-background-dark/80 via-background-dark/50 to-transparent" />
@@ -269,9 +274,13 @@ export default function AlbumContent({
               href={`/album/${nextAlbum.slug}`}
               className="group relative block w-full overflow-hidden"
             >
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-                style={{ backgroundImage: `url("${nextAlbum.coverImage}")` }}
+              <ProtectedImage
+                alt=""
+                src={nextAlbum.coverImage}
+                sources={wideCoverSources(nextAlbum.coverImage)}
+                sizes="(min-width: 1100px) 1100px, 100vw"
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/70 to-background-dark/30" />
               <div className="relative flex min-h-[280px] flex-col justify-center gap-4 px-8 py-16 md:min-h-[360px] md:px-16">

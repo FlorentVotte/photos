@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  coverSources,
   formatPhotoAccessibleLabel,
   formatPhotoLocation,
   formatPhotoMetadataDescription,
   formatPhotoShareText,
+  wideCoverSources,
 } from "./photo-display";
 
 describe("formatPhotoAccessibleLabel", () => {
@@ -60,5 +62,32 @@ describe("photo sharing and metadata copy", () => {
     expect(formatPhotoMetadataDescription(photo, "Morning light")).toBe(
       "Morning light"
     );
+  });
+});
+
+describe("coverSources", () => {
+  it("derives thumb and full from a synced medium path", () => {
+    expect(coverSources("/photos/kyoto/medium/abc.jpg")).toEqual({
+      thumb: "/photos/kyoto/thumb/abc.jpg",
+      medium: "/photos/kyoto/medium/abc.jpg",
+      full: "/photos/kyoto/full/abc.jpg",
+    });
+  });
+
+  it("returns only medium for external or unexpected URLs", () => {
+    expect(coverSources("https://example.com/medium/x.jpg")).toEqual({
+      medium: "https://example.com/medium/x.jpg",
+    });
+    expect(coverSources("/other/cover.jpg")).toEqual({ medium: "/other/cover.jpg" });
+  });
+});
+
+describe("wideCoverSources", () => {
+  it("drops the square thumb", () => {
+    expect(wideCoverSources("/photos/kyoto/medium/abc.jpg")).toEqual({
+      medium: "/photos/kyoto/medium/abc.jpg",
+      full: "/photos/kyoto/full/abc.jpg",
+    });
+    expect(wideCoverSources("/x.jpg")).toEqual({ medium: "/x.jpg" });
   });
 });
