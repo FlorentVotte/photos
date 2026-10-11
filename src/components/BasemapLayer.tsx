@@ -9,6 +9,8 @@ import type { Map as MapLibreMap } from "maplibre-gl";
 // a third party on every map view.
 import "leaflet/dist/leaflet.css";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { useTheme } from "@/lib/ThemeContext";
+import { THEME_PRESETS } from "@/lib/themes";
 
 // OpenFreeMap serves OpenStreetMap-derived vector tiles with no API key and no
 // account. It replaced CARTO's dark_all raster basemap, which started stamping
@@ -18,7 +20,11 @@ import "maplibre-gl/dist/maplibre-gl.css";
 // Attribution is not set here on purpose: the style's own tile sources carry
 // their OpenFreeMap / OpenMapTiles / OpenStreetMap credits, and Leaflet renders
 // them in the attribution control. Adding them again here duplicated the line.
-const STYLE_URL = "https://tiles.openfreemap.org/styles/dark";
+// Dark themes get the dark style, light themes the positron (light) one.
+const STYLE_URLS = {
+  dark: "https://tiles.openfreemap.org/styles/dark",
+  light: "https://tiles.openfreemap.org/styles/positron",
+} as const;
 const NOOP = () => {};
 
 interface BasemapLayerProps {
@@ -27,6 +33,8 @@ interface BasemapLayerProps {
 
 export default function BasemapLayer({ onError = NOOP }: BasemapLayerProps) {
   const map = useMap();
+  const { theme } = useTheme();
+  const styleUrl = STYLE_URLS[THEME_PRESETS[theme]?.mode ?? "dark"];
 
   useEffect(() => {
     if (!map) return;
@@ -50,7 +58,7 @@ export default function BasemapLayer({ onError = NOOP }: BasemapLayerProps) {
         // it from public/; the version query keeps a cached copy from an older
         // release from pairing with newer main-thread code.
         maplibre.setWorkerUrl(`/maplibre-gl-worker.mjs?v=${maplibre.getVersion()}`);
-        const nextLayer = maplibreGL({ style: STYLE_URL });
+        const nextLayer = maplibreGL({ style: styleUrl });
         nextLayer.addTo(map);
         layer = nextLayer;
         maplibreMap = nextLayer.getMaplibreMap();
@@ -63,7 +71,7 @@ export default function BasemapLayer({ onError = NOOP }: BasemapLayerProps) {
       maplibreMap?.off("error", handleError);
       layer?.remove();
     };
-  }, [map, onError]);
+  }, [map, onError, styleUrl]);
 
   return null;
 }

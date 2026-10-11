@@ -28,7 +28,8 @@ export function ThemeProvider({ children, initialTheme }: ThemeProviderProps) {
 
     // Apply CSS variables to document root
     const cssVars = generateThemeCSSVars(theme);
-    document.documentElement.style.cssText = cssVars;
+    // cssText replaces the whole inline style, so keep the colour-scheme the server rendered.
+    document.documentElement.style.cssText = `${cssVars}; color-scheme: ${THEME_PRESETS[theme].mode};`;
   }, [theme, mounted]);
 
   const value: ThemeContextType = { theme };

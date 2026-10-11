@@ -328,4 +328,35 @@ describe("motion is driven by transforms and honours reduced motion", () => {
     expect(globe).not.toContain("pl-2.5");
     expect(globe).toContain("translate-x-2.5");
   });
+
+  it("carries the active theme to browser chrome, manifest and share images", () => {
+    const layout = source("app/layout.tsx");
+    expect(layout).toContain("themeColor: getThemeMetaColor(theme)");
+    expect(layout).toContain("colorScheme: mode");
+    expect(layout).not.toContain('className="dark"');
+    const manifest = source("app/manifest.ts");
+    expect(manifest).toContain("getActiveTheme");
+    expect(manifest).not.toMatch(/#[0-9a-fA-F]{6}/);
+    for (const route of ["app/api/og/route.tsx", "app/api/og/album/[slug]/route.tsx"]) {
+      const og = source(route);
+      expect(og).toContain("getActiveTheme");
+      expect(og).not.toContain("#c9a227");
+      expect(og).not.toContain("#0d0d0d");
+    }
+  });
+
+  it("picks the basemap style by theme mode", () => {
+    const basemap = source("components/BasemapLayer.tsx");
+    expect(basemap).toContain("styles/positron");
+    expect(basemap).toContain("THEME_PRESETS[theme]");
+  });
+
+  it("keeps photographs square and drops dead typography and focus radius", () => {
+    expect(source("components/PhotoGrid.tsx")).not.toContain("overflow-hidden rounded-lg");
+    expect(source("components/PhotoGrid.tsx")).toContain("font-display font-semibold tracking-tight");
+    expect(source("components/PhotoLocationMap.tsx")).not.toContain("rounded-lg");
+    expect(source("components/LegalContent.tsx")).not.toContain("prose");
+    expect(source("components/PrivacyContent.tsx")).not.toContain("prose");
+    expect(source("app/globals.css")).not.toMatch(/:focus-visible \{[^}]*border-radius/);
+  });
 });

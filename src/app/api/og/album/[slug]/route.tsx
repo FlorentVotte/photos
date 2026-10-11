@@ -1,5 +1,8 @@
 import { ImageResponse } from "next/og";
 import { getAlbumBySlug } from "@/lib/data";
+import { getActiveTheme } from "@/lib/active-theme";
+import { THEME_PRESETS } from "@/lib/themes";
+import { hexToRgba } from "@/lib/theme-utils";
 
 export const runtime = "nodejs";
 
@@ -26,6 +29,10 @@ export async function GET(request: Request, { params }: Props) {
     return Response.redirect(new URL("/api/og", SITE_URL));
   }
 
+  const preset = THEME_PRESETS[await getActiveTheme()];
+  const { primary, background, surface, textPrimary, textMuted } = preset.colors;
+  const coverBrightness = preset.mode === "dark" ? 0.4 : 1;
+
   const coverImageUrl = album.coverImage.startsWith("http")
     ? album.coverImage
     : `${SITE_URL}${album.coverImage}`;
@@ -38,7 +45,7 @@ export async function GET(request: Request, { params }: Props) {
           height: "100%",
           display: "flex",
           position: "relative",
-          background: "#0d0d0d",
+          background: background,
         }}
       >
         {/* Album cover as full-bleed background */}
@@ -51,7 +58,7 @@ export async function GET(request: Request, { params }: Props) {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            filter: "brightness(0.4)",
+            filter: `brightness(${coverBrightness})`,
           }}
         />
 
@@ -61,7 +68,7 @@ export async function GET(request: Request, { params }: Props) {
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%)",
+              `linear-gradient(to top, ${hexToRgba(background, 0.9)} 0%, ${hexToRgba(background, 0.2)} 50%, ${hexToRgba(background, 0.4)} 100%)`,
           }}
         />
 
@@ -83,7 +90,7 @@ export async function GET(request: Request, { params }: Props) {
             style={{
               fontSize: "52px",
               fontWeight: 700,
-              color: "#ffffff",
+              color: textPrimary,
               lineHeight: 1.1,
               maxWidth: "900px",
             }}
@@ -98,18 +105,18 @@ export async function GET(request: Request, { params }: Props) {
               alignItems: "center",
               justifyContent: "space-between",
               fontSize: "22px",
-              color: "rgba(255, 255, 255, 0.8)",
+              color: textMuted,
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <span>{album.location}</span>
-              <span style={{ color: "rgba(255, 255, 255, 0.4)" }}>•</span>
+              <span style={{ color: primary }}>•</span>
               <span>{album.date}</span>
             </div>
             <div
               style={{
                 padding: "6px 16px",
-                background: "rgba(255, 255, 255, 0.15)",
+                background: surface,
                 borderRadius: "20px",
                 fontSize: "18px",
               }}
@@ -126,10 +133,10 @@ export async function GET(request: Request, { params }: Props) {
             top: "24px",
             right: "32px",
             padding: "8px 16px",
-            background: "rgba(0, 0, 0, 0.5)",
+            background: hexToRgba(surface, 0.85),
             borderRadius: "20px",
             fontSize: "16px",
-            color: "rgba(255, 255, 255, 0.7)",
+            color: textMuted,
           }}
         >
           photos.votte.eu

@@ -15,8 +15,8 @@ import { LocaleProvider } from "@/lib/LocaleContext";
 import { resolveLocale } from "@/lib/locale";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
-import prisma from "@/lib/db";
-import { DEFAULT_THEME, ThemePresetKey } from "@/lib/themes";
+import { getActiveTheme } from "@/lib/active-theme";
+import { THEME_PRESETS } from "@/lib/themes";
 import { generateThemeCSSVars, getThemeMetaColor } from "@/lib/theme-utils";
 import "./globals.css";
 
@@ -90,21 +90,8 @@ const fontVariableClasses = [
   bodoniModa.variable,
 ].join(" ");
 
-// Fetch theme from database
-async function getTheme(): Promise<ThemePresetKey> {
-  try {
-    const settings = await prisma.settings.findUnique({
-      where: { id: "default" },
-      select: { theme: true },
-    });
-    return (settings?.theme as ThemePresetKey) || DEFAULT_THEME;
-  } catch {
-    return DEFAULT_THEME;
-  }
-}
-
 export async function generateViewport(): Promise<Viewport> {
-  const theme = await getTheme();
+  const theme = await getActiveTheme();
   return {
     width: "device-width",
     initialScale: 1,
@@ -156,11 +143,12 @@ export default async function RootLayout({
     cookieStore.get("locale")?.value,
     requestHeaders.get("accept-language")
   );
-  const theme = await getTheme();
+  const theme = await getActiveTheme();
+  const mode = THEME_PRESETS[theme].mode;
   const initialCSSVars = generateThemeCSSVars(theme);
 
   return (
-    <html lang={locale} className="dark">
+    <html lang={locale} data-theme-mode={mode} style={{ colorScheme: mode }}>
       <head>
         {/* Inject theme CSS variables inline for SSR - prevents flash */}
         <style nonce={nonce} dangerouslySetInnerHTML={{

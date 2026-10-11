@@ -23,7 +23,7 @@ export default function LegalContent() {
 
       {/* Content Section */}
       <section className="py-8 md:py-12 px-4 md:px-8 lg:px-16">
-        <div className="max-w-3xl mx-auto prose prose-invert prose-lg">
+        <div className="max-w-3xl mx-auto">
           <p className="text-text-muted leading-relaxed mb-8">
             {t("legal", "lastUpdated", locale)}
           </p>

@@ -1,14 +1,20 @@
 import type { MetadataRoute } from "next";
+import { getActiveTheme } from "@/lib/active-theme";
+import { getThemeBackgroundColor } from "@/lib/theme-utils";
 
-export default function manifest(): MetadataRoute.Manifest {
+// Reads the active theme from the DB, so it must not be prerendered at build.
+export const dynamic = "force-dynamic";
+
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const background = getThemeBackgroundColor(await getActiveTheme());
   return {
     name: "Regards Perdus - Photo Portfolio",
     short_name: "Regards Perdus",
     description: "Capturing the fleeting moments between departures and arrivals. A visual journey through the world.",
     start_url: "/",
     display: "standalone",
-    background_color: "#0d0d0d",
-    theme_color: "#7ba88e",
+    background_color: background,
+    theme_color: background,
     orientation: "portrait-primary",
     icons: [
       {
