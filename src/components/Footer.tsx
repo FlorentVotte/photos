@@ -13,7 +13,10 @@ export default function Footer() {
         <p className="font-sans text-label uppercase text-text-muted">
           © {currentYear} Florent Votte · {t("footer", "allRightsReserved")}
         </p>
-        <nav className="flex items-center gap-8">
+        <nav
+          className="flex items-center gap-8"
+          aria-label={t("footer", "legalNav")}
+        >
           <Link
             href="/privacy"
             className="font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"

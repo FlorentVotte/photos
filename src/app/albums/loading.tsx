@@ -5,7 +5,7 @@ export default function AlbumsLoading() {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />
-      <main className="flex-1 px-6 pt-20 pb-20 md:px-12 md:pt-28">
+      <main id="main" tabIndex={-1} className="flex-1 px-6 pt-20 pb-20 md:px-12 md:pt-28">
         <div className="mx-auto max-w-[1200px]">
           <header className="mb-20 max-w-2xl">
             <Skeleton className="h-12 w-72 mb-6" />

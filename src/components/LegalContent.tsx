@@ -7,7 +7,7 @@ export default function LegalContent() {
   const { locale } = useLocale();
 
   return (
-    <main className="flex-1">
+    <main id="main" tabIndex={-1} className="flex-1">
       {/* Hero Section */}
       <section className="relative py-16 md:py-24 px-4 md:px-8 lg:px-16">
         <div className="max-w-4xl mx-auto text-center">

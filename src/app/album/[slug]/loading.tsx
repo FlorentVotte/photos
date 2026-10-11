@@ -5,7 +5,7 @@ export default function AlbumLoading() {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />
-      <main className="flex-1 flex flex-col items-center w-full">
+      <main id="main" tabIndex={-1} className="flex-1 flex flex-col items-center w-full">
         {/* Hero */}
         <div className="relative w-full h-[75vh] min-h-[480px] md:h-[88vh] md:min-h-[640px] overflow-hidden">
           <ImageSkeleton className="absolute inset-0" />

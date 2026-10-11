@@ -161,7 +161,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
     <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Header />
 
-      <main className="flex-1 px-6 pt-20 pb-20 md:px-12 md:pt-28">
+      <main id="main" tabIndex={-1} className="flex-1 px-6 pt-20 pb-20 md:px-12 md:pt-28">
         <div className="mx-auto max-w-[1200px]">
           <header className="mb-12 max-w-2xl">
             <h1 className="font-display text-4xl md:text-5xl font-semibold leading-tight tracking-tight text-foreground">

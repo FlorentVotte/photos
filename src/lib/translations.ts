@@ -10,6 +10,10 @@ export const translations = {
     about: { en: "About", fr: "À propos" },
     openMenu: { en: "Open menu", fr: "Ouvrir le menu" },
     closeMenu: { en: "Close menu", fr: "Fermer le menu" },
+    menu: { en: "Menu", fr: "Menu" },
+    main: { en: "Main", fr: "Principale" },
+    skipToContent: { en: "Skip to content", fr: "Aller au contenu" },
+    homeLink: { en: "Regards Perdus — Home", fr: "Regards Perdus — Accueil" },
   },
 
   // Homepage
@@ -71,6 +75,10 @@ export const translations = {
     download: { en: "Download", fr: "Télécharger" },
     share: { en: "Share", fr: "Partager" },
     linkCopied: { en: "Link copied!", fr: "Lien copié !" },
+    copyFailed: {
+      en: "Couldn't copy the link",
+      fr: "Impossible de copier le lien",
+    },
     location: { en: "Location", fr: "Lieu" },
     capture: { en: "Capture", fr: "Prise de vue" },
     unknownLocation: { en: "Unknown location", fr: "Lieu inconnu" },
@@ -176,6 +184,7 @@ export const translations = {
     allRightsReserved: { en: "All rights reserved.", fr: "Tous droits réservés." },
     privacyPolicy: { en: "Privacy Policy", fr: "Politique de confidentialité" },
     legalNotice: { en: "Legal Notice", fr: "Mentions légales" },
+    legalNav: { en: "Legal", fr: "Mentions" },
   },
 
   // Chapter stats

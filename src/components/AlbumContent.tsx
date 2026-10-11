@@ -9,6 +9,7 @@ import ChapterLocationSummary from "./ChapterLocationSummary";
 import ProtectedImage from "./ProtectedImage";
 import { useLocale } from "@/lib/LocaleContext";
 import { extractLocations, computeChapterStats } from "@/lib/geo-utils";
+import { formatPhotoAccessibleLabel } from "@/lib/photo-display";
 import type { Photo, Album, Chapter } from "@/lib/types";
 
 const ChapterRouteMap = dynamic(() => import("./ChapterRouteMap"), {
@@ -116,7 +117,7 @@ export default function AlbumContent({
   };
 
   return (
-    <main className="flex-1 flex flex-col items-center w-full">
+    <main id="main" tabIndex={-1} className="flex-1 flex flex-col items-center w-full">
       {/* Cinematic hero with parallax */}
       <div
         ref={heroRef}
@@ -186,7 +187,12 @@ export default function AlbumContent({
                     src={coverPhoto.src.medium}
                     sources={coverPhoto.src}
                     sizes="(max-width: 1200px) 100vw, 1200px"
-                    alt={coverPhoto.title}
+                    alt={formatPhotoAccessibleLabel(
+                      coverPhoto,
+                      album.title,
+                      0,
+                      locale
+                    )}
                     className="absolute inset-0 w-full h-full object-cover"
                     loading={chapterIndex === 0 ? "eager" : "lazy"}
                     fetchPriority={chapterIndex === 0 ? "high" : undefined}
@@ -241,9 +247,9 @@ export default function AlbumContent({
         {chapters.length === 0 && photos.length > 0 && (
           <section className="flex w-full flex-col gap-10">
             <header className="text-center">
-              <p className="font-sans text-eyebrow uppercase text-text-muted">
+              <h2 className="font-sans text-eyebrow uppercase text-text-muted">
                 {t("album", "gallery")}
-              </p>
+              </h2>
             </header>
             <PhotoGrid
               photos={photos}

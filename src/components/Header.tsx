@@ -1,18 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { type RefObject, useCallback, useEffect, useId, useRef, useState } from "react";
 import { useLocale } from "@/lib/LocaleContext";
 import { useModalFocus, useScrolled } from "@/hooks";
 import { translations, type Locale } from "@/lib/translations";
 
 interface HeaderProps {
   transparent?: boolean;
+  /** Admin pages render their own skip link before the header. */
+  showSkipLink?: boolean;
 }
 
 type Translator = (section: keyof typeof translations, key: string) => string;
 
 interface MobileMenuDialogProps {
+  id?: string;
+  pathname?: string | null;
   containerRef: RefObject<HTMLDivElement | null>;
   initialFocusRef: RefObject<HTMLAnchorElement | null>;
   locale: Locale;
@@ -23,8 +28,24 @@ interface MobileMenuDialogProps {
 
 const navItemClass =
   "font-display text-3xl font-semibold tracking-tight text-foreground/85 hover:text-foreground transition-colors";
+const navItemActiveClass =
+  "font-display text-3xl font-semibold tracking-tight text-foreground transition-colors";
+const desktopNavClass =
+  "text-sm font-medium leading-normal hover:text-primary transition-colors";
+const desktopNavActiveClass =
+  "text-sm font-medium leading-normal text-foreground underline decoration-primary decoration-1 underline-offset-8 hover:text-primary transition-colors";
+
+const NAV_ITEMS = [
+  { href: "/", key: "home" },
+  { href: "/albums", key: "albums" },
+  { href: "/search", key: "search" },
+  { href: "/map", key: "map" },
+  { href: "/about", key: "about" },
+] as const;
 
 export function MobileMenuDialog({
+  id,
+  pathname,
   containerRef,
   initialFocusRef,
   locale,
@@ -34,11 +55,12 @@ export function MobileMenuDialog({
 }: MobileMenuDialogProps) {
   return (
     <div
+      id={id}
       ref={containerRef}
       className="material-thick md:hidden fixed inset-0 z-[60]"
       role="dialog"
       aria-modal="true"
-      aria-label={t("nav", "openMenu")}
+      aria-label={t("nav", "menu")}
       tabIndex={-1}
     >
       <button
@@ -48,27 +70,25 @@ export function MobileMenuDialog({
       >
         <span aria-hidden="true" className="material-symbols-outlined">close</span>
       </button>
-      <nav className="flex h-full flex-col items-start justify-center gap-8 px-8">
-        <Link
-          href="/"
-          ref={initialFocusRef}
-          onClick={onClose}
-          className={navItemClass}
-        >
-          {t("nav", "home")}
-        </Link>
-        <Link href="/albums" onClick={onClose} className={navItemClass}>
-          {t("nav", "albums")}
-        </Link>
-        <Link href="/search" onClick={onClose} className={navItemClass}>
-          {t("nav", "search")}
-        </Link>
-        <Link href="/map" onClick={onClose} className={navItemClass}>
-          {t("nav", "map")}
-        </Link>
-        <Link href="/about" onClick={onClose} className={navItemClass}>
-          {t("nav", "about")}
-        </Link>
+      <nav
+        className="flex h-full flex-col items-start justify-center gap-8 px-8"
+        aria-label={t("nav", "main")}
+      >
+        {NAV_ITEMS.map(({ href, key }) => {
+          const active = pathname === href;
+          return (
+            <Link
+              key={href}
+              href={href}
+              ref={href === "/" ? initialFocusRef : undefined}
+              onClick={onClose}
+              aria-current={active ? "page" : undefined}
+              className={active ? navItemActiveClass : navItemClass}
+            >
+              {t("nav", key)}
+            </Link>
+          );
+        })}
         <button
           onClick={() => {
             onToggleLocale();
@@ -83,12 +103,17 @@ export function MobileMenuDialog({
   );
 }
 
-export default function Header({ transparent = false }: HeaderProps) {
+export default function Header({
+  transparent = false,
+  showSkipLink = true,
+}: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const firstMobileNavLinkRef = useRef<HTMLAnchorElement>(null);
   const mobileMenuOpenerFocusRef = useRef<HTMLButtonElement>(null);
   const { t, locale, setLocale } = useLocale();
+  const pathname = usePathname();
+  const mobileMenuId = useId();
   const scrolled = useScrolled();
 
   const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
@@ -117,6 +142,14 @@ export default function Header({ transparent = false }: HeaderProps) {
 
   return (
     <>
+      {showSkipLink && (
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[70] focus:bg-background-dark focus:px-4 focus:py-2 focus:text-foreground focus:font-sans focus:text-label focus:uppercase"
+        >
+          {t("nav", "skipToContent")}
+        </a>
+      )}
       <header
         data-scrolled={scrolled}
         className={`scroll-edge sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-transparent px-4 py-3 md:px-6 md:py-4 lg:px-16 ${
@@ -128,47 +161,37 @@ export default function Header({ transparent = false }: HeaderProps) {
           mobileMenuOpen ? "material-passthrough" : ""
         }`}
       >
-        <Link href="/" className="group flex items-baseline gap-2">
-          <h2 className="text-base sm:text-lg font-semibold leading-none tracking-[0.18em] uppercase">
+        <Link
+          href="/"
+          className="group flex items-baseline gap-2"
+          aria-label={t("nav", "homeLink")}
+        >
+          <span className="text-base sm:text-lg font-semibold leading-none tracking-[0.18em] uppercase">
             Regards
-          </h2>
+          </span>
           <span className="text-base sm:text-lg font-light leading-none tracking-[0.18em] uppercase text-text-muted group-hover:text-foreground transition-colors">
             Perdus
           </span>
         </Link>
 
         <div className="flex flex-1 justify-end gap-8">
-          <nav className="hidden md:flex items-center gap-9">
-            <Link
-              href="/"
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors"
-            >
-              {t("nav", "home")}
-            </Link>
-            <Link
-              href="/albums"
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors"
-            >
-              {t("nav", "albums")}
-            </Link>
-            <Link
-              href="/search"
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors"
-            >
-              {t("nav", "search")}
-            </Link>
-            <Link
-              href="/map"
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors"
-            >
-              {t("nav", "map")}
-            </Link>
-            <Link
-              href="/about"
-              className="text-sm font-medium leading-normal hover:text-primary transition-colors"
-            >
-              {t("nav", "about")}
-            </Link>
+          <nav
+            className="hidden md:flex items-center gap-9"
+            aria-label={t("nav", "main")}
+          >
+            {NAV_ITEMS.map(({ href, key }) => {
+              const active = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={active ? desktopNavActiveClass : desktopNavClass}
+                >
+                  {t("nav", key)}
+                </Link>
+              );
+            })}
             <button
               onClick={toggleLocale}
               className="text-sm font-medium leading-normal hover:text-primary transition-colors uppercase"
@@ -187,7 +210,9 @@ export default function Header({ transparent = false }: HeaderProps) {
               onClick={() => setMobileMenuOpen(true)}
               className="md:hidden flex min-h-11 min-w-11 items-center justify-center text-foreground hover:text-primary transition-colors relative z-[60]"
               aria-label={t("nav", "openMenu")}
-              aria-expanded={false}
+              aria-expanded={mobileMenuOpen}
+              aria-controls={mobileMenuId}
+              aria-haspopup="dialog"
             >
               <span className="material-symbols-outlined">menu</span>
             </button>
@@ -202,6 +227,8 @@ export default function Header({ transparent = false }: HeaderProps) {
           viewport and the menu rendered as a strip under the bar. */}
       {mobileMenuOpen && (
         <MobileMenuDialog
+          id={mobileMenuId}
+          pathname={pathname}
           containerRef={mobileMenuRef}
           initialFocusRef={firstMobileNavLinkRef}
           locale={locale}
