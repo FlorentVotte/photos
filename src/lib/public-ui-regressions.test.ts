@@ -381,4 +381,12 @@ describe("motion is driven by transforms and honours reduced motion", () => {
     expect(layout).toMatch(/<html[^>]*className=\{fontVariableClasses\}/);
     expect(layout).not.toMatch(/<body\s+className=\{`\$\{fontVariableClasses/);
   });
+
+  it("keeps service-worker cache writes alive with waitUntil", () => {
+    const sw = readFileSync(join(process.cwd(), "public", "sw.js"), "utf8");
+    expect(sw).toContain("function cacheFirst(event, cacheName, afterPut)");
+    // No fire-and-forget writes: every cache.put sits inside a waitUntil.
+    expect(sw).not.toMatch(/\n\s{6,}caches\.open\([a-zA-Z_]+\)\.then\(/);
+    expect(sw.match(/event\.waitUntil\(/g)?.length).toBeGreaterThanOrEqual(5);
+  });
 });

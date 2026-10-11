@@ -40,17 +40,25 @@ async function trimImageCache() {
 }
 
 // Cache-first: serve from any cache, otherwise fetch and store in `cacheName`.
-function cacheFirst(request, cacheName, afterPut) {
+// The write is registered with event.waitUntil so the browser can't stop the
+// worker once the response is delivered, before the entry is stored.
+function cacheFirst(event, cacheName, afterPut) {
+  const { request } = event;
   return caches.match(request).then((cached) => {
     if (cached) return cached;
 
     return fetch(request).then((response) => {
       if (response.ok) {
         const responseClone = response.clone();
-        caches.open(cacheName).then(async (cache) => {
-          await cache.put(request, responseClone);
-          if (afterPut) await afterPut();
-        });
+        event.waitUntil(
+          caches
+            .open(cacheName)
+            .then(async (cache) => {
+              await cache.put(request, responseClone);
+              if (afterPut) await afterPut();
+            })
+            .catch(() => {})
+        );
       }
       return response;
     });
@@ -76,9 +84,12 @@ self.addEventListener("fetch", (event) => {
         .then((response) => {
           if (response.ok) {
             const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone);
-            });
+            event.waitUntil(
+              caches
+                .open(CACHE_NAME)
+                .then((cache) => cache.put(request, responseClone))
+                .catch(() => {})
+            );
           }
           return response;
         })
@@ -91,13 +102,13 @@ self.addEventListener("fetch", (event) => {
 
   // Content-hashed build assets never change: cache first
   if (url.pathname.startsWith("/_next/static/")) {
-    event.respondWith(cacheFirst(request, CACHE_NAME));
+    event.respondWith(cacheFirst(event, CACHE_NAME));
     return;
   }
 
   // Images: cache first, bounded cache
   if (request.destination === "image") {
-    event.respondWith(cacheFirst(request, IMAGE_CACHE_NAME, trimImageCache));
+    event.respondWith(cacheFirst(event, IMAGE_CACHE_NAME, trimImageCache));
     return;
   }
 
