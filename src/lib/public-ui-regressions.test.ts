@@ -389,4 +389,11 @@ describe("motion is driven by transforms and honours reduced motion", () => {
     expect(sw).not.toMatch(/\n\s{6,}caches\.open\([a-zA-Z_]+\)\.then\(/);
     expect(sw.match(/event\.waitUntil\(/g)?.length).toBeGreaterThanOrEqual(5);
   });
+
+  it("renders the album share image's photo count as one text node", () => {
+    // next/og rejects a non-flex <div> with several children; "{n} photos"
+    // in JSX is two text nodes and made the route return 500.
+    const og = source("app/api/og/album/[slug]/route.tsx");
+    expect(og).toContain("{`${album.photoCount} photos`}");
+  });
 });

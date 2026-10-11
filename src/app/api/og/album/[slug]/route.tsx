@@ -121,7 +121,7 @@ export async function GET(request: Request, { params }: Props) {
                 fontSize: "18px",
               }}
             >
-              {album.photoCount} photos
+              {`${album.photoCount} photos`}
             </div>
           </div>
         </div>
