@@ -78,3 +78,33 @@ export function rubberband(
     (dimension + constant * Math.abs(overshoot))
   );
 }
+
+export interface PanPosition {
+  x: number;
+  y: number;
+}
+
+export interface PanSize {
+  /** Rendered width at scale 1, in px. */
+  width: number;
+  /** Rendered height at scale 1, in px. */
+  height: number;
+}
+
+/**
+ * Keep a zoomed image's pan offset inside the area it overflows by, so its
+ * edges can't be dragged past the frame. The overflow per axis is
+ * `(scale - 1) * dimension`, split evenly on both sides.
+ */
+export function clampPan(
+  position: PanPosition,
+  scale: number,
+  size: PanSize
+): PanPosition {
+  const maxX = Math.max(0, ((scale - 1) * size.width) / 2);
+  const maxY = Math.max(0, ((scale - 1) * size.height) / 2);
+  return {
+    x: Math.min(Math.max(position.x, -maxX), maxX) || 0,
+    y: Math.min(Math.max(position.y, -maxY), maxY) || 0,
+  };
+}

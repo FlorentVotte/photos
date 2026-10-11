@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { project, resolveProjectedSwipe, rubberband } from "./gesture-utils";
+import { clampPan, project, resolveProjectedSwipe, rubberband } from "./gesture-utils";
 
 describe("project", () => {
   it("returns 0 for no velocity", () => {
@@ -90,5 +90,27 @@ describe("rubberband", () => {
 
   it("never hard-stops — keeps yielding movement even far past the bound", () => {
     expect(rubberband(5000, 400)).toBeGreaterThan(rubberband(2000, 400));
+  });
+});
+
+describe("clampPan", () => {
+  const size = { width: 400, height: 300 };
+
+  it("leaves in-range offsets untouched", () => {
+    expect(clampPan({ x: 50, y: -20 }, 2, size)).toEqual({ x: 50, y: -20 });
+  });
+
+  it("clamps each axis to ((scale - 1) * dimension) / 2", () => {
+    expect(clampPan({ x: 999, y: -999 }, 2, size)).toEqual({ x: 200, y: -150 });
+    expect(clampPan({ x: -999, y: 999 }, 3, size)).toEqual({ x: -400, y: 300 });
+  });
+
+  it("recentres at scale 1 and below", () => {
+    expect(clampPan({ x: 40, y: -40 }, 1, size)).toEqual({ x: 0, y: 0 });
+    expect(clampPan({ x: 40, y: -40 }, 0.8, size)).toEqual({ x: 0, y: 0 });
+  });
+
+  it("collapses to zero for a zero-size frame", () => {
+    expect(clampPan({ x: 40, y: 40 }, 2, { width: 0, height: 0 })).toEqual({ x: 0, y: 0 });
   });
 });

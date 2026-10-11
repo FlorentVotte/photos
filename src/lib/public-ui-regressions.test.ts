@@ -130,4 +130,24 @@ describe("public UI regressions", () => {
       expect(source(f), f).toContain("border-b border-text-muted/60 bg-transparent");
     }
   });
+
+  it("keeps the lightbox keyboard-, screen-reader- and touch-safe", () => {
+    const lightbox = source("components/Lightbox.tsx");
+    expect(lightbox).toContain('role="status"');
+    expect(lightbox).toContain('aria-live={isPlaying ? "off" : "polite"}');
+    expect(lightbox).toContain('t("lightbox", "loading")');
+    expect(lightbox).toContain("formatPhotoAccessibleLabel");
+    expect(lightbox).toContain("onTouchCancel={handleTouchCancel}");
+    expect(lightbox).not.toMatch(/aria-label=\{(isPlaying|t\("lightbox", "(close|viewDetails)")/);
+    expect(lightbox).not.toContain("85vh");
+    expect(lightbox).not.toContain("text-white/40");
+    expect(lightbox).toContain("max-h-[85dvh]");
+    expect(lightbox).toContain("[@media(max-height:500px)]:max-h-[72dvh]");
+    expect(lightbox).toContain("env(safe-area-inset-top)");
+    expect(lightbox).toContain("env(safe-area-inset-bottom)");
+
+    const keyboard = source("hooks/useLightboxKeyboard.ts");
+    expect(keyboard).toContain("isInteractiveTarget(e.target)");
+    expect(keyboard).not.toMatch(/handleKeyDown = [^]*?\n\s*e\.stopImmediatePropagation\(\);\n\n\s*switch/);
+  });
 });

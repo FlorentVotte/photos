@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { UI } from "@/lib/constants";
-import { rubberband } from "@/lib/gesture-utils";
+import { clampPan, rubberband } from "@/lib/gesture-utils";
 
 /** Resting scale. Pinching below this rubber-bands and springs back. */
 const MIN_SCALE = 1;
@@ -17,6 +17,8 @@ interface UsePinchZoomOptions {
   maxScale?: number;
   /** Default zoom scale for double-tap */
   doubleTapScale?: number;
+  /** Element whose layout size (at scale 1) bounds the pan. */
+  sizeRef?: React.RefObject<HTMLElement | null>;
 }
 
 interface UsePinchZoomReturn {
@@ -45,6 +47,8 @@ interface UsePinchZoomReturn {
   handleTouchMove: (e: React.TouchEvent) => void;
   /** Touch end handler */
   handleTouchEnd: (e: React.TouchEvent) => void;
+  /** Touch cancel handler (interrupted gesture) */
+  handleTouchCancel: (e: React.TouchEvent) => void;
   /** Reset zoom to default */
   resetZoom: () => void;
 }
@@ -57,6 +61,7 @@ export function usePinchZoom({
   resetKey,
   maxScale = UI.MAX_ZOOM_SCALE,
   doubleTapScale = 2.5,
+  sizeRef,
 }: UsePinchZoomOptions = {}): UsePinchZoomReturn {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
@@ -72,6 +77,20 @@ export function usePinchZoom({
   const initialScale = useRef<number>(1);
   const isPinching = useRef<boolean>(false);
   const lastPanPosition = useRef<Position | null>(null);
+
+  // Clamp a pan offset to the image's overflow. offsetWidth/Height are layout
+  // sizes, unaffected by the zoom transform. Unmeasurable -> leave as is.
+  const clamp = useCallback(
+    (pos: Position, atScale: number): Position => {
+      const el = sizeRef?.current;
+      if (!el || el.offsetWidth === 0 || el.offsetHeight === 0) return pos;
+      return clampPan(pos, atScale, {
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+      });
+    },
+    [sizeRef]
+  );
 
   // Calculate distance between two touch points
   const getTouchDistance = (touches: React.TouchList): number => {
@@ -105,6 +124,8 @@ export function usePinchZoom({
         // Pinch start. Only a two-finger touch marks the gesture as active
         // here — a single tap must NOT, or the double-tap zoom below would
         // have its own transition disabled and snap instead of animating.
+        // A second finger means this is not a tap sequence.
+        lastTapTime.current = 0;
         isPinching.current = true;
         setIsGesturing(true);
         initialPinchDistance.current = getTouchDistance(e.touches);
@@ -172,6 +193,8 @@ export function usePinchZoom({
 
         if (newScale <= MIN_SCALE) {
           setPosition({ x: 0, y: 0 });
+        } else {
+          setPosition((prev) => clamp(prev, newScale));
         }
       } else if (e.touches.length === 1 && scale > 1 && lastPanPosition.current) {
         // Pan when zoomed. The gesture only counts as active once the finger
@@ -181,10 +204,9 @@ export function usePinchZoom({
         const deltaX = e.touches[0].clientX - lastPanPosition.current.x;
         const deltaY = e.touches[0].clientY - lastPanPosition.current.y;
 
-        setPosition((prev) => ({
-          x: prev.x + deltaX,
-          y: prev.y + deltaY,
-        }));
+        setPosition((prev) =>
+          clamp({ x: prev.x + deltaX, y: prev.y + deltaY }, scale)
+        );
 
         lastPanPosition.current = {
           x: e.touches[0].clientX,
@@ -192,10 +214,10 @@ export function usePinchZoom({
         };
       }
     },
-    [scale, maxScale]
+    [scale, maxScale, clamp]
   );
 
-  const handleTouchEnd = useCallback(() => {
+  const endGesture = useCallback(() => {
     if (isPinching.current) {
       isPinching.current = false;
       initialPinchDistance.current = null;
@@ -205,12 +227,25 @@ export function usePinchZoom({
       setScale((current) => {
         const settled = Math.min(Math.max(current, MIN_SCALE), maxScale);
         if (settled <= MIN_SCALE) setPosition({ x: 0, y: 0 });
+        else setPosition((prev) => clamp(prev, settled));
         return settled;
       });
     }
     lastPanPosition.current = null;
     setIsGesturing(false);
-  }, [maxScale]);
+  }, [maxScale, clamp]);
+
+  const handleTouchEnd = endGesture;
+
+  // The system interrupted the touch (call, notification, palm rejection).
+  // Settle like a normal release and forget all in-flight tracking.
+  const handleTouchCancel = useCallback(() => {
+    endGesture();
+    lastTapTime.current = 0;
+    initialPinchDistance.current = null;
+    isPinching.current = false;
+    lastPanPosition.current = null;
+  }, [endGesture]);
 
   return {
     scale,
@@ -222,6 +257,7 @@ export function usePinchZoom({
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
+    handleTouchCancel,
     resetZoom,
   };
 }

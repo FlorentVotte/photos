@@ -213,6 +213,8 @@ export const translations = {
     space: { en: "Space: slideshow", fr: "Espace : diaporama" },
     info: { en: "I: details", fr: "I : détails" },
     esc: { en: "Esc: close", fr: "Échap : fermer" },
+    loading: { en: "Loading", fr: "Chargement" },
+    position: { en: "Photo {current} of {total}", fr: "Photo {current} sur {total}" },
   },
 
   // Common
