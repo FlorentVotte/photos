@@ -359,4 +359,10 @@ describe("motion is driven by transforms and honours reduced motion", () => {
     expect(source("components/PrivacyContent.tsx")).not.toContain("prose");
     expect(source("app/globals.css")).not.toMatch(/:focus-visible \{[^}]*border-radius/);
   });
+
+  it("lets long mapped-photo titles truncate instead of widening the page", () => {
+    const map = source("components/PhotoMap.tsx");
+    expect(map).toContain("grid grid-cols-1 gap-2");
+    expect(map).toContain('<li key={photo.id} className="min-w-0">');
+  });
 });

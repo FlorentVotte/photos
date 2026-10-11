@@ -104,9 +104,9 @@ export default function PhotoMap({ photos }: PhotoMapProps) {
       <p aria-live="polite" className="mt-2 font-sans text-sm text-text-muted">
         {t("common", "showing")} {visibleGeoPhotos.length} {t("common", "of")} {geoPhotos.length} {t("map", "mappedPhotos").toLocaleLowerCase()}
       </p>
-      <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {visibleGeoPhotos.map((photo, index) => (
-          <li key={photo.id}>
+          <li key={photo.id} className="min-w-0">
             <Link
               href={`/photo/${photo.id}`}
               aria-label={photoLabel(photo, index)}
