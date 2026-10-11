@@ -314,7 +314,7 @@ describe("motion is driven by transforms and honours reduced motion", () => {
     ]) {
       const src = source(file);
       expect(src).not.toMatch(/transition-all duration-300 group(\/cta)?-hover:w-/);
-      expect(src).toContain("origin-left scale-x-[");
+      expect(src).toMatch(/origin-(left|right) scale-x-\[/);
       expect(src).toContain("ease-out-soft");
     }
   });

@@ -364,10 +364,10 @@ export default function PhotoContent({
                     href={`/album/${album.slug}`}
                     className="group/cta inline-flex items-center gap-3 font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
                   >
-                    {/* w-10 box scaled to 1.5rem at rest; -mr-4 cancels the extra 1rem */}
+                    {/* w-10 box scaled to 1.5rem at rest, anchored right so it grows away from the label; -ml-4 cancels the extra 1rem */}
                     <span
                       aria-hidden="true"
-                      className="-mr-4 h-px w-10 origin-left scale-x-[0.6] bg-text-muted/60 transition-[transform,background-color] duration-300 ease-out-soft group-hover/cta:scale-x-100 group-hover/cta:bg-foreground motion-reduce:transition-none"
+                      className="-ml-4 h-px w-10 origin-right scale-x-[0.6] bg-text-muted/60 transition-[transform,background-color] duration-300 ease-out-soft group-hover/cta:scale-x-100 group-hover/cta:bg-foreground motion-reduce:transition-none"
                     />
                     <span>
                       {t("photo", "backTo")} {album.title}
