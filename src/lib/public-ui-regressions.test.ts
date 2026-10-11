@@ -365,4 +365,10 @@ describe("motion is driven by transforms and honours reduced motion", () => {
     expect(map).toContain("grid grid-cols-1 gap-2");
     expect(map).toContain('<li key={photo.id} className="min-w-0">');
   });
+
+  it("defines the font variables where the theme's :root block resolves them", () => {
+    const layout = source("app/layout.tsx");
+    expect(layout).toMatch(/<html[^>]*className=\{fontVariableClasses\}/);
+    expect(layout).not.toMatch(/<body\s+className=\{`\$\{fontVariableClasses/);
+  });
 });

@@ -78,6 +78,8 @@ const bodoniModa = Bodoni_Moda({
   preload: false,
 });
 
+// Applied to <html>, not <body>: the theme block on :root resolves
+// --font-display against these variables, so they must be defined there.
 const fontVariableClasses = [
   notoSerif.variable,
   notoSans.variable,
@@ -148,7 +150,7 @@ export default async function RootLayout({
   const initialCSSVars = generateThemeCSSVars(theme);
 
   return (
-    <html lang={locale} data-theme-mode={mode} style={{ colorScheme: mode }}>
+    <html lang={locale} className={fontVariableClasses} data-theme-mode={mode} style={{ colorScheme: mode }}>
       <head>
         {/* Inject theme CSS variables inline for SSR - prevents flash */}
         <style nonce={nonce} dangerouslySetInnerHTML={{
@@ -163,7 +165,7 @@ export default async function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body
-        className={`${fontVariableClasses} bg-background-dark text-foreground font-display antialiased overflow-x-hidden`}
+        className="bg-background-dark text-foreground font-display antialiased overflow-x-hidden"
       >
         <ThemeProvider initialTheme={theme}>
           <LocaleProvider initialLocale={locale}>{children}</LocaleProvider>
