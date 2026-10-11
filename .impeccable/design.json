@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-11T13:40:06.403Z",
+  "generatedAt": "2026-10-11T14:19:50.255Z",
   "title": "Design System: Regards Perdus",
   "extensions": {
     "colorMeta": {
@@ -135,6 +135,26 @@
       "micro": {
         "displayName": "Micro",
         "purpose": "Smallest uppercase hints and list headers."
+      },
+      "display-home": {
+        "displayName": "Display (home)",
+        "purpose": "Globe hero headline (3rem / 4.75rem lg)."
+      },
+      "quote": {
+        "displayName": "Quote (italic)",
+        "purpose": "Home page colophon quote."
+      },
+      "lede-home": {
+        "displayName": "Lede (home, italic)",
+        "purpose": "Globe hero tagline (1.0625rem / 1.25rem lg)."
+      },
+      "list": {
+        "displayName": "List",
+        "purpose": "Hairline album list rows beside the home globe and under the /map globe."
+      },
+      "tag": {
+        "displayName": "Tag",
+        "purpose": "Globe marker labels, list years, featured-album label."
       }
     },
     "shadows": [
@@ -249,7 +269,7 @@
       "refersTo": "button-pill",
       "description": "Default action (share, download, slideshow, load more): hairline pill, tracked uppercase label.",
       "html": "<button class=\"ds-btn-pill\" type=\"button\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><circle cx=\"18\" cy=\"5\" r=\"3\"/><circle cx=\"6\" cy=\"12\" r=\"3\"/><circle cx=\"18\" cy=\"19\" r=\"3\"/><path d=\"M8.6 13.5l6.8 4M15.4 6.5l-6.8 4\"/></svg>Share</button>",
-      "css": ".ds-btn-pill { display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 9999px; border: 1px solid var(--color-surface-border); background: color-mix(in srgb, var(--color-surface) 40%, transparent); padding: 0.625rem 1.25rem; font-family: var(--font-sans); font-size: 0.75rem; line-height: 1.5; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-text-primary); cursor: pointer; transition: all 200ms; } .ds-btn-pill:hover { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 10%, transparent); color: var(--color-primary); } .ds-btn-pill:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-primary); } .ds-btn-pill:active { transform: scale(0.97); transition-duration: 150ms; } @media (prefers-reduced-motion: reduce) { .ds-btn-pill:active { transform: none; opacity: 0.8; } }"
+      "css": ".ds-btn-pill { display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 9999px; border: 1px solid var(--color-surface-border); background: color-mix(in srgb, var(--color-surface) 40%, transparent); min-height: 2.75rem; padding: 0.625rem 1.25rem; font-family: var(--font-sans); font-size: 0.75rem; line-height: 1.5; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-text-primary); cursor: pointer; transition: all 200ms; } .ds-btn-pill:hover { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 10%, transparent); color: var(--color-primary); } .ds-btn-pill:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-primary); } .ds-btn-pill:active { transform: scale(0.97); transition-duration: 150ms; } @media (prefers-reduced-motion: reduce) { .ds-btn-pill:active { transform: none; opacity: 0.8; } }"
     },
     {
       "name": "Hero CTA",
@@ -265,15 +285,15 @@
       "refersTo": "input-search",
       "description": "Boxless serif line on a single hairline underline; the underline brightens on focus.",
       "html": "<input class=\"ds-input-search\" type=\"text\" aria-label=\"Search the photo archive\" placeholder=\"Search albums, photos, locations, cameras...\">",
-      "css": ".ds-input-search { width: 100%; border: 0; border-bottom: 1px solid var(--color-surface-border); background: transparent; padding: 0 1rem 0.75rem 0; font-family: var(--font-display); font-size: 1.875rem; font-weight: 400; color: var(--color-text-primary); transition: border-color 150ms; } .ds-input-search::placeholder { color: color-mix(in srgb, var(--color-text-muted) 60%, transparent); } .ds-input-search:focus { outline: none; border-bottom-color: var(--color-text-primary); }"
+      "css": ".ds-input-search { width: 100%; border: 0; border-bottom: 1px solid color-mix(in srgb, var(--color-text-muted) 60%, transparent); background: transparent; padding: 0 1rem 0.75rem 0; font-family: var(--font-display); font-size: 1.875rem; font-weight: 400; color: var(--color-text-primary); transition: border-color 150ms; } .ds-input-search::placeholder { color: color-mix(in srgb, var(--color-text-muted) 80%, transparent); } .ds-input-search:focus { outline: none; border-bottom-color: var(--color-text-primary); }"
     },
     {
       "name": "Header",
       "kind": "nav",
       "refersTo": "nav-link",
       "description": "Thick-glass sticky bar: two-weight serif wordmark, serif nav links, locale toggle.",
-      "html": "<header class=\"ds-header\"><a class=\"ds-wordmark\" href=\"#\"><span class=\"ds-wordmark-a\">Regards</span><span class=\"ds-wordmark-b\">Perdus</span></a><nav class=\"ds-nav\"><a href=\"#\">Home</a><a href=\"#\">Albums</a><a href=\"#\">Search</a><a href=\"#\">Map</a><a href=\"#\">About</a><button class=\"ds-nav-locale\" type=\"button\" aria-label=\"Switch to French\">FR</button></nav></header>",
-      "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1rem 1.5rem; background: color-mix(in srgb, var(--color-background) 92%, transparent); -webkit-backdrop-filter: blur(32px) saturate(180%); backdrop-filter: blur(32px) saturate(180%); } .ds-wordmark { display: flex; align-items: baseline; gap: 0.5rem; text-decoration: none; font-family: var(--font-display); font-size: 1.125rem; line-height: 1; letter-spacing: 0.18em; text-transform: uppercase; } .ds-wordmark-a { font-weight: 600; color: var(--color-text-primary); } .ds-wordmark-b { font-weight: 300; color: var(--color-text-muted); transition: color 150ms; } .ds-wordmark:hover .ds-wordmark-b { color: var(--color-text-primary); } .ds-nav { display: flex; align-items: center; gap: 2.25rem; } .ds-nav a, .ds-nav-locale { background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--font-display); font-size: 0.875rem; font-weight: 500; line-height: 1.5; color: var(--color-text-primary); text-decoration: none; transition: color 150ms; } .ds-nav-locale { text-transform: uppercase; } .ds-nav a:hover, .ds-nav-locale:hover { color: var(--color-primary); } .ds-nav a:focus-visible, .ds-nav-locale:focus-visible, .ds-wordmark:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: 2px; }"
+      "html": "<header class=\"ds-header\"><a class=\"ds-wordmark\" href=\"#\"><span class=\"ds-wordmark-a\">Regards</span><span class=\"ds-wordmark-b\">Perdus</span></a><nav class=\"ds-nav\"><a href=\"#\" aria-current=\"page\">Home</a><a href=\"#\">Albums</a><a href=\"#\">Search</a><a href=\"#\">Map</a><a href=\"#\">About</a><button class=\"ds-nav-locale\" type=\"button\" aria-label=\"Switch to French\">FR</button></nav></header>",
+      "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1rem 1.5rem; background: color-mix(in srgb, var(--color-background) 92%, transparent); -webkit-backdrop-filter: blur(32px) saturate(180%); backdrop-filter: blur(32px) saturate(180%); } .ds-wordmark { display: flex; align-items: baseline; gap: 0.5rem; text-decoration: none; font-family: var(--font-display); font-size: 1.125rem; line-height: 1; letter-spacing: 0.18em; text-transform: uppercase; } .ds-wordmark-a { font-weight: 600; color: var(--color-text-primary); } .ds-wordmark-b { font-weight: 300; color: var(--color-text-muted); transition: color 150ms; } .ds-wordmark:hover .ds-wordmark-b { color: var(--color-text-primary); } .ds-nav { display: flex; align-items: center; gap: 2.25rem; } .ds-nav a, .ds-nav-locale { background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--font-display); font-size: 0.875rem; font-weight: 500; line-height: 1.5; color: var(--color-text-primary); text-decoration: none; transition: color 150ms; } .ds-nav-locale { text-transform: uppercase; } .ds-nav a, .ds-nav-locale { display: inline-flex; align-items: center; min-height: 2.75rem; } .ds-nav a[aria-current=\"page\"] { text-decoration: underline; text-decoration-color: var(--color-primary); text-decoration-thickness: 1px; text-underline-offset: 8px; } .ds-nav a:hover, .ds-nav-locale:hover { color: var(--color-primary); } .ds-nav a:focus-visible, .ds-nav-locale:focus-visible, .ds-wordmark:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: 2px; }"
     },
     {
       "name": "Filter Tabs",
@@ -281,13 +301,13 @@
       "refersTo": "filter-tab",
       "description": "Eyebrow-type toggle words; the active one turns Sea Salt with a hairline underline.",
       "html": "<div class=\"ds-tabs\"><button class=\"ds-tab\" type=\"button\" aria-pressed=\"true\">all</button><button class=\"ds-tab\" type=\"button\" aria-pressed=\"false\">albums</button><button class=\"ds-tab\" type=\"button\" aria-pressed=\"false\">photos</button></div>",
-      "css": ".ds-tabs { display: flex; align-items: center; gap: 1.5rem; } .ds-tab { position: relative; background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--font-sans); font-size: 0.75rem; line-height: 1.5; letter-spacing: 0.32em; text-transform: uppercase; color: var(--color-text-muted); transition: color 150ms; } .ds-tab:hover { color: var(--color-text-primary); } .ds-tab[aria-pressed=\"true\"] { color: var(--color-text-primary); } .ds-tab[aria-pressed=\"true\"]::after { content: \"\"; position: absolute; left: 0; right: 0; bottom: -0.5rem; height: 1px; background: var(--color-text-primary); } .ds-tab:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: 2px; }"
+      "css": ".ds-tabs { display: flex; align-items: center; gap: 1.5rem; } .ds-tab { position: relative; display: inline-flex; align-items: center; min-height: 2.75rem; background: none; border: 0; padding: 0 0.5rem; cursor: pointer; font-family: var(--font-sans); font-size: 0.75rem; line-height: 1.5; letter-spacing: 0.32em; text-transform: uppercase; color: var(--color-text-muted); transition: color 150ms; } .ds-tab:hover { color: var(--color-text-primary); } .ds-tab[aria-pressed=\"true\"] { color: var(--color-text-primary); } .ds-tab[aria-pressed=\"true\"]::after { content: \"\"; position: absolute; bottom: 0.25rem; left: 0.5rem; right: 0.5rem; height: 1px; background: var(--color-text-primary); } .ds-tab:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: 2px; }"
     },
     {
       "name": "Album Card",
       "kind": "card",
       "refersTo": "album-card",
-      "description": "Square, unframed cover with a black scrim and caption; slow zoom on hover; accent border and inner glow when the globe points at it (data-highlighted). Gradient stands in for the cover photo.",
+      "description": "Square, unframed cover with a black scrim and caption; slow zoom on hover; accent border and inner glow when the globe points at it (data-highlighted). Gradient stands in for the cover photo (in the product it is a lazy <img> with srcset).",
       "html": "<a class=\"ds-album-card\" href=\"#\" data-highlighted><div class=\"ds-album-card-cover\"></div><div class=\"ds-album-card-scrim\"></div><div class=\"ds-album-card-caption\"><h3 class=\"ds-album-card-title\">Album title</h3><p class=\"ds-album-card-meta\">Place <span>·</span> Month Year</p></div></a>",
       "css": ".ds-album-card { position: relative; display: block; width: 320px; aspect-ratio: 1; overflow: hidden; text-decoration: none; } .ds-album-card-cover { position: absolute; inset: 0; background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 60%, var(--color-surface)), var(--color-surface) 75%); transition: transform 1200ms ease-out; } .ds-album-card:hover .ds-album-card-cover { transform: scale(1.04); } .ds-album-card-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0)); } .ds-album-card::after { content: \"\"; position: absolute; inset: 0; pointer-events: none; border: 1px solid var(--color-primary); box-shadow: inset 0 0 60px color-mix(in srgb, var(--color-primary) 25%, transparent); opacity: 0; transition: opacity 250ms ease-out; } .ds-album-card[data-highlighted]::after { opacity: 1; } .ds-album-card-caption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 0.25rem; padding: 1.5rem; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35); } .ds-album-card-title { margin: 0; font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; line-height: 1.25; letter-spacing: -0.025em; color: var(--color-text-primary); } .ds-album-card-meta { margin: 0; font-family: var(--font-sans); font-size: 0.75rem; line-height: 1.5; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255, 255, 255, 0.8); } .ds-album-card-meta span { color: rgba(255, 255, 255, 0.4); } .ds-album-card:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { .ds-album-card-cover, .ds-album-card::after { transition: none; } }"
     },
@@ -360,7 +380,9 @@
       "Do separate sections with space (5–7rem) and hairlines, not boxes.",
       "Do use the two named curves for motion: `ease-out-soft` (cubic-bezier(0.23, 1, 0.32, 1)) for entrances, reveals and hover zooms, and `ease-settle` (cubic-bezier(0.32, 0.72, 0, 1)) for things coming to rest.",
       "Do switch off all entrance, reveal and zoom motion under `prefers-reduced-motion`, and make glass solid under reduced transparency or increased contrast.",
-      "Do give icon buttons and mobile controls a 44px target, and give every interactive element a visible 2px Harbour Slate focus ring."
+      "Do give every interactive element a 44px target and a visible 2px Harbour Slate focus ring that follows the element's own corners.",
+      "Do size type in rem and full-height surfaces in `svh`/`dvh`.",
+      "Do animate with `transform` and `opacity` (`scaleX` for growing hairlines, `translate` for nudges); never animate `width` or padding."
     ],
     "donts": [
       "Don't drift toward the travel-blog / influencer look: big CTAs, subscribe prompts, affiliate cards.",
@@ -370,7 +392,7 @@
       "Don't hardcode one preset's hex in a component. The code already corrected this once for Ocean Blue's `#14283a`.",
       "Don't fill large areas with Harbour Slate. It is a hairline, ring and marker color (The Hairline Accent Rule).",
       "Don't give a surface a `box-shadow` for elevation; only map chrome is exempt (The No-Shadow Rule).",
-      "Don't add new rounded-rectangle frames around photographs. The 0.5rem photo-grid radius is drift, not precedent."
+      "Don't put rounded-rectangle frames around photographs or maps (The Square Print Rule)."
     ]
   }
 }
