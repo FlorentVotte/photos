@@ -62,3 +62,6 @@ test-results/
 /src/generated/prisma
 *.db
 *.db-journal
+
+# Impeccable per-machine settings
+.impeccable/config.local.json

@@ -1,0 +1,376 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-11T13:40:06.403Z",
+  "title": "Design System: Regards Perdus",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Harbour Slate",
+        "canonical": "#6c9bb5",
+        "tonalRamp": [
+          "oklch(15% 0.064 233.2)",
+          "oklch(26% 0.064 233.2)",
+          "oklch(37% 0.064 233.2)",
+          "oklch(48% 0.064 233.2)",
+          "oklch(60% 0.064 233.2)",
+          "oklch(71% 0.064 233.2)",
+          "oklch(83% 0.064 233.2)",
+          "oklch(95% 0.064 233.2)"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Deep Harbour Ink",
+        "canonical": "#0f1a23",
+        "tonalRamp": [
+          "oklch(15% 0.024 243.9)",
+          "oklch(26% 0.024 243.9)",
+          "oklch(37% 0.024 243.9)",
+          "oklch(48% 0.024 243.9)",
+          "oklch(60% 0.024 243.9)",
+          "oklch(71% 0.024 243.9)",
+          "oklch(83% 0.024 243.9)",
+          "oklch(95% 0.024 243.9)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Chart Table",
+        "canonical": "#162330",
+        "tonalRamp": [
+          "oklch(15% 0.031 249.1)",
+          "oklch(26% 0.031 249.1)",
+          "oklch(37% 0.031 249.1)",
+          "oklch(48% 0.031 249.1)",
+          "oklch(60% 0.031 249.1)",
+          "oklch(71% 0.031 249.1)",
+          "oklch(83% 0.031 249.1)",
+          "oklch(95% 0.031 249.1)"
+        ]
+      },
+      "surface-border": {
+        "role": "neutral",
+        "displayName": "Rigging Line",
+        "canonical": "#22354a",
+        "tonalRamp": [
+          "oklch(15% 0.045 251.7)",
+          "oklch(26% 0.045 251.7)",
+          "oklch(37% 0.045 251.7)",
+          "oklch(48% 0.045 251.7)",
+          "oklch(60% 0.045 251.7)",
+          "oklch(71% 0.045 251.7)",
+          "oklch(83% 0.045 251.7)",
+          "oklch(95% 0.045 251.7)"
+        ]
+      },
+      "text-primary": {
+        "role": "neutral",
+        "displayName": "Sea Salt",
+        "canonical": "#f3f4f5",
+        "tonalRamp": [
+          "oklch(15% 0.002 247.8)",
+          "oklch(26% 0.002 247.8)",
+          "oklch(37% 0.002 247.8)",
+          "oklch(48% 0.002 247.8)",
+          "oklch(60% 0.002 247.8)",
+          "oklch(71% 0.002 247.8)",
+          "oklch(83% 0.002 247.8)",
+          "oklch(95% 0.002 247.8)"
+        ]
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Fog",
+        "canonical": "#9aabbb",
+        "tonalRamp": [
+          "oklch(15% 0.030 246.6)",
+          "oklch(26% 0.030 246.6)",
+          "oklch(37% 0.030 246.6)",
+          "oklch(48% 0.030 246.6)",
+          "oklch(60% 0.030 246.6)",
+          "oklch(71% 0.030 246.6)",
+          "oklch(83% 0.030 246.6)",
+          "oklch(95% 0.030 246.6)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Album hero title (3rem / 4.5rem md / 6rem lg); the globe hero headline is its sibling at up to 4.75rem."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Chapter titles, section headings, about name, next-journey title (1.875rem / 2.25rem md)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Album card titles (1.25rem / 1.5rem md; larger on the featured card)."
+      },
+      "lede": {
+        "displayName": "Lede (italic)",
+        "purpose": "Album subtitles, intro quote, hero tagline. Always italic serif."
+      },
+      "nav": {
+        "displayName": "Nav",
+        "purpose": "Desktop header links, in the serif."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Captions, descriptions, legal text."
+      },
+      "narrative": {
+        "displayName": "Narrative",
+        "purpose": "Chapter story text at max 65ch, line-height 2, opening on a serif drop cap."
+      },
+      "eyebrow": {
+        "displayName": "Eyebrow",
+        "purpose": "Uppercase kickers, filter tabs, locale toggle, lightbox controls (0.32em tracking)."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase footer, place · date lines, metadata (0.24em tracking; pills use 0.18em)."
+      },
+      "micro": {
+        "displayName": "Micro",
+        "purpose": "Smallest uppercase hints and list headers."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-glow",
+        "value": "inset 0 0 60px color-mix(in srgb, var(--color-primary) 25%, transparent)",
+        "purpose": "Inner glow on the album card the home globe is pointing at, paired with a 1px primary border."
+      },
+      {
+        "name": "caption-text-shadow",
+        "value": "0 1px 8px rgba(0, 0, 0, 0.35)",
+        "purpose": "text-shadow on captions set over cover images."
+      },
+      {
+        "name": "map-chrome",
+        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "purpose": "Map chrome only (3D globe markers, /map caption overlay; Tailwind shadow-lg). Never for surfaces."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-soft",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Entrances, scroll reveals, CTA hover."
+      },
+      {
+        "name": "ease-settle",
+        "value": "cubic-bezier(0.32, 0.72, 0, 1)",
+        "purpose": "Things coming to rest."
+      },
+      {
+        "name": "globe-in",
+        "value": "1400ms ease-out-soft, scale 0.92 → 1 with fade",
+        "purpose": "Home globe entrance."
+      },
+      {
+        "name": "rise",
+        "value": "1000ms ease-out-soft, translateY 18px → 0 with fade",
+        "purpose": "Hero copy entrance, staggered."
+      },
+      {
+        "name": "reveal",
+        "value": "900ms ease-out-soft, translateY 24px → 0 with fade",
+        "purpose": "Scroll reveals on the home page; cards stagger 0/90/180ms per row."
+      },
+      {
+        "name": "rule-draw",
+        "value": "900ms ease-out-soft after 250ms, width 0 → 56px",
+        "purpose": "Accent hairline under the home quote."
+      },
+      {
+        "name": "cover-zoom",
+        "value": "1200ms ease-out, scale 1 → 1.04",
+        "purpose": "Album card and next-journey cover on hover."
+      },
+      {
+        "name": "color",
+        "value": "150–200ms",
+        "purpose": "Text, border and fill state changes."
+      },
+      {
+        "name": "press",
+        "value": "150ms, scale 0.97 (opacity 0.8 under reduced motion)",
+        "purpose": "Pill button active state."
+      },
+      {
+        "name": "marker-label",
+        "value": "160ms ease-out, fade + 4px lift",
+        "purpose": "Globe marker label show/hide."
+      },
+      {
+        "name": "card-glow-fade",
+        "value": "250ms ease-out",
+        "purpose": "Album card highlight while the globe points at it."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ],
+    "materials": [
+      {
+        "name": "material",
+        "value": "background: color-mix(in srgb, var(--color-background) 80%, transparent); backdrop-filter: blur(20px) saturate(180%)",
+        "purpose": "Light glass chrome: header over a hero image. Solid under reduced transparency or increased contrast."
+      },
+      {
+        "name": "material-thick",
+        "value": "background: color-mix(in srgb, var(--color-background) 92%, transparent); backdrop-filter: blur(32px) saturate(180%)",
+        "purpose": "Thick glass chrome: header over content, full-screen mobile menu."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Pill Button",
+      "kind": "button",
+      "refersTo": "button-pill",
+      "description": "Default action (share, download, slideshow, load more): hairline pill, tracked uppercase label.",
+      "html": "<button class=\"ds-btn-pill\" type=\"button\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><circle cx=\"18\" cy=\"5\" r=\"3\"/><circle cx=\"6\" cy=\"12\" r=\"3\"/><circle cx=\"18\" cy=\"19\" r=\"3\"/><path d=\"M8.6 13.5l6.8 4M15.4 6.5l-6.8 4\"/></svg>Share</button>",
+      "css": ".ds-btn-pill { display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 9999px; border: 1px solid var(--color-surface-border); background: color-mix(in srgb, var(--color-surface) 40%, transparent); padding: 0.625rem 1.25rem; font-family: var(--font-sans); font-size: 0.75rem; line-height: 1.5; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-text-primary); cursor: pointer; transition: all 200ms; } .ds-btn-pill:hover { border-color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 10%, transparent); color: var(--color-primary); } .ds-btn-pill:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-primary); } .ds-btn-pill:active { transform: scale(0.97); transition-duration: 150ms; } @media (prefers-reduced-motion: reduce) { .ds-btn-pill:active { transform: none; opacity: 0.8; } }"
+    },
+    {
+      "name": "Hero CTA",
+      "kind": "button",
+      "refersTo": "button-hero-cta",
+      "description": "The one call to action over imagery (home globe hero): glass pill that inverts to solid white on hover.",
+      "html": "<a class=\"ds-btn-hero\" href=\"#\"><span>View Album</span><span class=\"ds-btn-hero-arrow\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M5 12h14M13 6l6 6-6 6\"/></svg></span></a>",
+      "css": ".ds-btn-hero { display: inline-flex; align-items: center; gap: 0.75rem; min-height: 3rem; padding: 0 1.625rem; border-radius: 9999px; border: 1px solid rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.05); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); font-family: var(--font-sans); font-size: 0.75rem; letter-spacing: 0.24em; text-transform: uppercase; color: #ffffff; text-decoration: none; transition: all 300ms cubic-bezier(0.23, 1, 0.32, 1); } .ds-btn-hero:hover { border-color: #ffffff; background: #ffffff; color: var(--color-background); } .ds-btn-hero-arrow { display: inline-flex; transition: transform 300ms; } .ds-btn-hero:hover .ds-btn-hero-arrow { transform: translateX(4px); } .ds-btn-hero:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-primary); }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "Boxless serif line on a single hairline underline; the underline brightens on focus.",
+      "html": "<input class=\"ds-input-search\" type=\"text\" aria-label=\"Search the photo archive\" placeholder=\"Search albums, photos, locations, cameras...\">",
+      "css": ".ds-input-search { width: 100%; border: 0; border-bottom: 1px solid var(--color-surface-border); background: transparent; padding: 0 1rem 0.75rem 0; font-family: var(--font-display); font-size: 1.875rem; font-weight: 400; color: var(--color-text-primary); transition: border-color 150ms; } .ds-input-search::placeholder { color: color-mix(in srgb, var(--color-text-muted) 60%, transparent); } .ds-input-search:focus { outline: none; border-bottom-color: var(--color-text-primary); }"
+    },
+    {
+      "name": "Header",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Thick-glass sticky bar: two-weight serif wordmark, serif nav links, locale toggle.",
+      "html": "<header class=\"ds-header\"><a class=\"ds-wordmark\" href=\"#\"><span class=\"ds-wordmark-a\">Regards</span><span class=\"ds-wordmark-b\">Perdus</span></a><nav class=\"ds-nav\"><a href=\"#\">Home</a><a href=\"#\">Albums</a><a href=\"#\">Search</a><a href=\"#\">Map</a><a href=\"#\">About</a><button class=\"ds-nav-locale\" type=\"button\" aria-label=\"Switch to French\">FR</button></nav></header>",
+      "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1rem 1.5rem; background: color-mix(in srgb, var(--color-background) 92%, transparent); -webkit-backdrop-filter: blur(32px) saturate(180%); backdrop-filter: blur(32px) saturate(180%); } .ds-wordmark { display: flex; align-items: baseline; gap: 0.5rem; text-decoration: none; font-family: var(--font-display); font-size: 1.125rem; line-height: 1; letter-spacing: 0.18em; text-transform: uppercase; } .ds-wordmark-a { font-weight: 600; color: var(--color-text-primary); } .ds-wordmark-b { font-weight: 300; color: var(--color-text-muted); transition: color 150ms; } .ds-wordmark:hover .ds-wordmark-b { color: var(--color-text-primary); } .ds-nav { display: flex; align-items: center; gap: 2.25rem; } .ds-nav a, .ds-nav-locale { background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--font-display); font-size: 0.875rem; font-weight: 500; line-height: 1.5; color: var(--color-text-primary); text-decoration: none; transition: color 150ms; } .ds-nav-locale { text-transform: uppercase; } .ds-nav a:hover, .ds-nav-locale:hover { color: var(--color-primary); } .ds-nav a:focus-visible, .ds-nav-locale:focus-visible, .ds-wordmark:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: 2px; }"
+    },
+    {
+      "name": "Filter Tabs",
+      "kind": "nav",
+      "refersTo": "filter-tab",
+      "description": "Eyebrow-type toggle words; the active one turns Sea Salt with a hairline underline.",
+      "html": "<div class=\"ds-tabs\"><button class=\"ds-tab\" type=\"button\" aria-pressed=\"true\">all</button><button class=\"ds-tab\" type=\"button\" aria-pressed=\"false\">albums</button><button class=\"ds-tab\" type=\"button\" aria-pressed=\"false\">photos</button></div>",
+      "css": ".ds-tabs { display: flex; align-items: center; gap: 1.5rem; } .ds-tab { position: relative; background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--font-sans); font-size: 0.75rem; line-height: 1.5; letter-spacing: 0.32em; text-transform: uppercase; color: var(--color-text-muted); transition: color 150ms; } .ds-tab:hover { color: var(--color-text-primary); } .ds-tab[aria-pressed=\"true\"] { color: var(--color-text-primary); } .ds-tab[aria-pressed=\"true\"]::after { content: \"\"; position: absolute; left: 0; right: 0; bottom: -0.5rem; height: 1px; background: var(--color-text-primary); } .ds-tab:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: 2px; }"
+    },
+    {
+      "name": "Album Card",
+      "kind": "card",
+      "refersTo": "album-card",
+      "description": "Square, unframed cover with a black scrim and caption; slow zoom on hover; accent border and inner glow when the globe points at it (data-highlighted). Gradient stands in for the cover photo.",
+      "html": "<a class=\"ds-album-card\" href=\"#\" data-highlighted><div class=\"ds-album-card-cover\"></div><div class=\"ds-album-card-scrim\"></div><div class=\"ds-album-card-caption\"><h3 class=\"ds-album-card-title\">Album title</h3><p class=\"ds-album-card-meta\">Place <span>·</span> Month Year</p></div></a>",
+      "css": ".ds-album-card { position: relative; display: block; width: 320px; aspect-ratio: 1; overflow: hidden; text-decoration: none; } .ds-album-card-cover { position: absolute; inset: 0; background: linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 60%, var(--color-surface)), var(--color-surface) 75%); transition: transform 1200ms ease-out; } .ds-album-card:hover .ds-album-card-cover { transform: scale(1.04); } .ds-album-card-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0)); } .ds-album-card::after { content: \"\"; position: absolute; inset: 0; pointer-events: none; border: 1px solid var(--color-primary); box-shadow: inset 0 0 60px color-mix(in srgb, var(--color-primary) 25%, transparent); opacity: 0; transition: opacity 250ms ease-out; } .ds-album-card[data-highlighted]::after { opacity: 1; } .ds-album-card-caption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 0.25rem; padding: 1.5rem; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35); } .ds-album-card-title { margin: 0; font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; line-height: 1.25; letter-spacing: -0.025em; color: var(--color-text-primary); } .ds-album-card-meta { margin: 0; font-family: var(--font-sans); font-size: 0.75rem; line-height: 1.5; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255, 255, 255, 0.8); } .ds-album-card-meta span { color: rgba(255, 255, 255, 0.4); } .ds-album-card:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { .ds-album-card-cover, .ds-album-card::after { transition: none; } }"
+    },
+    {
+      "name": "Chapter Opening",
+      "kind": "custom",
+      "description": "Signature carnet page: tracked eyebrow, serif headline, then sans narrative opening on a serif drop cap.",
+      "html": "<section class=\"ds-chapter\"><p class=\"ds-eyebrow\">Chapter 1</p><h2 class=\"ds-chapter-title\">Chapter title</h2><p class=\"ds-narrative\">Narrative text sits at a long, loose measure in Fog, so a chapter reads like a page of the notebook rather than a caption under a picture.</p></section>",
+      "css": ".ds-chapter { max-width: 65ch; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; text-align: center; } .ds-eyebrow { margin: 0; font-family: var(--font-sans); font-size: 0.75rem; line-height: 1.5; letter-spacing: 0.32em; text-transform: uppercase; color: var(--color-text-muted); } .ds-chapter-title { margin: 0; font-family: var(--font-display); font-size: 2.25rem; font-weight: 600; line-height: 1.25; letter-spacing: -0.025em; color: var(--color-text-primary); } .ds-narrative { margin: 1.75rem 0 0; text-align: left; font-family: var(--font-sans); font-size: 1.125rem; line-height: 2; color: var(--color-text-muted); } .ds-narrative::first-letter { float: left; margin-right: 0.75rem; font-family: var(--font-display); font-size: 3.75rem; font-weight: 600; line-height: 1; color: var(--color-text-primary); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Carnet de Voyage",
+    "overview": "Regards Perdus reads like a travel notebook opened after dark. The page is ink: a near-black harbour navy that every image, scrim and fade settles into. On it, the photographs carry all the light, and the words are set the way a careful diarist writes them: a serif voice for titles, quotes and italic ledes, a drop cap where a chapter's story begins, and small uppercase captions in a tracked sans for the record (place, date, counts, camera settings). A quote stands in as the colophon. The globe and the route maps are the notebook's pasted-in maps.\n\nDensity is low and the pace is slow. Sections are separated by generous vertical space (5–7rem) rather than rules or boxes. Photographs go full-bleed or edge-to-edge within their column with square corners, and text sits below them or on a gradient scrim. The chrome is translucent glass that content slides under, and motion is long, soft and decelerating: things rise and settle, they never bounce.\n\nConfirmed rejections: the travel-blog / influencer look (big CTAs, subscribe prompts, affiliate cards), social-feed mechanics (likes, counters, avatars, infinite feeds), SaaS or dashboard chrome (shadowed cards, badges, chip clouds, rounded panels), and the stock portfolio template (centered hero text over a photo, three-column feature rows).",
+    "keyCharacteristics": [
+      "Dark ink ground; photographs are the only bright surfaces.",
+      "Serif for what the author says, tracked uppercase sans for what the camera recorded.",
+      "Square-cornered photographs; only controls are round.",
+      "No drop shadows. Depth comes from scrims, glass chrome and tonal steps.",
+      "Long, soft, decelerating motion, switched off entirely under reduced motion."
+    ],
+    "rules": [
+      {
+        "name": "The Ink Ground Rule",
+        "body": "Every gradient, scrim and fade resolves to the page ground (`--color-background`). Nothing ends darker or lighter than Deep Harbour Ink, or a seam shows where the section meets the page.",
+        "section": "colors"
+      },
+      {
+        "name": "The Derived Tone Rule",
+        "body": "A tone the six variables don't define is mixed from them with `color-mix()` (the globe hero's mid-tone is 14% Harbour Slate into the ground), never hardcoded from one preset's hex.",
+        "section": "colors"
+      },
+      {
+        "name": "The Hairline Accent Rule",
+        "body": "Harbour Slate appears as lines, text, rings and markers. It never fills a large area; the widest fill it takes is a 10% hover wash inside a pill.",
+        "section": "colors"
+      },
+      {
+        "name": "The Caption Rule",
+        "body": "Anything the camera or the archive recorded (place, date, counts, EXIF, controls) is set in the sans, uppercase, at one of the three named tracking steps: eyebrow, label or micro. Tracking is never set ad hoc. The serif is reserved for what the author says: titles, quotes, ledes, drop caps.",
+        "section": "typography"
+      },
+      {
+        "name": "The Wordmark Rule",
+        "body": "\"Regards Perdus\" is set in uppercase serif at 0.18em tracking, with \"Regards\" in 600 Sea Salt and \"Perdus\" in 300 Fog. \"Perdus\" lifts to Sea Salt on hover.",
+        "section": "typography"
+      },
+      {
+        "name": "The Photo Leads Rule",
+        "body": "A photograph is never boxed, bordered or inset in a frame. It runs full-bleed or edge-to-edge within its column, and text sits below it or on a scrim over its lower edge.",
+        "section": "layout"
+      },
+      {
+        "name": "The No-Shadow Rule",
+        "body": "Surfaces never lift on drop shadows. A new panel, card or menu gets depth from glass, scrim or a tonal step, never from a `box-shadow`. Only map chrome sitting on map tiles is exempt.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Square Print Rule",
+        "body": "Photographs have square corners. Only controls and markers are round.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do take every color from the six `--color-*` variables and every family from `--font-display` / `--font-sans`, so all nine presets keep working.",
+      "Do end every gradient, scrim and fade on `--color-background` (The Ink Ground Rule).",
+      "Do mix any missing tone from the theme variables with `color-mix()` (The Derived Tone Rule).",
+      "Do set metadata and controls in uppercase sans at the eyebrow (0.32em), label (0.24em) or micro (0.24em) tracking steps.",
+      "Do keep photographs square-cornered and full-bleed or column-wide, with text below or on a scrim.",
+      "Do separate sections with space (5–7rem) and hairlines, not boxes.",
+      "Do use the two named curves for motion: `ease-out-soft` (cubic-bezier(0.23, 1, 0.32, 1)) for entrances, reveals and hover zooms, and `ease-settle` (cubic-bezier(0.32, 0.72, 0, 1)) for things coming to rest.",
+      "Do switch off all entrance, reveal and zoom motion under `prefers-reduced-motion`, and make glass solid under reduced transparency or increased contrast.",
+      "Do give icon buttons and mobile controls a 44px target, and give every interactive element a visible 2px Harbour Slate focus ring."
+    ],
+    "donts": [
+      "Don't drift toward the travel-blog / influencer look: big CTAs, subscribe prompts, affiliate cards.",
+      "Don't add social-feed mechanics: likes, counters, avatars, infinite feeds.",
+      "Don't add SaaS or dashboard chrome: shadowed cards, badges, chip clouds, rounded panels.",
+      "Don't fall back on the stock portfolio template: centered hero text over a photo, three-column feature rows.",
+      "Don't hardcode one preset's hex in a component. The code already corrected this once for Ocean Blue's `#14283a`.",
+      "Don't fill large areas with Harbour Slate. It is a hairline, ring and marker color (The Hairline Accent Rule).",
+      "Don't give a surface a `box-shadow` for elevation; only map chrome is exempt (The No-Shadow Rule).",
+      "Don't add new rounded-rectangle frames around photographs. The 0.5rem photo-grid radius is drift, not precedent."
+    ]
+  }
+}
