@@ -20,11 +20,12 @@ export function generateThemeCSSVars(theme: ThemePresetKey): string {
 }
 
 /**
- * Get the primary color for meta theme-color tag
+ * Get the color for the meta theme-color tag. It is the page background (not the
+ * accent) so the browser/status bar blends with the page.
  */
 export function getThemeMetaColor(theme: ThemePresetKey): string {
   const preset = THEME_PRESETS[theme] || THEME_PRESETS[DEFAULT_THEME];
-  return preset.colors.primary;
+  return preset.colors.background;
 }
 
 /**
@@ -33,4 +34,15 @@ export function getThemeMetaColor(theme: ThemePresetKey): string {
 export function getThemeBackgroundColor(theme: ThemePresetKey): string {
   const preset = THEME_PRESETS[theme] || THEME_PRESETS[DEFAULT_THEME];
   return preset.colors.background;
+}
+
+/**
+ * Convert a #rrggbb colour to an rgba() string. Used where CSS variables are
+ * unavailable (next/og) and a theme colour needs transparency.
+ */
+export function hexToRgba(hex: string, alpha: number): string {
+  const m = /^#([0-9a-fA-F]{6})$/.exec(hex);
+  if (!m) return hex;
+  const n = parseInt(m[1], 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
 }

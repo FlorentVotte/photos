@@ -80,7 +80,7 @@ export default function MapContent({ photos, albums }: MapContentProps) {
   const view = useSyncExternalStore(subscribeToView, readView, readServerView);
 
   return (
-    <main className="flex-1 px-6 pt-20 pb-12 md:px-12 md:pt-28">
+    <main id="main" tabIndex={-1} className="flex-1 px-6 pt-20 pb-12 md:px-12 md:pt-28">
       <div className="mx-auto max-w-[1200px]">
         <header className="mb-12 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">

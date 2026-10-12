@@ -50,7 +50,7 @@ export default function AdobeConnectionCard({
               : "Connect your Adobe account to sync photo titles and captions"}
           </p>
           {status?.connected && status.updatedAt && (
-            <p className="font-sans text-xs text-text-muted/70">
+            <p className="font-sans text-xs text-text-muted">
               Connected on {new Date(status.updatedAt).toLocaleString()}
             </p>
           )}
@@ -83,7 +83,7 @@ export default function AdobeConnectionCard({
       </div>
 
       {status && !status.configured && (
-        <p className="font-sans text-xs text-text-muted/70 leading-relaxed">
+        <p className="font-sans text-xs text-text-muted leading-relaxed">
           Requires ADOBE_CLIENT_ID and ADOBE_CLIENT_SECRET in .env file. Get
           credentials from{" "}
           <a
@@ -114,7 +114,7 @@ export default function AdobeConnectionCard({
               className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-12 group-hover/cta:bg-foreground"
             />
           </button>
-          <p className="font-sans text-xs text-text-muted/70">
+          <p className="font-sans text-xs text-text-muted">
             Add albums directly from your Lightroom catalog (no public sharing
             needed)
           </p>

@@ -79,7 +79,7 @@ export default async function AlbumPage({ params }: Props) {
   const nextAlbum = albums[(currentIndex + 1) % albums.length];
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <ImageGalleryStructuredData
         name={album.title}
         description={album.description || `Photo album from ${album.location}`}

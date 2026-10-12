@@ -98,3 +98,32 @@ export function formatPhotoMetadataDescription(
   const location = formatPhotoLocation(photo);
   return location ? `Photo from ${location}` : displayTitle;
 }
+
+const MEDIUM_SEGMENT_RE = /^\/photos\/[^/]+\/medium\/[^/]+$/;
+
+/**
+ * Derive the thumb/medium/full variants of an album cover from its medium path
+ * (`/photos/<slug>/medium/<id>.jpg`). Anything else (external or unexpected
+ * URLs) only has the one source we were given.
+ */
+export function coverSources(coverImage: string): {
+  thumb?: string;
+  medium: string;
+  full?: string;
+} {
+  if (!MEDIUM_SEGMENT_RE.test(coverImage)) return { medium: coverImage };
+  return {
+    thumb: coverImage.replace("/medium/", "/thumb/"),
+    medium: coverImage,
+    full: coverImage.replace("/medium/", "/full/"),
+  };
+}
+
+/** Cover sources for non-square slots: the square thumb crop would be upscaled. */
+export function wideCoverSources(coverImage: string): {
+  medium: string;
+  full?: string;
+} {
+  const { medium, full } = coverSources(coverImage);
+  return full ? { medium, full } : { medium };
+}

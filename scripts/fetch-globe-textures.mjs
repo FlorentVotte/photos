@@ -16,10 +16,9 @@ const SOURCES = [
   },
   {
     url: "https://unpkg.com/three-globe@2.31.0/example/img/earth-topology.png",
-    file: "earth-topology.png",
-    // Palette-encoded: the source is an 8-bit grayscale bump map, so 256 levels
-    // are lossless in practice and roughly halve the file.
-    encode: (img) => img.png({ compressionLevel: 9, palette: true }),
+    file: "earth-topology.jpg",
+    // A bump map only needs luminance; grayscale JPEG is a fraction of the PNG.
+    encode: (img) => img.grayscale().jpeg({ quality: 80, mozjpeg: true }),
   },
 ];
 

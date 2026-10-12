@@ -1,5 +1,8 @@
 import { ImageResponse } from "next/og";
 import { getFeaturedAlbum } from "@/lib/data";
+import { getActiveTheme } from "@/lib/active-theme";
+import { THEME_PRESETS } from "@/lib/themes";
+import { hexToRgba } from "@/lib/theme-utils";
 
 export const runtime = "nodejs";
 
@@ -10,6 +13,10 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
 
 export async function GET() {
   const featuredAlbum = await getFeaturedAlbum();
+  const preset = THEME_PRESETS[await getActiveTheme()];
+  const { primary, background, surface, textPrimary, textMuted } = preset.colors;
+  // Only darken the cover for dark themes; light themes scrim towards the page ground.
+  const coverBrightness = preset.mode === "dark" ? 0.5 : 1;
 
   // If we have a featured album, use its cover image
   if (featuredAlbum) {
@@ -25,7 +32,7 @@ export async function GET() {
             height: "100%",
             display: "flex",
             position: "relative",
-            background: "#0d0d0d",
+            background: background,
           }}
         >
           {/* Featured album cover as background */}
@@ -38,7 +45,7 @@ export async function GET() {
               width: "100%",
               height: "100%",
               objectFit: "cover",
-              filter: "brightness(0.5)",
+              filter: `brightness(${coverBrightness})`,
             }}
           />
 
@@ -48,7 +55,7 @@ export async function GET() {
               position: "absolute",
               inset: 0,
               background:
-                "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.5) 100%)",
+                `linear-gradient(to top, ${hexToRgba(background, 0.92)} 0%, ${hexToRgba(background, 0.3)} 50%, ${hexToRgba(background, 0.5)} 100%)`,
             }}
           />
 
@@ -71,7 +78,7 @@ export async function GET() {
               style={{
                 fontSize: "24px",
                 fontWeight: 600,
-                color: "#c9a227",
+                color: primary,
                 letterSpacing: "0.2em",
                 textTransform: "uppercase",
               }}
@@ -84,7 +91,7 @@ export async function GET() {
               style={{
                 fontSize: "56px",
                 fontWeight: 700,
-                color: "#ffffff",
+                color: textPrimary,
                 textAlign: "center",
                 lineHeight: 1.1,
               }}
@@ -96,7 +103,7 @@ export async function GET() {
             <div
               style={{
                 fontSize: "22px",
-                color: "rgba(255, 255, 255, 0.8)",
+                color: textMuted,
                 textAlign: "center",
                 maxWidth: "800px",
               }}
@@ -109,7 +116,7 @@ export async function GET() {
               style={{
                 width: "100px",
                 height: "3px",
-                background: "#c9a227",
+                background: primary,
                 marginTop: "8px",
               }}
             />
@@ -122,7 +129,7 @@ export async function GET() {
               top: "30px",
               right: "40px",
               fontSize: "16px",
-              color: "rgba(255, 255, 255, 0.6)",
+              color: textMuted,
             }}
           >
             photos.votte.eu
@@ -150,7 +157,7 @@ export async function GET() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%)",
+          background: `linear-gradient(135deg, ${surface} 0%, ${background} 100%)`,
           position: "relative",
         }}
       >
@@ -160,7 +167,7 @@ export async function GET() {
             position: "absolute",
             inset: 0,
             opacity: 0.05,
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${encodeURIComponent(primary)}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         />
 
@@ -179,7 +186,7 @@ export async function GET() {
             style={{
               fontSize: "24px",
               fontWeight: 600,
-              color: "#c9a227",
+              color: primary,
               letterSpacing: "0.2em",
               textTransform: "uppercase",
             }}
@@ -192,7 +199,7 @@ export async function GET() {
             style={{
               fontSize: "64px",
               fontWeight: 700,
-              color: "#ffffff",
+              color: textPrimary,
               textAlign: "center",
               lineHeight: 1.1,
             }}
@@ -204,7 +211,7 @@ export async function GET() {
           <div
             style={{
               fontSize: "24px",
-              color: "rgba(255, 255, 255, 0.7)",
+              color: textMuted,
               textAlign: "center",
               maxWidth: "800px",
             }}
@@ -217,7 +224,7 @@ export async function GET() {
             style={{
               width: "100px",
               height: "3px",
-              background: "#c9a227",
+              background: primary,
               marginTop: "16px",
             }}
           />
@@ -230,7 +237,7 @@ export async function GET() {
             bottom: "30px",
             right: "40px",
             fontSize: "16px",
-            color: "rgba(255, 255, 255, 0.5)",
+            color: textMuted,
           }}
         >
           photos.votte.eu

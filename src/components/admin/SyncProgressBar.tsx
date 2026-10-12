@@ -64,7 +64,7 @@ export default function SyncProgressBar({ progress }: SyncProgressBarProps) {
       </p>
 
       {progress.status === "syncing" && progress.currentPhotoName && (
-        <p className="mt-1 truncate font-sans text-xs text-text-muted/70">
+        <p className="mt-1 truncate font-sans text-xs text-text-muted">
           Processing: {progress.currentPhotoName}
         </p>
       )}

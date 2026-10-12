@@ -4,9 +4,9 @@ import Header from "@/components/Header";
 
 export default function OfflinePage() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
-      <main className="flex-1 flex items-center justify-center px-6">
+      <main id="main" tabIndex={-1} className="flex-1 flex items-center justify-center px-6">
         <div className="max-w-md text-center">
           <p className="font-sans text-eyebrow uppercase text-text-muted">
             Offline

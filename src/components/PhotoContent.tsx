@@ -3,10 +3,10 @@
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import ProtectedImage from "./ProtectedImage";
 import PhotoLocationMap from "./PhotoLocationMap";
 import PhotoKeyboardNav from "./PhotoKeyboardNav";
-import Lightbox from "./Lightbox";
 import { useLocale } from "@/lib/LocaleContext";
 import { usePresence } from "@/hooks";
 import {
@@ -16,6 +16,9 @@ import {
 } from "@/lib/photo-display";
 import { hasFiniteCoordinates } from "@/lib/geo-utils";
 import type { Photo, Album } from "@/lib/types";
+
+// Lightbox pulls in the motion library; load it only once it is first opened.
+const Lightbox = dynamic(() => import("./Lightbox"), { ssr: false });
 
 interface PhotoContentProps {
   photo: Photo;
@@ -54,14 +57,22 @@ export default function PhotoContent({
   const location = formatPhotoLocation(photo);
 
   const [showCopied, setShowCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
   // Keeps the badge mounted long enough to fade back out.
   const copiedToast = usePresence(showCopied, 150);
+  const copyMessage = copyFailed
+    ? t("photo", "copyFailed")
+    : t("photo", "linkCopied");
+  const [announcement, setAnnouncement] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  // Stays true after the first open so the close animation can still play.
+  const [lightboxRequested, setLightboxRequested] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(currentIndex);
 
   const openLightbox = useCallback(() => {
     setLightboxIndex(currentIndex);
+    setLightboxRequested(true);
     setLightboxOpen(true);
   }, [currentIndex]);
 
@@ -100,11 +111,17 @@ export default function PhotoContent({
 
     try {
       await navigator.clipboard.writeText(url);
-      setShowCopied(true);
-      setTimeout(() => setShowCopied(false), 2000);
+      setCopyFailed(false);
+      setAnnouncement(t("photo", "linkCopied"));
     } catch {
-      // silent
+      setCopyFailed(true);
+      setAnnouncement(t("photo", "copyFailed"));
     }
+    setShowCopied(true);
+    setTimeout(() => {
+      setShowCopied(false);
+      setAnnouncement("");
+    }, 2000);
   };
 
   const handleDownload = async () => {
@@ -171,7 +188,11 @@ export default function PhotoContent({
         nextPhotoId={nextPhoto?.id}
       />
 
-      <div className="flex flex-1 justify-center px-6 pt-6 pb-20 md:px-12">
+      <main
+        id="main"
+        tabIndex={-1}
+        className="flex flex-1 justify-center px-6 pt-6 pb-20 md:px-12"
+      >
         <div className="flex w-full max-w-[1200px] flex-col">
           {/* Breadcrumbs */}
           <nav
@@ -209,7 +230,7 @@ export default function PhotoContent({
               <Link
                 href={`/photo/${prevPhoto.id}`}
                 scroll={false}
-                className="absolute inset-y-0 left-0 z-10 hidden w-20 items-center justify-start pl-4 text-3xl font-thin text-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:text-white md:flex"
+                className="absolute inset-y-0 left-0 z-10 hidden w-20 items-center justify-start pl-4 text-3xl font-thin text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)] opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 hover:text-white md:flex"
                 aria-label={t("photo", "previous")}
               >
                 ←
@@ -219,7 +240,7 @@ export default function PhotoContent({
               <Link
                 href={`/photo/${nextPhoto.id}`}
                 scroll={false}
-                className="absolute inset-y-0 right-0 z-10 hidden w-20 items-center justify-end pr-4 text-3xl font-thin text-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100 hover:text-white md:flex"
+                className="absolute inset-y-0 right-0 z-10 hidden w-20 items-center justify-end pr-4 text-3xl font-thin text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)] opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 hover:text-white md:flex"
                 aria-label={t("photo", "next")}
               >
                 →
@@ -227,13 +248,13 @@ export default function PhotoContent({
             )}
 
             <div
-              className="relative w-full h-[60vh] sm:h-[70vh] md:h-[78vh] flex items-center justify-center bg-background-dark cursor-pointer"
+              className="relative w-full h-[60svh] sm:h-[70svh] md:h-[78svh] flex items-center justify-center bg-background-dark cursor-pointer"
               onClick={openLightbox}
             >
               <ProtectedImage
                 alt={displayTitle}
                 className="max-h-full max-w-full object-contain pointer-events-none"
-                src={photo.src.full}
+                src={photo.src.medium}
                 sources={photo.src}
                 sizes="(max-width: 1200px) 100vw, 1200px"
                 loading="eager"
@@ -242,18 +263,18 @@ export default function PhotoContent({
             </div>
 
             {/* Counter — quiet caption, not a backdrop pill */}
-            <p className="absolute top-4 left-4 z-10 font-sans text-eyebrow uppercase text-white/60 tabular-nums">
+            <p className="absolute top-4 left-4 z-10 font-sans text-eyebrow uppercase text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)] tabular-nums">
               {String(currentIndex + 1).padStart(2, "0")} /{" "}
               {String(albumPhotos.length).padStart(2, "0")}
             </p>
 
             {/* Mobile nav */}
-            <div className="absolute bottom-4 right-4 z-10 flex gap-6 md:hidden">
+            <div className="absolute bottom-4 right-4 z-10 flex gap-2 md:hidden">
               {prevPhoto && (
                 <Link
                   href={`/photo/${prevPhoto.id}`}
                   scroll={false}
-                  className="text-2xl font-thin text-white/60 hover:text-white"
+                  className="inline-flex size-11 items-center justify-center text-2xl font-thin text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)] hover:text-white"
                   aria-label={t("photo", "previous")}
                 >
                   ←
@@ -263,7 +284,7 @@ export default function PhotoContent({
                 <Link
                   href={`/photo/${nextPhoto.id}`}
                   scroll={false}
-                  className="text-2xl font-thin text-white/60 hover:text-white"
+                  className="inline-flex size-11 items-center justify-center text-2xl font-thin text-white/80 [text-shadow:0_1px_8px_rgba(0,0,0,0.35)] hover:text-white"
                   aria-label={t("photo", "next")}
                 >
                   →
@@ -292,7 +313,7 @@ export default function PhotoContent({
                 <button
                   onClick={handleDownload}
                   disabled={isDownloading}
-                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t("photo", "download")}
                 >
                   <span aria-hidden="true" className="material-symbols-outlined !text-base">
@@ -302,7 +323,7 @@ export default function PhotoContent({
                 </button>
                 <button
                   onClick={handleShare}
-                  className="relative inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="relative inline-flex min-h-11 items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   aria-label={t("photo", "share")}
                 >
                   <span aria-hidden="true" className="material-symbols-outlined !text-base">
@@ -311,19 +332,23 @@ export default function PhotoContent({
                   <span>{t("photo", "share")}</span>
                   {copiedToast.shouldRender && (
                     <span
+                      aria-hidden="true"
                       className={`absolute -top-9 left-0 whitespace-nowrap rounded-full bg-foreground px-3 py-1 font-sans text-micro uppercase text-background-dark transition-[opacity,transform] duration-150 ease-out motion-reduce:translate-y-0 ${
                         copiedToast.isVisible
                           ? "opacity-100 translate-y-0"
                           : "opacity-0 translate-y-1"
                       }`}
                     >
-                      {t("photo", "linkCopied")}
+                      {copyMessage}
                     </span>
                   )}
                 </button>
+                <span role="status" aria-live="polite" className="sr-only">
+                  {announcement}
+                </span>
                 <button
                   onClick={openLightbox}
-                  className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-surface-border bg-surface-dark/40 px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-all duration-200 active:duration-150 active:scale-[0.97] motion-reduce:active:scale-100 motion-reduce:active:opacity-80 hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <span aria-hidden="true" className="material-symbols-outlined !text-base">
                     slideshow
@@ -339,9 +364,10 @@ export default function PhotoContent({
                     href={`/album/${album.slug}`}
                     className="group/cta inline-flex items-center gap-3 font-sans text-label uppercase text-text-muted hover:text-foreground transition-colors"
                   >
+                    {/* w-10 box scaled to 1.5rem at rest, anchored right so it grows away from the label; -ml-4 cancels the extra 1rem */}
                     <span
                       aria-hidden="true"
-                      className="h-px w-6 bg-text-muted/60 transition-all duration-300 group-hover/cta:w-10 group-hover/cta:bg-foreground"
+                      className="-ml-4 h-px w-10 origin-right scale-x-[0.6] bg-text-muted/60 transition-[transform,background-color] duration-300 ease-out-soft group-hover/cta:scale-x-100 group-hover/cta:bg-foreground motion-reduce:transition-none"
                     />
                     <span>
                       {t("photo", "backTo")} {album.title}
@@ -436,15 +462,17 @@ export default function PhotoContent({
             </aside>
           </div>
         </div>
-      </div>
+      </main>
 
-      <Lightbox
-        photos={albumPhotos}
-        currentIndex={lightboxIndex}
-        isOpen={lightboxOpen}
-        onClose={handleLightboxClose}
-        onNavigate={handleLightboxNavigate}
-      />
+      {lightboxRequested && (
+        <Lightbox
+          photos={albumPhotos}
+          currentIndex={lightboxIndex}
+          isOpen={lightboxOpen}
+          onClose={handleLightboxClose}
+          onNavigate={handleLightboxNavigate}
+        />
+      )}
     </>
   );
 }

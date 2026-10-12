@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function LegalPage() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
       <LegalContent />
       <Footer />

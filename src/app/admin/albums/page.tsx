@@ -190,14 +190,14 @@ export default function AlbumsEditorPage() {
   };
 
   const inputClass =
-    "w-full border-b border-surface-border bg-transparent py-2 font-sans text-sm text-foreground placeholder-text-muted/40 focus:border-foreground focus:outline-none transition-colors";
+    "w-full border-b border-text-muted/60 bg-transparent py-2 font-sans text-sm text-foreground placeholder-text-muted/80 focus:border-foreground focus:outline-none transition-colors";
   const labelClass =
     "block mb-2 font-sans text-label uppercase text-text-muted";
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <SkipLink />
-      <Header />
+      <Header showSkipLink={false} />
 
       <main id="main-content" className="flex-1 px-6 pt-16 pb-20 md:px-12 md:pt-20">
         <div className="mx-auto max-w-4xl">
@@ -370,7 +370,7 @@ export default function AlbumsEditorPage() {
                           }
                           placeholder="Write a description for this album…"
                           rows={3}
-                          className="w-full border-b border-surface-border bg-transparent py-2 font-sans text-sm text-foreground placeholder-text-muted/40 focus:border-foreground focus:outline-none transition-colors resize-none"
+                          className="w-full border-b border-text-muted/60 bg-transparent py-2 font-sans text-sm text-foreground placeholder-text-muted/80 focus:border-foreground focus:outline-none transition-colors resize-none"
                         />
                       </div>
 

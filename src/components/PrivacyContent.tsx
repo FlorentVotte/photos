@@ -7,7 +7,7 @@ export default function PrivacyContent() {
   const { locale } = useLocale();
 
   return (
-    <main className="flex-1">
+    <main id="main" tabIndex={-1} className="flex-1">
       {/* Hero Section */}
       <section className="relative py-16 md:py-24 px-4 md:px-8 lg:px-16">
         <div className="max-w-4xl mx-auto text-center">
@@ -23,7 +23,7 @@ export default function PrivacyContent() {
 
       {/* Content Section */}
       <section className="py-8 md:py-12 px-4 md:px-8 lg:px-16">
-        <div className="max-w-3xl mx-auto prose prose-invert prose-lg">
+        <div className="max-w-3xl mx-auto">
           <p className="text-text-muted leading-relaxed mb-8">
             {t("privacy", "lastUpdated", locale)}
           </p>

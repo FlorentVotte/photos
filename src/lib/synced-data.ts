@@ -4,6 +4,7 @@
 import prisma from "./db";
 import type { Album, Photo, Chapter } from "./types";
 import { PAGINATION } from "./constants";
+import type { GeoPhoto } from "./geo-utils";
 import {
   transformAlbum,
   transformAlbums,
@@ -20,15 +21,19 @@ export async function getAlbums(): Promise<Album[]> {
 
   const transformed = transformAlbums(albums);
 
-  // For albums without cover images, get first photo's medium thumbnail as fallback
-  for (const album of transformed) {
-    if (!album.coverImage) {
-      const firstPhoto = await prisma.photo.findFirst({
-        where: { albumId: album.id },
-        orderBy: { sortOrder: "asc" },
-        select: { mediumPath: true },
-      });
-      album.coverImage = firstPhoto?.mediumPath || "";
+  // For albums without cover images, use each album's first photo (one query,
+  // `distinct` keeps the first row per album in the requested order).
+  const uncovered = transformed.filter((album) => !album.coverImage);
+  if (uncovered.length > 0) {
+    const firstPhotos = await prisma.photo.findMany({
+      where: { albumId: { in: uncovered.map((album) => album.id) } },
+      orderBy: [{ albumId: "asc" }, { sortOrder: "asc" }],
+      distinct: ["albumId"],
+      select: { albumId: true, mediumPath: true },
+    });
+    const covers = new Map(firstPhotos.map((p) => [p.albumId, p.mediumPath]));
+    for (const album of uncovered) {
+      album.coverImage = covers.get(album.id) || "";
     }
   }
 
@@ -151,6 +156,19 @@ export async function getAllPhotos(): Promise<Photo[]> {
   });
 
   return transformPhotosWithAlbum(photos);
+}
+
+// Minimal geotagged points (album + coordinates) for the home globe markers
+export async function getPhotoGeoPoints(): Promise<GeoPhoto[]> {
+  const rows = await prisma.photo.findMany({
+    where: { latitude: { not: null }, longitude: { not: null } },
+    select: { albumId: true, latitude: true, longitude: true },
+  });
+
+  return rows.map((r) => ({
+    albumId: r.albumId,
+    metadata: { latitude: r.latitude, longitude: r.longitude },
+  }));
 }
 
 // Search photos

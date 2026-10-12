@@ -185,7 +185,7 @@ function ChaptersEditorContent() {
   };
 
   const inputClass =
-    "w-full border-b border-surface-border bg-transparent py-2 font-sans text-foreground placeholder-text-muted/40 focus:border-foreground focus:outline-none transition-colors";
+    "w-full border-b border-text-muted/60 bg-transparent py-2 font-sans text-foreground placeholder-text-muted/80 focus:border-foreground focus:outline-none transition-colors";
   const labelClass =
     "block mb-2 font-sans text-label uppercase text-text-muted";
 
@@ -262,8 +262,9 @@ function ChaptersEditorContent() {
                       </p>
                       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
                         <div>
-                          <label className={labelClass}>English</label>
+                          <label htmlFor={`chapter-${chapter.id}-title-en`} className={labelClass}>English</label>
                           <input
+                            id={`chapter-${chapter.id}-title-en`}
                             type="text"
                             value={chapter.title}
                             onChange={(e) =>
@@ -273,6 +274,8 @@ function ChaptersEditorContent() {
                             className={`${inputClass} font-display text-xl font-semibold tracking-tight`}
                           />
                           <textarea
+                            id={`chapter-${chapter.id}-narrative-en`}
+                            aria-label="English narrative"
                             value={chapter.narrative || ""}
                             onChange={(e) =>
                               updateChapter(index, { narrative: e.target.value })
@@ -283,8 +286,9 @@ function ChaptersEditorContent() {
                           />
                         </div>
                         <div>
-                          <label className={labelClass}>Français</label>
+                          <label htmlFor={`chapter-${chapter.id}-title-fr`} className={labelClass}>Français</label>
                           <input
+                            id={`chapter-${chapter.id}-title-fr`}
                             type="text"
                             value={chapter.titleFr || ""}
                             onChange={(e) =>
@@ -294,6 +298,8 @@ function ChaptersEditorContent() {
                             className={`${inputClass} font-display text-xl font-semibold tracking-tight`}
                           />
                           <textarea
+                            id={`chapter-${chapter.id}-narrative-fr`}
+                            aria-label="Narrative en français"
                             value={chapter.narrativeFr || ""}
                             onChange={(e) =>
                               updateChapter(index, {
@@ -464,7 +470,7 @@ function ChaptersEditorContent() {
                           );
                         })}
                       </div>
-                      <p className="font-sans text-xs text-text-muted/70">
+                      <p className="font-sans text-xs text-text-muted">
                         {chapter.coverPhotoId
                           ? "Click again to remove cover photo"
                           : "Click a photo to set it as the chapter cover"}
@@ -483,7 +489,7 @@ function ChaptersEditorContent() {
                           </span>
                         )}
                       </h4>
-                      <p className="font-sans text-xs text-text-muted/70">
+                      <p className="font-sans text-xs text-text-muted">
                         Select photos to display larger in the grid. They will
                         alternate left/right positioning.
                       </p>
@@ -576,9 +582,9 @@ function ChaptersEditorContent() {
 
 export default function ChaptersEditorPage() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <SkipLink />
-      <Header />
+      <Header showSkipLink={false} />
       <Suspense
         fallback={
           <div className="flex-1 flex items-center justify-center">

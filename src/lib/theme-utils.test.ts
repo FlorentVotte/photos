@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   generateThemeCSSVars,
   getThemeMetaColor,
+  hexToRgba,
   getThemeBackgroundColor,
 } from "./theme-utils";
 import { THEME_PRESETS, DEFAULT_THEME, type ThemePresetKey } from "./themes";
@@ -120,29 +121,17 @@ describe("theme-utils", () => {
   });
 
   describe("getThemeMetaColor", () => {
-    it("should return primary color for forest-green theme", () => {
-      const color = getThemeMetaColor("forest-green");
-      expect(color).toBe("#7ba88e");
+    it("should return the background color, not the accent", () => {
+      const themeKeys = Object.keys(THEME_PRESETS) as ThemePresetKey[];
+
+      themeKeys.forEach((theme) => {
+        expect(getThemeMetaColor(theme)).toBe(THEME_PRESETS[theme].colors.background);
+        expect(getThemeMetaColor(theme)).toBe(getThemeBackgroundColor(theme));
+      });
     });
 
-    it("should return primary color for ocean-blue theme", () => {
-      const color = getThemeMetaColor("ocean-blue");
-      expect(color).toBe("#6c9bb5");
-    });
-
-    it("should return primary color for sunset-orange theme", () => {
-      const color = getThemeMetaColor("sunset-orange");
-      expect(color).toBe("#c08770");
-    });
-
-    it("should return primary color for midnight-purple theme", () => {
-      const color = getThemeMetaColor("midnight-purple");
-      expect(color).toBe("#8a7cad");
-    });
-
-    it("should return primary color for desert-sand theme", () => {
-      const color = getThemeMetaColor("desert-sand");
-      expect(color).toBe("#b39870");
+    it("should return the light background for the light preset", () => {
+      expect(getThemeMetaColor("warm-print-catalogue" as ThemePresetKey)).toBe("#f5ede2");
     });
 
     it("should fall back to default theme for invalid theme", () => {
@@ -224,6 +213,16 @@ describe("theme-utils", () => {
           expect(channelsAboveThreshold).toBeGreaterThanOrEqual(2);
         }
       });
+    });
+  });
+
+  describe("hexToRgba", () => {
+    it("should convert a hex colour with alpha", () => {
+      expect(hexToRgba("#0f1a23", 0.5)).toBe("rgba(15, 26, 35, 0.5)");
+    });
+
+    it("should pass through non-hex input", () => {
+      expect(hexToRgba("red", 0.5)).toBe("red");
     });
   });
 });

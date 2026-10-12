@@ -20,7 +20,7 @@ export default async function AboutPage() {
   ]);
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
       <AboutContent
         photographerName={siteConfig.photographerName}

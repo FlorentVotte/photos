@@ -20,6 +20,7 @@ import {
 } from "react";
 import * as THREE from "three";
 import type { AlbumMarker } from "@/lib/types";
+import { globeRenderBudget, hotspotWrites, type HotspotState } from "@/lib/globe-render";
 
 export interface GlobeHeroHandle {
   /** Ease the globe until the named album's marker faces the camera. */
@@ -37,6 +38,8 @@ interface GlobeHeroProps {
   /** Marker hit-target diameter in CSS pixels. */
   hotspotSize?: number;
   handleRef?: RefObject<GlobeHeroHandle | null>;
+  /** Freeze the idle spin, rings and arc drawing. Dragging still works. */
+  paused?: boolean;
   onMarkerEnter?: (marker: AlbumMarker) => void;
   onMarkerLeave?: (marker: AlbumMarker) => void;
   onMarkerClick?: (marker: AlbumMarker) => void;
@@ -57,19 +60,13 @@ function latLngToVector3(lat: number, lng: number, radius: number) {
   );
 }
 
-function prefersReducedMotion() {
-  return (
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true
-  );
-}
-
 export default function GlobeHero({
   markers,
   distance = 2.9,
   tilt = 0.3,
   hotspotSize = 34,
   handleRef,
+  paused = false,
   onMarkerEnter,
   onMarkerLeave,
   onMarkerClick,
@@ -84,6 +81,11 @@ export default function GlobeHero({
   useEffect(() => {
     callbacks.current = { onMarkerEnter, onMarkerLeave, onMarkerClick };
   }, [onMarkerEnter, onMarkerLeave, onMarkerClick]);
+
+  const pausedRef = useRef(paused);
+  useEffect(() => {
+    pausedRef.current = paused;
+  }, [paused]);
 
   const focusOn = useCallback((slug: string) => apiRef.current?.focusOn(slug), []);
   const releaseFocus = useCallback(() => apiRef.current?.releaseFocus(), []);
@@ -101,7 +103,18 @@ export default function GlobeHero({
     const mount = mountRef.current;
     if (!mount) return;
 
-    const reduceMotion = prefersReducedMotion();
+    // Follows the live setting: the tick reads the ref, never a snapshot.
+    const reduceQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const reduceRef = { current: reduceQuery.matches };
+    const onReduceChange = (event: MediaQueryListEvent) => {
+      reduceRef.current = event.matches;
+    };
+    reduceQuery.addEventListener("change", onReduceChange);
+    const reduceMotion = reduceRef.current;
+    const budget = globeRenderBudget({
+      coarsePointer: window.matchMedia("(pointer: coarse)").matches,
+      devicePixelRatio: window.devicePixelRatio,
+    });
 
     // Accent comes from the theme's CSS variables so the globe follows a theme
     // switch instead of hardcoding Ocean Blue's slate.
@@ -123,8 +136,11 @@ export default function GlobeHero({
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     camera.position.set(0, 0, RADIUS * distance);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const renderer = new THREE.WebGLRenderer({
+      antialias: budget.antialias,
+      alpha: true,
+    });
+    renderer.setPixelRatio(budget.pixelRatio);
     Object.assign(renderer.domElement.style, {
       position: "absolute",
       inset: "0",
@@ -159,13 +175,13 @@ export default function GlobeHero({
       })
     );
     const bumpTexture = track(
-      loader.load("/globe/earth-topology.png", (t) => {
+      loader.load("/globe/earth-topology.jpg", (t) => {
         t.anisotropy = 8;
       })
     );
 
     const globe = new THREE.Mesh(
-      track(new THREE.SphereGeometry(RADIUS, 64, 64)),
+      track(new THREE.SphereGeometry(RADIUS, budget.segments, budget.segments)),
       track(
         new THREE.MeshStandardMaterial({
           map: earthTexture,
@@ -415,16 +431,38 @@ export default function GlobeHero({
 
     // ---- frame loop --------------------------------------------------------
     const projected = new THREE.Vector3();
-    const startedAt = performance.now();
-    let previous = startedAt;
+    const cameraDirection = new THREE.Vector3();
+    const pointDirection = new THREE.Vector3();
+    const lastHotspot: (HotspotState | null)[] = hotspots.map(() => null);
+    // Animation clock: only advances while rings and arcs actually move, so
+    // pausing (or scrolling away) resumes where it stopped.
+    let elapsed = 0;
+    let previous = performance.now();
     let frame = 0;
+    let staticApplied = reduceMotion;
+
+    const showFinishedArcs = () => {
+      rings.forEach((ring) => {
+        ring.scale.setScalar(1);
+        ring.material.opacity = 0.5;
+      });
+      arcs.forEach((arc) => {
+        arc.geometry.setDrawRange(0, arc.count);
+        arc.line.material.opacity = 0.8;
+        arc.head.visible = false;
+      });
+    };
 
     const tick = () => {
       frame = requestAnimationFrame(tick);
       const now = performance.now();
-      const elapsed = (now - startedAt) / 1000;
-      const delta = Math.min(0.05, (now - previous) / 1000);
+      const rawDelta = (now - previous) / 1000;
+      const delta = Math.min(0.05, rawDelta);
       previous = now;
+
+      const reduce = reduceRef.current;
+      const frozen = reduce || pausedRef.current;
+      if (!frozen) elapsed += rawDelta;
 
       if (!dragging) {
         if (target) {
@@ -433,7 +471,7 @@ export default function GlobeHero({
           world.rotation.x += (target.x - world.rotation.x) * k;
           velocity = 0;
         } else {
-          const idle = hovering || reduceMotion ? 0 : IDLE_SPIN;
+          const idle = hovering || frozen ? 0 : IDLE_SPIN;
           spin.rotation.y += idle * delta + velocity;
           world.rotation.x += (tilt - world.rotation.x) * (1 - Math.pow(0.15, delta));
           velocity *= 0.94;
@@ -441,7 +479,13 @@ export default function GlobeHero({
         }
       }
 
-      if (!reduceMotion) {
+      if (reduce) {
+        if (!staticApplied) {
+          showFinishedArcs();
+          staticApplied = true;
+        }
+      } else if (!frozen) {
+        staticApplied = false;
         rings.forEach((ring) => {
           const phase = (elapsed * 0.7 + (ring.userData.phase as number)) % 1;
           ring.scale.setScalar(1 + phase * 1.6);
@@ -462,26 +506,57 @@ export default function GlobeHero({
 
       const width = mount.clientWidth;
       const height = mount.clientHeight;
-      const cameraDirection = camera.position.clone().normalize();
+      cameraDirection.copy(camera.position).normalize();
       points.forEach((point, index) => {
         projected.copy(point).applyMatrix4(spin.matrixWorld);
         const facing =
-          projected.clone().normalize().dot(cameraDirection) > 0.12;
-        const button = hotspots[index];
-        button.style.opacity = facing ? "1" : "0";
-        button.style.pointerEvents = facing ? "auto" : "none";
+          pointDirection.copy(projected).normalize().dot(cameraDirection) >
+          0.12;
         projected.project(camera);
-        button.style.transform = `translate(${
-          (projected.x * 0.5 + 0.5) * width
-        }px, ${(-projected.y * 0.5 + 0.5) * height}px)`;
+        const next: HotspotState = {
+          facing,
+          transform: `translate(${
+            Math.round((projected.x * 0.5 + 0.5) * width * 100) / 100
+          }px, ${
+            Math.round((-projected.y * 0.5 + 0.5) * height * 100) / 100
+          }px)`,
+        };
+        const writes = hotspotWrites(lastHotspot[index], next);
+        lastHotspot[index] = next;
+        const button = hotspots[index];
+        if (writes.facing) {
+          button.style.opacity = facing ? "1" : "0";
+          button.style.pointerEvents = facing ? "auto" : "none";
+          // Hidden markers must not be tabbable; the album list beside the
+          // globe stays the keyboard path.
+          button.tabIndex = facing ? 0 : -1;
+          if (facing) button.removeAttribute("aria-hidden");
+          else button.setAttribute("aria-hidden", "true");
+        }
+        if (writes.transform) button.style.transform = next.transform;
       });
 
       renderer.render(scene, camera);
     };
     tick();
 
+    // Stop drawing while the globe is scrolled out of view.
+    const visibility = new IntersectionObserver((entries) => {
+      const visible = entries[entries.length - 1].isIntersecting;
+      if (visible && frame === 0) {
+        previous = performance.now();
+        frame = requestAnimationFrame(tick);
+      } else if (!visible && frame !== 0) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
+    });
+    visibility.observe(mount);
+
     return () => {
       cancelAnimationFrame(frame);
+      visibility.disconnect();
+      reduceQuery.removeEventListener("change", onReduceChange);
       observer.disconnect();
       cleanups.forEach((fn) => fn());
       apiRef.current = null;

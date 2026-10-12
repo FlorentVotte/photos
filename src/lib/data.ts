@@ -1,4 +1,5 @@
 import type { Album, Photo, Chapter, SiteConfig } from "./types";
+import type { GeoPhoto } from "./geo-utils";
 import {
   getAlbums as getSyncedAlbums,
   getAlbumBySlug as getSyncedAlbumBySlug,
@@ -7,6 +8,7 @@ import {
   getChaptersByAlbum as getSyncedChaptersByAlbum,
   getFeaturedAlbum as getSyncedFeaturedAlbum,
   getAllPhotos as getSyncedAllPhotos,
+  getPhotoGeoPoints as getSyncedPhotoGeoPoints,
   searchPhotos as searchSyncedPhotos,
 } from "./synced-data";
 
@@ -53,6 +55,12 @@ export async function getChaptersByAlbum(albumSlug: string): Promise<Chapter[]> 
 
 export async function getAllPhotos(): Promise<Photo[]> {
   const synced = await getSyncedAllPhotos();
+  if (synced.length > 0 || isProduction) return synced;
+  return samplePhotos;
+}
+
+export async function getPhotoGeoPoints(): Promise<GeoPhoto[]> {
+  const synced = await getSyncedPhotoGeoPoints();
   if (synced.length > 0 || isProduction) return synced;
   return samplePhotos;
 }

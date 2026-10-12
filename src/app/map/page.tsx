@@ -25,7 +25,7 @@ export default async function MapPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <BreadcrumbStructuredData
         items={[
           { name: "Home", url: SITE_URL },

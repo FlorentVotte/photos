@@ -14,7 +14,8 @@ import {
   shouldRehydrateSearchState,
   type FilterType,
 } from "@/lib/search-state";
-import { formatPhotoAccessibleLabel } from "@/lib/photo-display";
+import ProtectedImage from "@/components/ProtectedImage";
+import { formatPhotoAccessibleLabel, wideCoverSources } from "@/lib/photo-display";
 import type { Album, Photo } from "@/lib/types";
 import type { Locale, translations } from "@/lib/translations";
 
@@ -158,10 +159,10 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
 
-      <main className="flex-1 px-6 pt-20 pb-20 md:px-12 md:pt-28">
+      <main id="main" tabIndex={-1} className="flex-1 px-6 pt-20 pb-20 md:px-12 md:pt-28">
         <div className="mx-auto max-w-[1200px]">
           <header className="mb-12 max-w-2xl">
             <h1 className="font-display text-4xl md:text-5xl font-semibold leading-tight tracking-tight text-foreground">
@@ -183,7 +184,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                 updateSearchUrl(nextQuery, filterType, "replaceState");
               }}
               placeholder={t("search", "placeholder")}
-              className="flex-1 border-b border-surface-border bg-transparent pb-3 pl-0 pr-4 font-display text-2xl md:text-3xl font-normal text-foreground placeholder-text-muted/60 focus:border-foreground focus:outline-none transition-colors"
+              className="flex-1 border-b border-text-muted/60 bg-transparent pb-3 pl-0 pr-4 font-display text-2xl md:text-3xl font-normal text-foreground placeholder-text-muted/80 focus:border-foreground focus:outline-none transition-colors"
             />
 
             <div className="flex shrink-0 items-center gap-6">
@@ -197,9 +198,9 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                     updateSearchUrl(query, type, "pushState");
                   }}
                   aria-pressed={filterType === type}
-                  className={`relative font-sans text-eyebrow uppercase transition-colors ${
+                  className={`relative inline-flex min-h-11 items-center px-2 font-sans text-eyebrow uppercase transition-colors ${
                     filterType === type
-                      ? "text-foreground after:absolute after:-bottom-2 after:left-0 after:right-0 after:h-px after:bg-foreground"
+                      ? "text-foreground after:absolute after:bottom-1 after:left-2 after:right-2 after:h-px after:bg-foreground"
                       : "text-text-muted hover:text-foreground"
                   }`}
                 >
@@ -236,16 +237,20 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
                     href={`/album/${album.slug}`}
                     className="group relative aspect-[4/3] overflow-hidden bg-surface-dark"
                   >
-                    <div
-                      className="absolute inset-0 bg-cover bg-center transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-                      style={{ backgroundImage: `url("${album.coverImage}")` }}
+                    <ProtectedImage
+                      alt=""
+                      src={album.coverImage}
+                      sources={wideCoverSources(album.coverImage)}
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-5 md:p-6">
                       <h3 className="font-display text-xl md:text-2xl font-semibold leading-tight tracking-tight text-foreground">
                         {album.title}
                       </h3>
-                      <p className="font-sans text-label uppercase tracking-[0.22em] text-white/70">
+                      <p className="font-sans text-label uppercase tracking-[0.22em] text-white/80">
                         {album.location} <span className="text-white/40">·</span>{" "}
                         {album.date}
                       </p>
@@ -273,7 +278,7 @@ export default function SearchClient({ albums, photos }: SearchClientProps) {
               <p className="font-sans text-sm text-text-muted">
                 {t("search", "noResults")}
               </p>
-              <p className="mt-2 font-sans text-xs text-text-muted/60">
+              <p className="mt-2 font-sans text-xs text-text-muted">
                 {t("search", "tryDifferent")}
               </p>
             </div>
@@ -341,7 +346,7 @@ function SearchPhotoResults({
           <button
             type="button"
             onClick={onLoadMore}
-            className="rounded-full border border-surface-border px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="min-h-11 rounded-full border border-surface-border px-5 py-2.5 font-sans text-label uppercase tracking-[0.18em] text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             {t("search", "loadMore")}
           </button>

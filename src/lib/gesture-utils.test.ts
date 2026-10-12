@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { project, resolveProjectedSwipe, rubberband } from "./gesture-utils";
+import { clampPan, project, resolveProjectedSwipe, rubberband } from "./gesture-utils";
 
 describe("project", () => {
   it("returns 0 for no velocity", () => {
@@ -90,5 +90,44 @@ describe("rubberband", () => {
 
   it("never hard-stops — keeps yielding movement even far past the bound", () => {
     expect(rubberband(5000, 400)).toBeGreaterThan(rubberband(2000, 400));
+  });
+});
+
+describe("clampPan", () => {
+  const size = { width: 400, height: 300 };
+
+  it("leaves in-range offsets untouched", () => {
+    expect(clampPan({ x: 50, y: -20 }, 2, size)).toEqual({ x: 50, y: -20 });
+  });
+
+  it("clamps each axis to ((scale - 1) * dimension) / 2", () => {
+    expect(clampPan({ x: 999, y: -999 }, 2, size)).toEqual({ x: 200, y: -150 });
+    expect(clampPan({ x: -999, y: 999 }, 3, size)).toEqual({ x: -400, y: 300 });
+  });
+
+  it("recentres at scale 1 and below", () => {
+    expect(clampPan({ x: 40, y: -40 }, 1, size)).toEqual({ x: 0, y: 0 });
+    expect(clampPan({ x: 40, y: -40 }, 0.8, size)).toEqual({ x: 0, y: 0 });
+  });
+
+  it("collapses to zero for a zero-size frame", () => {
+    expect(clampPan({ x: 40, y: 40 }, 2, { width: 0, height: 0 })).toEqual({ x: 0, y: 0 });
+  });
+
+  it("uses origin-aware bounds for an off-centre zoom origin", () => {
+    // ox=0.1, s=2.5, w=400: x in [-(1.5)(0.9)400, 1.5*0.1*400] = [-540, 60]
+    // oy=0.8, s=2.5, h=300: y in [-(1.5)(0.2)300, 1.5*0.8*300] = [-90, 360]
+    const origin = { x: 0.1, y: 0.8 };
+    const hi = clampPan({ x: 999, y: 999 }, 2.5, size, origin);
+    expect(hi.x).toBeCloseTo(60);
+    expect(hi.y).toBeCloseTo(360);
+    const lo = clampPan({ x: -999, y: -999 }, 2.5, size, origin);
+    expect(lo.x).toBeCloseTo(-540);
+    expect(lo.y).toBeCloseTo(-90);
+    expect(clampPan({ x: 10, y: 10 }, 2.5, size, origin)).toEqual({ x: 10, y: 10 });
+  });
+
+  it("matches the centred bounds when the origin is 0.5/0.5", () => {
+    expect(clampPan({ x: 999, y: -999 }, 2, size, { x: 0.5, y: 0.5 })).toEqual({ x: 200, y: -150 });
   });
 });

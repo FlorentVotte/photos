@@ -8,10 +8,10 @@ export default function NotFound() {
   const { t } = useLocale();
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
 
-      <main className="flex flex-1 items-center justify-center px-6 py-24 md:px-12">
+      <main id="main" tabIndex={-1} className="flex flex-1 items-center justify-center px-6 py-24 md:px-12">
         <div className="flex max-w-xl flex-col items-start gap-8">
           <p className="font-sans text-eyebrow uppercase text-text-muted">
             {t("notFound", "label")}

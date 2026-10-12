@@ -78,3 +78,51 @@ export function rubberband(
     (dimension + constant * Math.abs(overshoot))
   );
 }
+
+export interface PanPosition {
+  x: number;
+  y: number;
+}
+
+export interface PanSize {
+  /** Rendered width at scale 1, in px. */
+  width: number;
+  /** Rendered height at scale 1, in px. */
+  height: number;
+}
+
+/** Zoom origin as fractions (0-1) of the rendered width/height. */
+export interface PanOrigin {
+  x: number;
+  y: number;
+}
+
+const CENTRE_ORIGIN: PanOrigin = { x: 0.5, y: 0.5 };
+
+/**
+ * Keep a zoomed image's pan offset inside the area it overflows by, so its
+ * edges can't be dragged past the frame.
+ *
+ * The transform is `translate(x, y) scale(s)` about an origin at fractions
+ * (ox, oy) of the rendered size. The image's near edge sits at
+ * `x - (s - 1) * ox * w` and its far edge at `x + w + (s - 1) * (1 - ox) * w`,
+ * so the valid range is `x ∈ [-(s - 1)(1 - ox)w, (s - 1) ox w]` (same for y).
+ * A centred origin gives the symmetric `±(s - 1)w / 2`.
+ */
+export function clampPan(
+  position: PanPosition,
+  scale: number,
+  size: PanSize,
+  origin: PanOrigin = CENTRE_ORIGIN
+): PanPosition {
+  const extra = Math.max(0, scale - 1);
+  const axis = (value: number, dimension: number, o: number) => {
+    const min = -extra * (1 - o) * dimension;
+    const max = extra * o * dimension;
+    return Math.min(Math.max(value, min), max) || 0;
+  };
+  return {
+    x: axis(position.x, size.width, origin.x),
+    y: axis(position.y, size.height, origin.y),
+  };
+}

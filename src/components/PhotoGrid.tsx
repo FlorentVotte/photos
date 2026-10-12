@@ -90,8 +90,8 @@ export default function PhotoGrid({
       <div
         className={`grid gap-4 md:gap-6 ${
           variant === "chapter"
-            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-[300px]"
-            : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[250px]"
+            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 auto-rows-[minmax(300px,auto)]"
+            : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-[minmax(250px,auto)]"
         }`}
       >
         {displayedPhotos.map((photo, index) => {
@@ -106,7 +106,7 @@ export default function PhotoGrid({
           <Link
             key={photo.id}
             href={`/photo/${photo.id}`}
-            className={`group relative overflow-hidden rounded-lg bg-surface-dark cursor-pointer ${
+            className={`group relative overflow-hidden bg-surface-dark cursor-pointer ${
               getFeaturedClass(photo, index)
             }`}
             onContextMenu={(e) => e.preventDefault()}
@@ -123,17 +123,17 @@ export default function PhotoGrid({
               priority={index < 4}
               unoptimized
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
 
             {/* Photo info overlay */}
             <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
               {photo.title && !isFilename(photo.title) && (
-                <h3 className="text-lg md:text-xl text-foreground font-bold mb-1 truncate">
+                <h3 className="text-lg md:text-xl text-white font-display font-semibold tracking-tight mb-1 truncate">
                   {photo.title}
                 </h3>
               )}
               {photo.metadata.date && (
-                <p className="text-sm text-foreground/70">{photo.metadata.date}</p>
+                <p className="text-sm text-white/80">{photo.metadata.date}</p>
               )}
             </div>
           </Link>

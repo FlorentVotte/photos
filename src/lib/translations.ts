@@ -10,6 +10,10 @@ export const translations = {
     about: { en: "About", fr: "À propos" },
     openMenu: { en: "Open menu", fr: "Ouvrir le menu" },
     closeMenu: { en: "Close menu", fr: "Fermer le menu" },
+    menu: { en: "Menu", fr: "Menu" },
+    main: { en: "Main", fr: "Principale" },
+    skipToContent: { en: "Skip to content", fr: "Aller au contenu" },
+    homeLink: { en: "Regards Perdus — Home", fr: "Regards Perdus — Accueil" },
   },
 
   // Homepage
@@ -28,6 +32,8 @@ export const translations = {
       en: "Drag the globe · tap a marker",
       fr: "Faites tourner le globe · touchez un marqueur",
     },
+    globePause: { en: "Pause the globe", fr: "Mettre le globe en pause" },
+    globePlay: { en: "Play the globe", fr: "Relancer le globe" },
     recentAlbums: { en: "Recent Albums", fr: "Albums récents" },
     viewArchive: { en: "View Archive", fr: "Voir les archives" },
     tagline: {
@@ -71,6 +77,10 @@ export const translations = {
     download: { en: "Download", fr: "Télécharger" },
     share: { en: "Share", fr: "Partager" },
     linkCopied: { en: "Link copied!", fr: "Lien copié !" },
+    copyFailed: {
+      en: "Couldn't copy the link",
+      fr: "Impossible de copier le lien",
+    },
     location: { en: "Location", fr: "Lieu" },
     capture: { en: "Capture", fr: "Prise de vue" },
     unknownLocation: { en: "Unknown location", fr: "Lieu inconnu" },
@@ -136,6 +146,7 @@ export const translations = {
     viewGlobe: { en: "Globe", fr: "Globe" },
     viewLabel: { en: "View", fr: "Vue" },
     albumsOnGlobe: { en: "albums on the globe", fr: "albums sur le globe" },
+    albumsOnGlobeHeading: { en: "Albums on the globe", fr: "Albums sur le globe" },
     noGeoAlbums: {
       en: "No album has GPS data yet",
       fr: "Aucun album ne dispose encore de données GPS",
@@ -176,6 +187,7 @@ export const translations = {
     allRightsReserved: { en: "All rights reserved.", fr: "Tous droits réservés." },
     privacyPolicy: { en: "Privacy Policy", fr: "Politique de confidentialité" },
     legalNotice: { en: "Legal Notice", fr: "Mentions légales" },
+    legalNav: { en: "Legal", fr: "Mentions" },
   },
 
   // Chapter stats
@@ -204,6 +216,8 @@ export const translations = {
     space: { en: "Space: slideshow", fr: "Espace : diaporama" },
     info: { en: "I: details", fr: "I : détails" },
     esc: { en: "Esc: close", fr: "Échap : fermer" },
+    loading: { en: "Loading", fr: "Chargement" },
+    position: { en: "Photo {current} of {total}", fr: "Photo {current} sur {total}" },
   },
 
   // Common

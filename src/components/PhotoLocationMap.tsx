@@ -35,7 +35,7 @@ export default function PhotoLocationMap({ latitude, longitude, title }: PhotoLo
 
   if (!isClient || !L) {
     return (
-      <div className="w-full min-h-[200px] flex-1 bg-surface-dark rounded-lg flex items-center justify-center">
+      <div className="w-full min-h-[200px] flex-1 bg-surface-dark flex items-center justify-center">
         <span className="material-symbols-outlined text-2xl text-primary animate-spin">
           progress_activity
         </span>
@@ -63,7 +63,7 @@ export default function PhotoLocationMap({ latitude, longitude, title }: PhotoLo
       <MapContainer
         center={[latitude, longitude]}
         zoom={14}
-        className="w-full flex-1 min-h-[200px] rounded-lg overflow-hidden z-0"
+        className="w-full flex-1 min-h-[200px] overflow-hidden z-0"
         scrollWheelZoom={false}
         dragging={false}
         zoomControl={false}

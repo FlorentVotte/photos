@@ -71,7 +71,7 @@ export function ErrorFallback({
   resetError?: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 py-20 text-center bg-background-dark">
+    <div className="flex flex-col items-center justify-center min-h-[60svh] px-6 py-20 text-center bg-background-dark">
       <p className="font-sans text-eyebrow uppercase text-text-muted">
         Error
       </p>

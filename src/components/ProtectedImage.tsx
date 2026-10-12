@@ -1,9 +1,12 @@
 "use client";
 
+import type { CSSProperties } from "react";
+
 interface ProtectedImageProps {
   src: string;
   alt: string;
   className?: string;
+  style?: CSSProperties;
   /** Optional multi-resolution sources for srcset generation. */
   sources?: { thumb?: string; medium?: string; full?: string };
   /** Sizes attribute for responsive image selection. */
@@ -16,6 +19,7 @@ export default function ProtectedImage({
   src,
   alt,
   className = "",
+  style,
   sources,
   sizes,
   loading = "lazy",
@@ -37,6 +41,7 @@ export default function ProtectedImage({
       alt={alt}
       className={`select-none ${className}`}
       src={src}
+      style={style}
       srcSet={srcSet}
       sizes={sizes}
       draggable={false}

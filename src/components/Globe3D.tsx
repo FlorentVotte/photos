@@ -11,6 +11,12 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Html, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { resolveMarkerTabIndex } from "@/lib/pagination";
+import {
+  THEME_COLOR_FALLBACKS,
+  globeTouchConfig,
+  type GlobeTouchConfig,
+  readThemeColor,
+} from "@/lib/map-ui";
 
 /** Local stand-in for the `cn` helper the upstream component imports. */
 function cn(...classes: (string | false | undefined)[]): string {
@@ -101,7 +107,7 @@ interface Globe3DProps {
 // Self-hosted copies of the NASA Blue Marble textures the upstream component
 // fetches from a CDN at runtime. See scripts/fetch-globe-textures.sh.
 const DEFAULT_EARTH_TEXTURE = "/globe/earth-blue-marble.jpg";
-const DEFAULT_BUMP_TEXTURE = "/globe/earth-topology.png";
+const DEFAULT_BUMP_TEXTURE = "/globe/earth-topology.jpg";
 
 // ============================================================================
 // Utility Functions
@@ -148,6 +154,14 @@ function Marker({
   markerFallbackLabel,
   onFocusChange,
 }: MarkerProps) {
+  const pinColors = useMemo(
+    () => ({
+      cone: readThemeColor("--color-primary", THEME_COLOR_FALLBACKS.primary),
+      hot: readThemeColor("--color-text-primary", THEME_COLOR_FALLBACKS.textPrimary),
+      line: readThemeColor("--color-text-muted", THEME_COLOR_FALLBACKS.textMuted),
+    }),
+    [],
+  );
   const [hovered, setHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const groupRef = useRef<THREE.Group>(null);
@@ -241,7 +255,7 @@ function Marker({
       <mesh position={lineCenter} quaternion={lineQuaternion}>
         <cylinderGeometry args={[0.003, 0.003, lineHeight, 8]} />
         <meshBasicMaterial
-          color={hovered ? "#ffffff" : "#94a3b8"}
+          color={hovered ? pinColors.hot : pinColors.line}
           transparent
           opacity={hovered ? 0.9 : 0.6}
         />
@@ -250,7 +264,7 @@ function Marker({
       {/* Pin point at the surface */}
       <mesh position={surfacePosition} quaternion={lineQuaternion}>
         <coneGeometry args={[0.015, 0.04, 8]} />
-        <meshBasicMaterial color={hovered ? "#f97316" : "#ef4444"} />
+        <meshBasicMaterial color={hovered ? pinColors.hot : pinColors.cone} />
       </mesh>
 
       {/* Circular image at the top */}
@@ -456,6 +470,29 @@ function Atmosphere({ radius, color, intensity, blur }: AtmosphereProps) {
   );
 }
 
+interface PolarLockable {
+  enableZoom: boolean;
+  minPolarAngle: number;
+  maxPolarAngle: number;
+}
+
+/** Apply a touch config to the element the controls connected to. */
+function applyGlobeTouch(
+  target: HTMLElement,
+  controls: PolarLockable,
+  camera: THREE.Camera,
+  touch: GlobeTouchConfig,
+) {
+  if (touch.touchAction) target.style.touchAction = touch.touchAction;
+  if (touch.lockPolar) {
+    const polar = Math.acos(
+      THREE.MathUtils.clamp(camera.position.y / camera.position.length(), -1, 1),
+    );
+    controls.minPolarAngle = polar;
+    controls.maxPolarAngle = polar;
+  }
+}
+
 // ============================================================================
 // Scene Component
 // ============================================================================
@@ -477,13 +514,37 @@ function Scene({
   markerFallbackLabel,
   onMarkerFocusChange,
 }: SceneProps) {
-  const { camera } = useThree();
+  const { camera, gl } = useThree();
+  const controls = useThree((state) => state.controls) as
+    | (THREE.EventDispatcher & PolarLockable & { domElement?: HTMLElement })
+    | null;
+  const [coarsePointer] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(pointer: coarse)").matches,
+  );
+  const touch = useMemo(
+    () => globeTouchConfig({ coarsePointer }),
+    [coarsePointer],
+  );
 
   // Set initial camera position (pulled back to accommodate markers)
   React.useEffect(() => {
     camera.position.set(0, 0, config.radius * 3.5);
     camera.lookAt(0, 0, 0);
   }, [camera, config.radius]);
+
+  // OrbitControls claims every touch (touch-action: none) once connected, which
+  // traps page scroll on a full-width canvas. Give vertical swipes back to the
+  // page on coarse pointers and keep the drag horizontal-only.
+  React.useEffect(() => {
+    if (!controls || !touch.touchAction) return;
+    // controls.domElement is the element OrbitControls actually connected to
+    // (the canvas, via the explicit domElement prop below).
+    const target = controls.domElement;
+    if (!target) return;
+    applyGlobeTouch(target, controls, camera, touch);
+  }, [controls, camera, touch]);
 
   return (
     <>
@@ -497,7 +558,7 @@ function Scene({
       <directionalLight
         position={[-config.radius * 3, config.radius, -config.radius * 2]}
         intensity={config.pointLightIntensity * 0.3}
-        color="#88ccff"
+        color="#ffffff"
       />
 
       {/* Rotating Globe with Markers */}
@@ -523,8 +584,9 @@ function Scene({
       {/* Controls */}
       <OrbitControls
         makeDefault
+        domElement={gl.domElement}
         enablePan={config.enablePan}
-        enableZoom={config.enableZoom}
+        enableZoom={config.enableZoom && touch.enableZoom}
         minDistance={config.minDistance}
         maxDistance={config.maxDistance}
         rotateSpeed={0.4}
@@ -559,11 +621,11 @@ function LoadingFallback({ label }: { label: string }) {
 
 const defaultConfig: Required<Globe3DConfig> = {
   radius: 2,
-  globeColor: "#1a1a2e",
+  globeColor: "",
   textureUrl: DEFAULT_EARTH_TEXTURE,
   bumpMapUrl: DEFAULT_BUMP_TEXTURE,
   showAtmosphere: false,
-  atmosphereColor: "#4da6ff",
+  atmosphereColor: "",
   atmosphereIntensity: 0.5,
   atmosphereBlur: 2,
   bumpScale: 1,
@@ -575,7 +637,7 @@ const defaultConfig: Required<Globe3DConfig> = {
   initialRotation: { x: 0, y: 0 },
   markerSize: 32,
   showWireframe: false,
-  wireframeColor: "#4a9eff",
+  wireframeColor: "",
   ambientIntensity: 0.6,
   pointLightIntensity: 1.5,
   backgroundColor: null,
@@ -591,9 +653,21 @@ export function Globe3D({
   onMarkerFocusChange,
   loadingLabel = "Loading globe",
 }: Globe3DProps) {
+  // Theme-derived defaults, resolved once on mount (this component is
+  // client-only, so :root is available).
+  const [themeColors] = useState(() => ({
+    globeColor: readThemeColor("--color-surface", THEME_COLOR_FALLBACKS.surface),
+    accent: readThemeColor("--color-primary", THEME_COLOR_FALLBACKS.primary),
+  }));
   const mergedConfig = useMemo(
-    () => ({ ...defaultConfig, ...config }),
-    [config],
+    () => ({
+      ...defaultConfig,
+      globeColor: themeColors.globeColor,
+      atmosphereColor: themeColors.accent,
+      wireframeColor: themeColors.accent,
+      ...config,
+    }),
+    [config, themeColors],
   );
 
   return (

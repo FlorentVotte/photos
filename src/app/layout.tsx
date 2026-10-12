@@ -15,13 +15,15 @@ import { LocaleProvider } from "@/lib/LocaleContext";
 import { resolveLocale } from "@/lib/locale";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
-import prisma from "@/lib/db";
-import { DEFAULT_THEME, ThemePresetKey } from "@/lib/themes";
+import { getActiveTheme } from "@/lib/active-theme";
+import { THEME_PRESETS } from "@/lib/themes";
 import { generateThemeCSSVars, getThemeMetaColor } from "@/lib/theme-utils";
 import "./globals.css";
 
 // Each theme picks two of these. We load them all so the user can
 // switch in /admin/settings without a code change.
+// Only the Noto pair is preloaded (the live theme and most presets use it); the
+// rest stay preload:false so they are fetched only when a theme actually uses them.
 const notoSerif = Noto_Serif({
   variable: "--font-noto-serif",
   subsets: ["latin"],
@@ -36,39 +38,48 @@ const ebGaramond = EB_Garamond({
   variable: "--font-eb-garamond",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 const hankenGrotesk = Hanken_Grotesk({
   variable: "--font-hanken-grotesk",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 const anton = Anton({
   variable: "--font-anton",
   subsets: ["latin"],
   weight: "400",
   display: "swap",
+  preload: false,
 });
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 const bodoniModa = Bodoni_Moda({
   variable: "--font-bodoni-moda",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 
+// Applied to <html>, not <body>: the theme block on :root resolves
+// --font-display against these variables, so they must be defined there.
 const fontVariableClasses = [
   notoSerif.variable,
   notoSans.variable,
@@ -81,25 +92,13 @@ const fontVariableClasses = [
   bodoniModa.variable,
 ].join(" ");
 
-// Fetch theme from database
-async function getTheme(): Promise<ThemePresetKey> {
-  try {
-    const settings = await prisma.settings.findUnique({
-      where: { id: "default" },
-      select: { theme: true },
-    });
-    return (settings?.theme as ThemePresetKey) || DEFAULT_THEME;
-  } catch {
-    return DEFAULT_THEME;
-  }
-}
-
 export async function generateViewport(): Promise<Viewport> {
-  const theme = await getTheme();
+  const theme = await getActiveTheme();
   return {
     width: "device-width",
     initialScale: 1,
     maximumScale: 5,
+    viewportFit: "cover",
     themeColor: getThemeMetaColor(theme),
   };
 }
@@ -146,11 +145,12 @@ export default async function RootLayout({
     cookieStore.get("locale")?.value,
     requestHeaders.get("accept-language")
   );
-  const theme = await getTheme();
+  const theme = await getActiveTheme();
+  const mode = THEME_PRESETS[theme].mode;
   const initialCSSVars = generateThemeCSSVars(theme);
 
   return (
-    <html lang={locale} className="dark">
+    <html lang={locale} className={fontVariableClasses} data-theme-mode={mode} style={{ colorScheme: mode }}>
       <head>
         {/* Inject theme CSS variables inline for SSR - prevents flash */}
         <style nonce={nonce} dangerouslySetInnerHTML={{
@@ -165,7 +165,7 @@ export default async function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body
-        className={`${fontVariableClasses} bg-background-dark text-foreground font-display antialiased overflow-x-hidden`}
+        className="bg-background-dark text-foreground font-display antialiased overflow-x-hidden"
       >
         <ThemeProvider initialTheme={theme}>
           <LocaleProvider initialLocale={locale}>{children}</LocaleProvider>

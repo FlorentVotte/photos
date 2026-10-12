@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import PhotoGrid from "./PhotoGrid";
 import ChapterStats from "./ChapterStats";
 import ChapterLocationSummary from "./ChapterLocationSummary";
 import ProtectedImage from "./ProtectedImage";
+import { heroParallax } from "@/lib/hero-parallax";
 import { useLocale } from "@/lib/LocaleContext";
 import { extractLocations, computeChapterStats } from "@/lib/geo-utils";
+import { formatPhotoAccessibleLabel, wideCoverSources } from "@/lib/photo-display";
 import type { Photo, Album, Chapter } from "@/lib/types";
 
 const ChapterRouteMap = dynamic(() => import("./ChapterRouteMap"), {
@@ -33,38 +35,93 @@ export default function AlbumContent({
 }: AlbumContentProps) {
   const { t, locale } = useLocale();
   const heroRef = useRef<HTMLDivElement>(null);
-  const [heroHeight, setHeroHeight] = useState(600);
-  const [scrollY, setScrollY] = useState(0);
+  // Wide crops: the square thumb would be upscaled, so use medium + full only.
+  const heroSources = wideCoverSources(album.coverImage);
+  const heroHeightRef = useRef(600);
+  const heroImageRef = useRef<HTMLDivElement>(null);
+  const heroTextRef = useRef<HTMLDivElement>(null);
 
+  // Parallax is written straight to the DOM (no React state per scroll event),
+  // rAF-throttled, and only live while the hero is near the viewport.
   useEffect(() => {
-    const handleScroll = () => {
-      if (heroRef.current) {
-        const rect = heroRef.current.getBoundingClientRect();
-        if (rect.bottom > 0) {
-          setScrollY(window.scrollY);
-        }
+    const hero = heroRef.current;
+    const image = heroImageRef.current;
+    const text = heroTextRef.current;
+    if (!hero || !image || !text) return;
+
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let inView = false;
+    let frame = 0;
+
+    const clear = () => {
+      image.style.transform = "";
+      image.style.willChange = "";
+      text.style.transform = "";
+      text.style.opacity = "";
+      text.style.willChange = "";
+    };
+
+    const apply = () => {
+      frame = 0;
+      const { imageY, textY, textOpacity } = heroParallax(
+        window.scrollY,
+        heroHeightRef.current
+      );
+      image.style.transform = `translateY(${imageY}px)`;
+      text.style.transform = `translateY(${textY}px)`;
+      text.style.opacity = String(textOpacity);
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
+
+    const stop = () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    const sync = () => {
+      stop();
+      if (motionQuery.matches) {
+        clear();
+        return;
+      }
+      if (inView) {
+        image.style.willChange = "transform";
+        text.style.willChange = "transform";
+        window.addEventListener("scroll", onScroll, { passive: true });
+        apply();
+      } else {
+        image.style.willChange = "";
+        text.style.willChange = "";
       }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const hero = heroRef.current;
-    if (!hero) return;
-
     const resizeObserver = new ResizeObserver(([entry]) => {
-      setHeroHeight(entry.contentRect.height);
+      heroHeightRef.current = entry.contentRect.height;
+      if (inView && !motionQuery.matches) onScroll();
     });
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        sync();
+      },
+      { rootMargin: "100px 0px" }
+    );
 
     resizeObserver.observe(hero);
-    return () => resizeObserver.disconnect();
-  }, []);
+    intersectionObserver.observe(hero);
+    motionQuery.addEventListener("change", sync);
 
-  const parallaxOffset = scrollY * 0.35;
-  const textOpacity = Math.max(0, 1 - scrollY / (heroHeight * 0.6));
-  const textTranslate = scrollY * 0.18;
+    return () => {
+      stop();
+      resizeObserver.disconnect();
+      intersectionObserver.disconnect();
+      motionQuery.removeEventListener("change", sync);
+    };
+  }, []);
 
   useEffect(() => {
     const storageKey = `scroll-album-${album.slug}`;
@@ -116,30 +173,32 @@ export default function AlbumContent({
   };
 
   return (
-    <main className="flex-1 flex flex-col items-center w-full">
+    <main id="main" tabIndex={-1} className="flex-1 flex flex-col items-center w-full">
       {/* Cinematic hero with parallax */}
       <div
         ref={heroRef}
-        className="relative h-[75vh] min-h-[480px] w-full overflow-hidden md:h-[88vh] md:min-h-[640px]"
+        className="relative h-[75svh] min-h-[480px] w-full overflow-hidden md:h-[88svh] md:min-h-[640px]"
       >
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
-          style={{
-            backgroundImage: `url("${album.coverImage}")`,
-            transform: `translateY(${parallaxOffset}px) scale(1.1)`,
-          }}
-        />
+        <div ref={heroImageRef} className="absolute inset-0 z-0">
+          <ProtectedImage
+            alt=""
+            src={album.coverImage}
+            sources={heroSources}
+            sizes="100vw"
+            loading="eager"
+            fetchPriority="high"
+            className="h-full w-full scale-110 object-cover"
+          />
+        </div>
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-black/15 to-background-dark" />
+        <div className="absolute inset-x-0 bottom-0 z-10 h-3/5 bg-gradient-to-t from-background-dark/80 via-background-dark/50 to-transparent" />
 
         <div
-          className="relative z-20 mx-auto flex h-full max-w-[1100px] flex-col justify-end px-6 pb-20 md:px-12 md:pb-28 will-change-transform"
-          style={{
-            opacity: textOpacity,
-            transform: `translateY(${textTranslate}px)`,
-          }}
+          ref={heroTextRef}
+          className="relative z-20 mx-auto flex h-full max-w-[1100px] flex-col justify-end px-6 pb-20 md:px-12 md:pb-28"
         >
           <div className="flex max-w-3xl flex-col gap-4">
-            <p className="font-sans text-eyebrow uppercase text-white/70">
+            <p className="font-sans text-eyebrow uppercase text-white/80">
               {t("album", "travelDiary")}
             </p>
 
@@ -153,7 +212,7 @@ export default function AlbumContent({
               </p>
             )}
 
-            <p className="mt-2 font-sans text-eyebrow uppercase text-white/60">
+            <p className="mt-2 font-sans text-eyebrow uppercase text-white/80">
               {album.date} <span className="mx-2 text-white/30">·</span>{" "}
               {album.location}
             </p>
@@ -186,7 +245,12 @@ export default function AlbumContent({
                     src={coverPhoto.src.medium}
                     sources={coverPhoto.src}
                     sizes="(max-width: 1200px) 100vw, 1200px"
-                    alt={coverPhoto.title}
+                    alt={formatPhotoAccessibleLabel(
+                      coverPhoto,
+                      album.title,
+                      0,
+                      locale
+                    )}
                     className="absolute inset-0 w-full h-full object-cover"
                     loading={chapterIndex === 0 ? "eager" : "lazy"}
                     fetchPriority={chapterIndex === 0 ? "high" : undefined}
@@ -241,9 +305,9 @@ export default function AlbumContent({
         {chapters.length === 0 && photos.length > 0 && (
           <section className="flex w-full flex-col gap-10">
             <header className="text-center">
-              <p className="font-sans text-eyebrow uppercase text-text-muted">
+              <h2 className="font-sans text-eyebrow uppercase text-text-muted">
                 {t("album", "gallery")}
-              </p>
+              </h2>
             </header>
             <PhotoGrid
               photos={photos}
@@ -262,9 +326,13 @@ export default function AlbumContent({
               href={`/album/${nextAlbum.slug}`}
               className="group relative block w-full overflow-hidden"
             >
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-                style={{ backgroundImage: `url("${nextAlbum.coverImage}")` }}
+              <ProtectedImage
+                alt=""
+                src={nextAlbum.coverImage}
+                sources={wideCoverSources(nextAlbum.coverImage)}
+                sizes="(min-width: 1100px) 1100px, 100vw"
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/70 to-background-dark/30" />
               <div className="relative flex min-h-[280px] flex-col justify-center gap-4 px-8 py-16 md:min-h-[360px] md:px-16">
@@ -281,9 +349,10 @@ export default function AlbumContent({
                 )}
                 <div className="mt-2 inline-flex items-center gap-3 self-start font-sans text-sm uppercase tracking-[0.24em] text-text-muted transition-colors group-hover:text-foreground">
                   <span>{t("home", "viewAlbum")}</span>
+                  {/* w-12 box scaled to 2rem at rest; -mr-4 cancels the extra 1rem so layout matches the old w-8 */}
                   <span
                     aria-hidden="true"
-                    className="h-px w-8 bg-text-muted/60 transition-all duration-300 group-hover:w-12 group-hover:bg-foreground"
+                    className="-mr-4 h-px w-12 origin-left scale-x-[0.6667] bg-text-muted/60 transition-[transform,background-color] duration-300 ease-out-soft group-hover:scale-x-100 group-hover:bg-foreground motion-reduce:transition-none"
                   />
                 </div>
               </div>

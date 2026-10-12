@@ -75,7 +75,7 @@ export default async function PhotoPage({ params }: Props) {
     currentIndex < albumPhotos.length - 1 ? albumPhotos[currentIndex + 1] : null;
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
       <PhotoContent
         photo={photo}

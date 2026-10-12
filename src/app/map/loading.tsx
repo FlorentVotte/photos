@@ -12,16 +12,16 @@ export default async function MapLoading() {
   );
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
-      <main className="flex-1 px-6 pt-20 pb-20 md:px-12 md:pt-28">
+      <main id="main" tabIndex={-1} className="flex-1 px-6 pt-20 pb-20 md:px-12 md:pt-28">
         <div className="mx-auto max-w-[1200px]">
           <header className="mb-12 max-w-2xl">
             <Skeleton className="h-12 w-64 mb-6" />
             <Skeleton className="h-5 w-96 max-w-full" />
           </header>
 
-          <div className="w-full h-[70vh] bg-surface-dark flex items-center justify-center border-y border-surface-border">
+          <div className="w-full h-[70svh] bg-surface-dark flex items-center justify-center border-y border-surface-border">
             <p className="font-sans text-eyebrow uppercase text-text-muted animate-pulse">
               {t("map", "loadingMap", locale)}
             </p>

@@ -55,7 +55,7 @@ export default function GalleryListItem({
             : gallery.url}
         </p>
         {gallery.photoCount !== undefined && (
-          <p className="font-sans text-xs text-text-muted/70">
+          <p className="font-sans text-xs text-text-muted">
             {gallery.photoCount} photos
             {gallery.lastSynced && (
               <>

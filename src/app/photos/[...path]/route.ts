@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
+import { Readable } from "stream";
 import path from "path";
+import { etagMatches, isNotFoundError } from "@/lib/http-cache";
 
 // Serve photos from the data directory (for standalone mode)
 const PHOTOS_DIR = path.resolve(
@@ -37,18 +39,29 @@ export async function GET(
   }
 
   try {
-    // Check if file exists (use the resolved, validated path)
-    if (!fs.existsSync(filePath)) {
-      return new NextResponse("Not Found", { status: 404 });
+    // Stat the resolved, validated path; ENOENT/ENOTDIR mean not found.
+    let stat: fs.Stats;
+    try {
+      stat = await fs.promises.stat(filePath);
+    } catch (err) {
+      if (isNotFoundError(err)) {
+        return new NextResponse("Not Found", { status: 404 });
+      }
+      throw err;
     }
-
-    const stat = fs.statSync(filePath);
     if (!stat.isFile()) {
       return new NextResponse("Not Found", { status: 404 });
     }
 
-    // Read file
-    const fileBuffer = fs.readFileSync(filePath);
+    const etag = `"${stat.mtime.getTime()}-${stat.size}"`;
+    const cacheControl = "public, max-age=31536000, immutable";
+
+    if (etagMatches(request.headers.get("if-none-match"), etag)) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: { ETag: etag, "Cache-Control": cacheControl },
+      });
+    }
 
     // Determine content type
     const ext = path.extname(filePath).toLowerCase();
@@ -61,13 +74,16 @@ export async function GET(
           : "application/octet-stream";
 
     // Return with aggressive caching (images don't change)
-    return new NextResponse(fileBuffer, {
+    const body = Readable.toWeb(
+      fs.createReadStream(filePath)
+    ) as unknown as ReadableStream;
+    return new NextResponse(body, {
       status: 200,
       headers: {
         "Content-Type": contentType,
         "Content-Length": stat.size.toString(),
-        "Cache-Control": "public, max-age=31536000, immutable",
-        "ETag": `"${stat.mtime.getTime()}-${stat.size}"`,
+        "Cache-Control": cacheControl,
+        ETag: etag,
       },
     });
   } catch (error) {

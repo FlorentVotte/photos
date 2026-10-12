@@ -44,7 +44,7 @@ export default function ChapterStats({
         {parts.join("  ·  ")}
       </p>
       {photosWithGps > 0 && photosWithGps < photoCount && (
-        <p className="font-sans text-micro uppercase text-text-muted/60">
+        <p className="font-sans text-micro uppercase text-text-muted">
           {photosWithGps}/{photoCount} {t("stats", "withGps")}
         </p>
       )}

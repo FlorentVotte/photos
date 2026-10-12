@@ -52,7 +52,7 @@ export default function GalleryForm({
           placeholder="https://lightroom.adobe.com/shares/…"
           disabled={isDisabled}
           aria-label="Lightroom gallery URL"
-          className="flex-1 border-b border-surface-border bg-transparent pb-2.5 font-sans text-sm text-foreground placeholder-text-muted/50 focus:border-foreground focus:outline-none transition-colors disabled:opacity-50"
+          className="flex-1 border-b border-text-muted/60 bg-transparent pb-2.5 font-sans text-sm text-foreground placeholder-text-muted/80 focus:border-foreground focus:outline-none transition-colors disabled:opacity-50"
         />
         <button
           type="submit"

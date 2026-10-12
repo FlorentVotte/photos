@@ -67,7 +67,7 @@ export default function AboutContent({
   );
 
   return (
-    <main className="flex-1 px-6 pt-20 pb-12 md:px-12 md:pt-28">
+    <main id="main" tabIndex={-1} className="flex-1 px-6 pt-20 pb-12 md:px-12 md:pt-28">
       <div className="mx-auto max-w-[1100px]">
         {/* Header — name, role, bio, portrait */}
         <section className="grid grid-cols-1 gap-12 md:grid-cols-[1fr_280px] md:gap-16">

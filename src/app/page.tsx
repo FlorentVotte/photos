@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import HomeExperience from "@/components/HomeExperience";
 import Footer from "@/components/Footer";
 import { WebsiteStructuredData } from "@/components/StructuredData";
-import { getAlbums, getAllPhotos, getFeaturedAlbum } from "@/lib/data";
+import { getAlbums, getFeaturedAlbum, getPhotoGeoPoints } from "@/lib/data";
 import { albumMarkers, sortMarkersByDate } from "@/lib/geo-utils";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://photos.votte.eu";
@@ -13,13 +13,13 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   let featuredAlbum: Awaited<ReturnType<typeof getFeaturedAlbum>> = undefined;
   let albums: Awaited<ReturnType<typeof getAlbums>> = [];
-  let photos: Awaited<ReturnType<typeof getAllPhotos>> = [];
+  let photos: Awaited<ReturnType<typeof getPhotoGeoPoints>> = [];
 
   try {
     [featuredAlbum, albums, photos] = await Promise.all([
       getFeaturedAlbum(),
       getAlbums(),
-      getAllPhotos(),
+      getPhotoGeoPoints(),
     ]);
   } catch {
     // Database may not exist during build
@@ -32,7 +32,7 @@ export default async function Home() {
   const markers = sortMarkersByDate(albumMarkers(photos, albums));
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+    <div className="relative flex h-auto min-h-svh w-full flex-col overflow-x-hidden">
       <WebsiteStructuredData
         name="Regards Perdus - Photo Portfolio"
         description="Capturing the fleeting moments between departures and arrivals. A visual journey through the world."
@@ -40,7 +40,7 @@ export default async function Home() {
       />
       <Header />
 
-      <main className="flex flex-1 flex-col">
+      <main id="main" tabIndex={-1} className="flex flex-1 flex-col">
         <HomeExperience
           featuredAlbum={featuredAlbum}
           recentAlbums={recentAlbums}

@@ -7,6 +7,11 @@ import type { Photo } from "@/lib/types";
 import type * as LeafletTypes from "leaflet";
 import { useLocale } from "@/lib/LocaleContext";
 import { formatPhotoAccessibleLabel } from "@/lib/photo-display";
+import {
+  THEME_COLOR_FALLBACKS,
+  readThemeColor,
+  touchTargetHtml,
+} from "@/lib/map-ui";
 
 interface ChapterRouteMapProps {
   photos: Photo[];
@@ -124,15 +129,15 @@ export default function ChapterRouteMap({
       </div>`;
     } else {
       iconHtml = `<div class="w-4 h-4 rounded-full bg-primary/70 ring-2 ring-primary/20 flex items-center justify-center">
-        <span class="text-[0.5rem] font-semibold text-background-dark">${index + 1}</span>
+        <span class="text-[0.625rem] font-semibold text-background-dark">${index + 1}</span>
       </div>`;
     }
 
     return L.divIcon({
       className: "custom-marker",
-      html: iconHtml,
-      iconSize: isFirst || isLast ? [24, 24] : [16, 16],
-      iconAnchor: isFirst || isLast ? [12, 12] : [8, 8],
+      html: touchTargetHtml(iconHtml),
+      iconSize: [44, 44],
+      iconAnchor: [22, 22],
       popupAnchor: [0, isFirst || isLast ? -16 : -10],
     });
   };
@@ -176,7 +181,7 @@ export default function ChapterRouteMap({
             <Polyline
               positions={routeCoordinates}
               pathOptions={{
-                color: "#7ba88e",
+                color: readThemeColor("--color-primary", THEME_COLOR_FALLBACKS.primary),
                 weight: 2,
                 opacity: 0.7,
                 dashArray: "8, 8",

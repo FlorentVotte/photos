@@ -3,11 +3,11 @@ import { ChapterSkeleton, ImageSkeleton, Skeleton } from "@/components/Skeleton"
 
 export default function AlbumLoading() {
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
+    <div className="relative flex min-h-svh w-full flex-col bg-background-dark">
       <Header />
-      <main className="flex-1 flex flex-col items-center w-full">
+      <main id="main" tabIndex={-1} className="flex-1 flex flex-col items-center w-full">
         {/* Hero */}
-        <div className="relative w-full h-[75vh] min-h-[480px] md:h-[88vh] md:min-h-[640px] overflow-hidden">
+        <div className="relative w-full h-[75svh] min-h-[480px] md:h-[88svh] md:min-h-[640px] overflow-hidden">
           <ImageSkeleton className="absolute inset-0" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-background-dark" />
           <div className="relative z-10 mx-auto flex h-full max-w-[1100px] flex-col justify-end px-6 pb-20 md:px-12 md:pb-28">
