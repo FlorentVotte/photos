@@ -42,9 +42,14 @@ export default function BasemapLayer({ onError = NOOP }: BasemapLayerProps) {
     // maplibre-gl touches `window` as it initialises, so it is pulled in here
     // rather than imported at module scope — PhotoLocationMap reaches the
     // server bundle through PhotoContent.
-    import("@maplibre/maplibre-gl-leaflet")
-      .then(({ maplibreGL }) => {
+    Promise.all([import("maplibre-gl"), import("@maplibre/maplibre-gl-leaflet")])
+      .then(([maplibre, { maplibreGL }]) => {
         if (cancelled) return;
+        // maplibre-gl 6 looks for its worker next to its own module, which
+        // does not exist once bundled. scripts/copy-maplibre-worker.mjs serves
+        // it from public/; the version query keeps a cached copy from an older
+        // release from pairing with newer main-thread code.
+        maplibre.setWorkerUrl(`/maplibre-gl-worker.mjs?v=${maplibre.getVersion()}`);
         const nextLayer = maplibreGL({ style: STYLE_URL });
         nextLayer.addTo(map);
         layer = nextLayer;

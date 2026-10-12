@@ -21,6 +21,9 @@ adobe-tokens.json
 # Synced photos (large files, generated)
 public/photos/
 
+# Copied from node_modules by scripts/copy-maplibre-worker.mjs
+public/maplibre-gl-worker.mjs
+
 # Debug logs
 npm-debug.log*
 yarn-debug.log*
